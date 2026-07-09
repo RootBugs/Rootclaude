@@ -84,81 +84,62 @@ function webFetchToolInputToPermissionRuleContent(input: {
 }
 
 /**
- * DeepScrape integration - fetches web content using deepscrape.exe
- * Falls back to null if Chrome is not available or deepscrape fails
+ * AutoCLI-style direct HTTP fetch - NO Chrome dependency
+ * Fetches web content directly using Node.js http/https modules
  */
-async function fetchWithDeepScrape(
+async function fetchWithAutoCLI(
   url: string,
   signal: AbortSignal,
 ): Promise<{ markdown: string; bytes: number } | null> {
   try {
-    const { execSync } = await import('child_process')
+    const http = await import('http')
+    const https = await import('https')
+    const { URL } = await import('url')
     
-    // Try multiple DeepScrape paths
-    const possiblePaths = [
-      process.env.DEEPSCRAPE_PATH,
-      'E:\\projects\\deepscrape\\deepscrape.exe',
-      'C:\\Users\\Dc\\deepscrape.exe',
-      'deepscrape.exe', // In PATH
-    ].filter(Boolean)
+    const parsedUrl = new URL(url)
+    const client = parsedUrl.protocol === 'https:' ? https : http
     
-    let deepscrapePath = ''
-    for (const p of possiblePaths) {
-      try {
-        execSync(`"${p}" --version`, { encoding: 'utf-8', timeout: 2000 })
-        deepscrapePath = p
-        break
-      } catch {
-        continue
-      }
-    }
-    
-    if (!deepscrapePath) {
-      console.error('[DeepScrape] Not found in any path')
-      return null
-    }
-    
-    // Check if Chrome is running (DeepScrape needs it)
-    const tasklist = execSync('tasklist /FI "IMAGENAME eq chrome.exe" /NH', { 
-      encoding: 'utf-8', 
-      timeout: 3000 
-    })
-    if (!tasklist.includes('chrome.exe')) {
-      console.error('[DeepScrape] Chrome not running - skipping')
-      return null // No Chrome, skip DeepScrape
-    }
-    
-    // Run deepscrape read command with retries
-    let lastError: Error | null = null
-    for (let attempt = 0; attempt < 2; attempt++) {
-      try {
-        const result = execSync(`"${deepscrapePath}" read "${url}" --format md`, {
-          encoding: 'utf-8',
-          timeout: 20000,
-          maxBuffer: 5 * 1024 * 1024,
-          signal: signal as any,
-        })
+    return new Promise((resolve, reject) => {
+      const req = client.get(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+        },
+        timeout: 10000,
+      }, (res) => {
+        // Handle redirects
+        if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          fetchWithAutoCLI(res.headers.location, signal).then(resolve).catch(reject)
+          return
+        }
         
-        if (result && result.trim().length > 0) {
-          return {
-            markdown: result.trim(),
-            bytes: Buffer.byteLength(result),
+        let data = ''
+        res.on('data', (chunk: Buffer) => { data += chunk.toString() })
+        res.on('end', () => {
+          // Simple HTML to text conversion
+          const text = data
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+          
+          if (text.length > 0) {
+            resolve({ markdown: text, bytes: Buffer.byteLength(text) })
+          } else {
+            resolve(null)
           }
-        }
-        return null
-      } catch (error) {
-        lastError = error as Error
-        if (attempt === 0) {
-          // Wait before retry
-          await new Promise(r => setTimeout(r, 1000))
-        }
-      }
-    }
-    
-    console.error(`[DeepScrape] Failed after 2 attempts: ${lastError?.message}`)
-    return null
-  } catch (error) {
-    console.error(`[DeepScrape] Error: ${error}`)
+        })
+      })
+      
+      req.on('error', () => resolve(null))
+      req.on('timeout', () => { req.destroy(); resolve(null) })
+      
+      // Handle abort signal
+      signal?.addEventListener('abort', () => { req.destroy(); resolve(null) }, { once: true })
+    })
+  } catch {
     return null
   }
 }
@@ -332,20 +313,20 @@ ${DESCRIPTION}`
       }
     }
 
-    // Try DeepScrape first (uses Chrome when available, fast extraction)
+    // Try AutoCLI direct HTTP fetch (NO Chrome dependency)
     try {
-      const deepscrapeResult = await fetchWithDeepScrape(url, abortController.signal)
-      if (deepscrapeResult) {
+      const autocliResult = await fetchWithAutoCLI(url, abortController.signal)
+      if (autocliResult) {
         const result = await applyPromptToMarkdown(
           prompt,
-          deepscrapeResult.markdown,
+          autocliResult.markdown,
           abortController.signal,
           isNonInteractiveSession,
           false,
         )
         return {
           data: {
-            bytes: deepscrapeResult.bytes,
+            bytes: autocliResult.bytes,
             code: 200,
             codeText: 'OK (DeepScrape)',
             result,
