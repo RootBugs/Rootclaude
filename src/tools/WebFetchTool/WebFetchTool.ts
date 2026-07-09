@@ -93,7 +93,30 @@ async function fetchWithDeepScrape(
 ): Promise<{ markdown: string; bytes: number } | null> {
   try {
     const { execSync } = await import('child_process')
-    const deepscrapePath = 'E:\\projects\\deepscrape\\deepscrape.exe'
+    
+    // Try multiple DeepScrape paths
+    const possiblePaths = [
+      process.env.DEEPSCRAPE_PATH,
+      'E:\\projects\\deepscrape\\deepscrape.exe',
+      'C:\\Users\\Dc\\deepscrape.exe',
+      'deepscrape.exe', // In PATH
+    ].filter(Boolean)
+    
+    let deepscrapePath = ''
+    for (const p of possiblePaths) {
+      try {
+        execSync(`"${p}" --version`, { encoding: 'utf-8', timeout: 2000 })
+        deepscrapePath = p
+        break
+      } catch {
+        continue
+      }
+    }
+    
+    if (!deepscrapePath) {
+      console.error('[DeepScrape] Not found in any path')
+      return null
+    }
     
     // Check if Chrome is running (DeepScrape needs it)
     const tasklist = execSync('tasklist /FI "IMAGENAME eq chrome.exe" /NH', { 
@@ -101,25 +124,41 @@ async function fetchWithDeepScrape(
       timeout: 3000 
     })
     if (!tasklist.includes('chrome.exe')) {
+      console.error('[DeepScrape] Chrome not running - skipping')
       return null // No Chrome, skip DeepScrape
     }
     
-    // Run deepscrape read command
-    const result = execSync(`"${deepscrapePath}" read "${url}" --format md`, {
-      encoding: 'utf-8',
-      timeout: 25000,
-      maxBuffer: 5 * 1024 * 1024,
-      signal: signal as any,
-    })
-    
-    if (result && result.trim().length > 0) {
-      return {
-        markdown: result.trim(),
-        bytes: Buffer.byteLength(result),
+    // Run deepscrape read command with retries
+    let lastError: Error | null = null
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const result = execSync(`"${deepscrapePath}" read "${url}" --format md`, {
+          encoding: 'utf-8',
+          timeout: 20000,
+          maxBuffer: 5 * 1024 * 1024,
+          signal: signal as any,
+        })
+        
+        if (result && result.trim().length > 0) {
+          return {
+            markdown: result.trim(),
+            bytes: Buffer.byteLength(result),
+          }
+        }
+        return null
+      } catch (error) {
+        lastError = error as Error
+        if (attempt === 0) {
+          // Wait before retry
+          await new Promise(r => setTimeout(r, 1000))
+        }
       }
     }
+    
+    console.error(`[DeepScrape] Failed after 2 attempts: ${lastError?.message}`)
     return null
-  } catch {
+  } catch (error) {
+    console.error(`[DeepScrape] Error: ${error}`)
     return null
   }
 }
