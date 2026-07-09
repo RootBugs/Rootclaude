@@ -120,10 +120,10 @@ export type ThemeSetting = (typeof THEME_SETTINGS)[number]
 const lightTheme: Theme = {
   autoAccept: 'rgb(135,0,255)', // Electric violet
   bashBorder: 'rgb(255,0,135)', // Vibrant pink
-  claude: 'rgb(209,87,0)', // Brand orange darkened for contrast on white
-  claudeShimmer: 'rgb(255,122,26)', // Full brand orange as the shimmer highlight
-  brand: 'rgb(209,87,0)', // Brand orange darkened for contrast on white
-  brandShimmer: 'rgb(255,122,26)', // Full brand orange as the shimmer highlight
+  claude: 'rgb(185,28,28)', // RootClaude red darkened for contrast on white
+  claudeShimmer: 'rgb(239,68,68)', // Full red as the shimmer highlight
+  brand: 'rgb(185,28,28)', // RootClaude red darkened for contrast on white
+  brandShimmer: 'rgb(239,68,68)', // Full red as the shimmer highlight
   claudeBlue_FOR_SYSTEM_SPINNER: 'rgb(87,105,247)', // Medium blue for system spinner
   claudeBlueShimmer_FOR_SYSTEM_SPINNER: 'rgb(117,135,255)', // Lighter blue for system spinner shimmer
   permission: 'rgb(87,105,247)', // Medium blue
@@ -370,10 +370,10 @@ const darkAnsiTheme: Theme = {
 const lightDaltonizedTheme: Theme = {
   autoAccept: 'rgb(135,0,255)', // Electric violet
   bashBorder: 'rgb(0,102,204)', // Blue instead of pink
-  claude: 'rgb(200,100,0)', // Brand orange darkened for white bg, luminance-separated from warning
-  claudeShimmer: 'rgb(255,150,40)', // Lighter brand orange for shimmer effect
-  brand: 'rgb(200,100,0)', // Brand orange darkened for white bg, luminance-separated from warning
-  brandShimmer: 'rgb(255,150,40)', // Lighter brand orange for shimmer effect
+  claude: 'rgb(180,30,30)', // RootClaude red darkened for white bg
+  claudeShimmer: 'rgb(220,60,60)', // Lighter red for shimmer effect
+  brand: 'rgb(180,30,30)', // RootClaude red darkened for white bg
+  brandShimmer: 'rgb(220,60,60)', // Lighter red for shimmer effect
   claudeBlue_FOR_SYSTEM_SPINNER: 'rgb(51,102,255)', // Bright blue for system spinner
   claudeBlueShimmer_FOR_SYSTEM_SPINNER: 'rgb(101,152,255)', // Lighter bright blue for system spinner shimmer
   permission: 'rgb(51,102,255)', // Bright blue
@@ -453,10 +453,10 @@ const lightDaltonizedTheme: Theme = {
 const darkTheme: Theme = {
   autoAccept: 'rgb(175,135,255)', // Electric violet
   bashBorder: 'rgb(253,93,177)', // Bright pink
-  claude: 'rgb(255,122,26)', // OpenClaude brand orange
-  claudeShimmer: 'rgb(255,177,95)', // Lighter brand orange for shimmer effect
-  brand: 'rgb(255,122,26)', // OpenClaude brand orange
-  brandShimmer: 'rgb(255,177,95)', // Lighter brand orange for shimmer effect
+  claude: 'rgb(239,68,68)', // RootClaude red
+  claudeShimmer: 'rgb(252,129,129)', // Lighter red for shimmer effect
+  brand: 'rgb(239,68,68)', // RootClaude red
+  brandShimmer: 'rgb(252,129,129)', // Lighter red for shimmer effect
   claudeBlue_FOR_SYSTEM_SPINNER: 'rgb(147,165,255)', // Blue for system spinner
   claudeBlueShimmer_FOR_SYSTEM_SPINNER: 'rgb(177,195,255)', // Lighter blue for system spinner shimmer
   permission: 'rgb(177,185,249)', // Light blue-purple
