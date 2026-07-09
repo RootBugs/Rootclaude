@@ -19,6 +19,20 @@ export type LogoPalette = {
 }
 
 export const LOGO_PALETTES = {
+  rootred: {
+    gradient: [
+      [252, 129, 129],
+      [248, 113, 113],
+      [239, 68, 68],
+      [220, 38, 38],
+      [185, 28, 28],
+      [153, 27, 27],
+    ],
+    accent: [239, 68, 68],
+    cream: [254, 205, 211],
+    dim: [180, 80, 80],
+    border: [153, 27, 27],
+  },
   ember: {
     gradient: [
       [255, 177, 95],
@@ -95,10 +109,11 @@ export type LogoPaletteName = keyof typeof LOGO_PALETTES
 
 export const LOGO_PALETTE_NAMES = Object.keys(LOGO_PALETTES) as LogoPaletteName[]
 
-export const DEFAULT_LOGO_PALETTE: LogoPaletteName = 'ember'
+export const DEFAULT_LOGO_PALETTE: LogoPaletteName = 'rootred'
 
 export const LOGO_PALETTE_LABELS: Record<LogoPaletteName, string> = {
-  ember: 'Ember (default)',
+  rootred: 'RootRed (default)',
+  ember: 'Ember',
   sunset: 'Sunset',
   forest: 'Forest green',
   ocean: 'Ocean blue',
