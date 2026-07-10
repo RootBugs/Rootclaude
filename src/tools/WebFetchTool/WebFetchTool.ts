@@ -86,17 +86,37 @@ function webFetchToolInputToPermissionRuleContent(input: {
 /**
  * AutoCLI-style direct HTTP fetch - NO Chrome dependency
  * Fetches web content directly using Node.js http/https modules
+ * Security: Max 5 redirects, URL validation, timeout protection
  */
+const MAX_REDIRECTS = 5
+const FETCH_TIMEOUT = 10000
+const MAX_RESPONSE_SIZE = 5 * 1024 * 1024 // 5MB
+
 async function fetchWithAutoCLI(
   url: string,
   signal: AbortSignal,
+  redirectCount = 0,
 ): Promise<{ markdown: string; bytes: number } | null> {
   try {
+    // Security: Validate URL
+    const parsedUrl = new URL(url)
+    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+      return null
+    }
+    
+    // Security: Block internal/private IPs
+    const hostname = parsedUrl.hostname
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.startsWith('172.')) {
+      return null
+    }
+    
+    // Security: Limit redirects
+    if (redirectCount > MAX_REDIRECTS) {
+      return null
+    }
+    
     const http = await import('http')
     const https = await import('https')
-    const { URL } = await import('url')
-    
-    const parsedUrl = new URL(url)
     const client = parsedUrl.protocol === 'https:' ? https : http
     
     return new Promise((resolve, reject) => {
@@ -106,16 +126,38 @@ async function fetchWithAutoCLI(
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'en-US,en;q=0.5',
         },
-        timeout: 10000,
+        timeout: FETCH_TIMEOUT,
       }, (res) => {
-        // Handle redirects
+        // Handle redirects with security checks
         if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          fetchWithAutoCLI(res.headers.location, signal).then(resolve).catch(reject)
+          try {
+            const redirectUrl = new URL(res.headers.location, url).toString()
+            fetchWithAutoCLI(redirectUrl, signal, redirectCount + 1).then(resolve).catch(reject)
+          } catch {
+            resolve(null)
+          }
+          return
+        }
+        
+        // Security: Check response size
+        const contentLength = parseInt(res.headers['content-length'] || '0', 10)
+        if (contentLength > MAX_RESPONSE_SIZE) {
+          res.destroy()
+          resolve(null)
           return
         }
         
         let data = ''
-        res.on('data', (chunk: Buffer) => { data += chunk.toString() })
+        let totalBytes = 0
+        res.on('data', (chunk: Buffer) => {
+          totalBytes += chunk.length
+          if (totalBytes > MAX_RESPONSE_SIZE) {
+            res.destroy()
+            resolve(null)
+            return
+          }
+          data += chunk.toString()
+        })
         res.on('end', () => {
           // Simple HTML to text conversion
           const text = data
