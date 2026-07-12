@@ -1,8 +1,8 @@
-﻿/**
- * RootClaude startup screen â€” filled-block text logo with sunset gradient.
+/**
+ * OpenClaude startup screen — filled-block text logo with sunset gradient.
  * Called once at CLI startup before the Ink UI renders.
  *
- * Addresses: https://github.com/Gitlawb/RootClaude/issues/55
+ * Addresses: https://github.com/Gitlawb/openclaude/issues/55
  */
 
 import { isLocalProviderUrl, resolveProviderRequest } from '../services/api/providerConfig.js'
@@ -54,19 +54,19 @@ export function paintLine(text: string, stops: readonly RGB[], lineT: number): s
   return out + RESET
 }
 
-// â”€â”€â”€ RootClaude Premium ASCII Logo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── RootClaude Premium ASCII Logo ─────────────────────────────────────────────
 
 const LOGO_ROOT = [
-  '  â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘',
-  '  â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–“â–’â–‘   â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘       ',
-  '  â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–“â–’â–‘   â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘      â–‘â–’â–“â–ˆâ–“â–’â–‘       ',
-  '  â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–“â–’â–‘   â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–’â–“â–ˆâ–ˆâ–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘ ',
-  '  â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–“â–’â–‘   â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘      â–‘â–’â–“â–ˆâ–“â–’â–‘',
-  '  â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–“â–’â–‘   â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘      â–‘â–’â–“â–ˆâ–“â–’â–‘',
-  '  â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘  â–‘â–’â–“â–ˆâ–“â–’â–‘   â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘ â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘â–‘â–’â–“â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–’â–‘ ',
+  '  ░▒▓███████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░▒▓████████▓▒░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░ ░▒▓███████▓▒░',
+  '  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░   ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░       ',
+  '  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░   ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░       ',
+  '  ░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░   ░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒▒▓███▓▒░░▒▓██████▓▒░ ',
+  '  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░   ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░',
+  '  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░   ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░',
+  '  ░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░ ░▒▓██████▓▒░  ░▒▓█▓▒░   ░▒▓███████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░░▒▓███████▓▒░ ',
 ]
 
-// â”€â”€â”€ Provider detection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Provider detection ───────────────────────────────────────────────────────
 
 export function detectProvider(modelOverride?: string): { name: string; model: string; baseUrl: string; isLocal: boolean } {
   const useGemini = process.env.CLAUDE_CODE_USE_GEMINI === '1' || process.env.CLAUDE_CODE_USE_GEMINI === 'true'
@@ -111,7 +111,7 @@ export function detectProvider(modelOverride?: string): { name: string; model: s
       baseUrl.includes('chatgpt.com/backend-api/codex')
     )
       name = 'Codex'
-    // Base URL is authoritative â€” must precede rawModel checks so aggregators
+    // Base URL is authoritative — must precede rawModel checks so aggregators
     // (OpenRouter/Together/Groq) aren't mislabelled as DeepSeek/Kimi/etc.
     // when routed to models whose IDs contain a vendor prefix. See issue #855.
     else if (/openrouter/i.test(baseUrl)) name = 'OpenRouter'
@@ -127,7 +127,7 @@ export function detectProvider(modelOverride?: string): { name: string; model: s
     else if (/deepseek/i.test(baseUrl)) name = 'DeepSeek'
     else if (/mistral/i.test(baseUrl)) name = 'Mistral'
     else if (/atlascloud/i.test(baseUrl)) name = 'Atlas Cloud'
-    // rawModel fallback â€” fires only when base URL is generic/custom.
+    // rawModel fallback — fires only when base URL is generic/custom.
     else if (/nvidia/i.test(rawModel)) name = 'NVIDIA NIM'
     else if (/minimax/i.test(rawModel)) name = 'MiniMax'
     else if (/\bkimi-for-coding\b/i.test(rawModel))
@@ -161,14 +161,14 @@ export function detectProvider(modelOverride?: string): { name: string; model: s
   return { name, model: resolvedModel, baseUrl, isLocal }
 }
 
-// â”€â”€â”€ Box drawing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Box drawing ──────────────────────────────────────────────────────────────
 
 function boxRow(content: string, width: number, rawLen: number, border: RGB): string {
   const pad = Math.max(0, width - 2 - rawLen)
   return `${ansiRgb(...border)}\u2502${RESET}${content}${' '.repeat(pad)}${ansiRgb(...border)}\u2502${RESET}`
 }
 
-// â”€â”€â”€ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main ─────────────────────────────────────────────────────────────────────
 
 export function printStartupScreen(modelOverride?: string): void {
   // Skip in non-interactive / CI / print mode
@@ -231,7 +231,7 @@ export function printStartupScreen(modelOverride?: string): void {
   out.push(boxRow(sRow, W, sLen, BORDER))
 
   out.push(`${ansiRgb(...BORDER)}\u255a${'\u2550'.repeat(W - 2)}\u255d${RESET}`)
-  out.push(`  ${DIM}${ansiRgb(...DIMCOL)}RootClaude ${RESET}${ansiRgb(...ACCENT)}v${MACRO.DISPLAY_VERSION ?? MACRO.VERSION}${RESET}`)
+  out.push(`  ${DIM}${ansiRgb(...DIMCOL)}rootclaude ${RESET}${ansiRgb(...ACCENT)}v${MACRO.DISPLAY_VERSION ?? MACRO.VERSION}${RESET}`)
   out.push('')
 
   process.stdout.write(out.join('\n') + '\n')
