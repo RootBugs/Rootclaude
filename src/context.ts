@@ -18,6 +18,8 @@ import { shouldIncludeGitInstructions } from './utils/gitSettings.js'
 import { logError } from './utils/log.js'
 import { getCwd } from './utils/cwd.js'
 import type { RepoMapResult } from './context/repoMap/index.js'
+import { readFile } from 'fs/promises'
+import { join } from 'path'
 
 const MAX_STATUS_CHARS = 2000
 const REPO_MAP_CONTEXT_TIMEOUT_MS = 5000
@@ -260,6 +262,74 @@ export const getSystemContext = memoize(
 )
 
 /**
+ * Build project-level context from package.json, README, and key config files.
+ * Returns a human-readable summary or null if no project metadata is found.
+ */
+async function buildProjectContext(cwd: string): Promise<string | null> {
+  const parts: string[] = []
+
+  // Read package.json
+  try {
+    const pkgRaw = await readFile(join(cwd, 'package.json'), 'utf-8')
+    const pkg = JSON.parse(pkgRaw)
+    const lines: string[] = []
+    if (pkg.name) lines.push(`Project: ${pkg.name}${pkg.version ? ` v${pkg.version}` : ''}`)
+    if (pkg.description) lines.push(`Description: ${pkg.description}`)
+    if (pkg.scripts) {
+      const scripts = Object.keys(pkg.scripts)
+      if (scripts.length > 0) {
+        lines.push(`Available scripts: ${scripts.slice(0, 10).join(', ')}${scripts.length > 10 ? '...' : ''}`)
+      }
+    }
+    if (pkg.dependencies) {
+      const deps = Object.keys(pkg.dependencies)
+      if (deps.length > 0) lines.push(`Dependencies (${deps.length}): ${deps.slice(0, 15).join(', ')}${deps.length > 15 ? '...' : ''}`)
+    }
+    if (pkg.devDependencies) {
+      const devDeps = Object.keys(pkg.devDependencies)
+      if (devDeps.length > 0) lines.push(`Dev dependencies (${devDeps.length}): ${devDeps.slice(0, 10).join(', ')}${devDeps.length > 10 ? '...' : ''}`)
+    }
+    if (lines.length > 0) parts.push(lines.join('\n'))
+  } catch { /* no package.json */ }
+
+  // Read README
+  for (const name of ['README.md', 'README', 'Readme.md']) {
+    try {
+      const content = await readFile(join(cwd, name), 'utf-8')
+      const summary = content.replace(/^#+\s*/, '').split('\n\n').find(p => p.trim().length > 20) ?? ''
+      parts.push(`README: ${summary.slice(0, 400).trim()}`)
+      break
+    } catch { /* try next */ }
+  }
+
+  // Detect language/framework from key config files
+  const configChecks: Record<string, string> = {
+    'tsconfig.json': 'TypeScript',
+    'tsconfig.app.json': 'TypeScript (app)',
+    'vite.config.ts': 'Vite',
+    'next.config.js': 'Next.js',
+    'next.config.ts': 'Next.js',
+    'nuxt.config.ts': 'Nuxt',
+    'svelte.config.js': 'Svelte',
+    'angular.json': 'Angular',
+    'Cargo.toml': 'Rust/Cargo',
+    'go.mod': 'Go',
+    'pyproject.toml': 'Python',
+    'Gemfile': 'Ruby',
+    'composer.json': 'PHP',
+  }
+  for (const [file, label] of Object.entries(configChecks)) {
+    try {
+      await readFile(join(cwd, file), 'utf-8')
+      parts.push(`Framework: ${label}`)
+      break
+    } catch { /* not this config */ }
+  }
+
+  return parts.length > 0 ? parts.join('\n\n') : null
+}
+
+/**
  * This context is prepended to each conversation, and cached for the duration of the conversation.
  */
 export const getUserContext = memoize(
@@ -294,6 +364,7 @@ export const getUserContext = memoize(
     return {
       ...(claudeMd && { claudeMd }),
       currentDate: `Today's date is ${getLocalISODate()}.`,
+      ...(await buildProjectContext(getCwd()).then(ctx => ctx ? { projectContext: ctx } : {})),
     }
   },
 )
