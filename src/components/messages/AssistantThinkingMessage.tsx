@@ -41,7 +41,7 @@ export function AssistantThinkingMessage(t0) {
     const t4 = addMargin ? 1 : 0;
     let t5;
     if ($[0] === Symbol.for("react.memo_cache_sentinel")) {
-      t5 = <Text dimColor={true} italic={true}>{"\u2234 Thinking"} <CtrlOToExpand /></Text>;
+      t5 = <Text dimColor={true} italic={true}>{"* Thinking"} <CtrlOToExpand /></Text>;
       $[0] = t5;
     } else {
       t5 = $[0];
