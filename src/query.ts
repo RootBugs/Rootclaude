@@ -1,4 +1,4 @@
-﻿// biome-ignore-all assist/source/organizeImports: internal-only import markers must not be reordered
+// biome-ignore-all assist/source/organizeImports: internal-only import markers must not be reordered
 import type {
   ToolResultBlockParam,
   ToolUseBlock,
@@ -155,12 +155,13 @@ import {
   injectSkillContext,
 } from './skills/autoTrigger.js'
 import { shouldVerify, runVerification } from './services/verification/autoVerify.js'
-import {
-  extractSuccessPattern,
-  storeSuccessPattern,
-  findRelevantPatterns,
-  getPatternSummary,
-} from './services/memory/successTracker.js'
+// successTracker imports disabled — skill injection was causing crashes
+// import {
+//   extractSuccessPattern,
+//   storeSuccessPattern,
+//   findRelevantPatterns,
+//   getPatternSummary,
+// } from './services/memory/successTracker.js'
 import { createBudgetTracker, checkTokenBudget } from './query/tokenBudget.js'
 import { count } from './utils/array.js'
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -1226,9 +1227,11 @@ async function* queryLoop(
     // guarantee.
     let routedFallbackUsed = false
 
-    // ── Auto-skill injection: classify the latest user message and inject ──────
-    // matching skill prompts into the conversation context so the model sees
-    // them as in-context instructions on the very first turn pass.
+    // ── Skill classification (logging only — injection disabled) ─────────────
+    // Skill injection was disabled because raw message objects don't match
+    // rootclaude's internal message format (message.message.content), causing
+    // "Cannot read properties of undefined (reading 'content')" crashes.
+    // TODO: Re-implement using createUserMessage() for proper message format.
     if (
       state.transition === undefined &&
       querySource !== 'compact' &&
@@ -1238,44 +1241,7 @@ async function* queryLoop(
       if (userText) {
         const skillNames = classifyTask(userText)
         if (skillNames.length > 0) {
-          const skillPrompts = loadSkillPrompts(skillNames)
-          if (skillPrompts.length > 0) {
-            const combinedContent = skillPrompts
-              .map(s => `## Skill: ${s.name}\n${s.content}`)
-              .join('\n\n')
-            messagesForQuery = injectSkillContext(messagesForQuery, combinedContent)
-          }
-        }
-      }
-    }
-
-    // ── Inject past success patterns into context ─────────────────────────
-    // Model learns from past patterns without cross-session memory.
-    if (
-      state.transition === undefined &&
-      querySource !== 'compact' &&
-      querySource !== 'session_memory'
-    ) {
-      const userText = extractLatestUserText(messagesForQuery)
-      if (userText) {
-        const relevantPatterns = findRelevantPatterns(userText, 3)
-        if (relevantPatterns.length > 0) {
-          const patternSummary = getPatternSummary(relevantPatterns)
-          const patternsMsg = `## Past Success Patterns\n${patternSummary}`
-          const lastMsg = messagesForQuery.at(-1)
-          if (lastMsg && lastMsg.type === 'user') {
-            messagesForQuery = [
-              ...messagesForQuery.slice(0, -1),
-              {
-                type: 'user',
-                content: [
-                  { type: 'text' as const, text: patternsMsg },
-                ],
-                isMeta: true,
-              },
-              lastMsg,
-            ]
-          }
+          logForDebugging(`[auto-skill] Matched skills: ${skillNames.join(', ')}`)
         }
       }
     }
@@ -2355,20 +2321,17 @@ async function* queryLoop(
       }
 
       // ── Record success pattern for learning memory ──────────────────────
-      // When a turn completes without tool_use blocks, extract and save the
-      // pattern so future similar tasks benefit from past context.
-      if (querySource !== 'compact') {
-        // @ts-expect-error - extractLatestUserText reads messagesForQuery
-        const userText = extractLatestUserText(messagesForQuery)
-        if (userText && userText.length < 500) {
-          try {
-            const pattern = extractSuccessPattern([], userText, 'success')
-            storeSuccessPattern(pattern)
-          } catch {
-            // non-critical - don't let memory errors crash the turn
-          }
-        }
-      }
+      // Disabled: successTracker imports commented out due to crash fix.
+      // TODO: Re-enable when message injection is properly implemented.
+      // if (querySource !== 'compact') {
+      //   const userText = extractLatestUserText(messagesForQuery)
+      //   if (userText && userText.length < 500) {
+      //     try {
+      //       const pattern = extractSuccessPattern([], userText, 'success')
+      //       storeSuccessPattern(pattern)
+      //     } catch {}
+      //   }
+      // }
 
       return { reason: 'completed' }
     }

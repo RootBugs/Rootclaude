@@ -85,13 +85,22 @@ export function injectSkillContext(
   skillContent: string,
 ): any[] {
   if (!skillContent) return [...messages]
-  return [
-    ...messages.slice(0, -1),
-    {
-      type: 'user',
-      content: [{ type: 'text', text: skillContent }],
-      isMeta: true,
-    },
-    ...messages.slice(-1),
-  ]
+  const lastMsg = messages.at(-1)
+  if (!lastMsg) return messages
+  // Append skill content to the last user message's text instead of creating
+  // a new message — avoids breaking the message chain for the model.
+  if (lastMsg.type === 'user' && typeof lastMsg.content === 'string') {
+    return [
+      ...messages.slice(0, -1),
+      { ...lastMsg, content: `${skillContent}\n\n---\n\n${lastMsg.content}` },
+    ]
+  }
+  if (lastMsg.type === 'user' && Array.isArray(lastMsg.content)) {
+    const textBlock = lastMsg.content.find((b: any) => b.type === 'text')
+    if (textBlock) {
+      textBlock.text = `${skillContent}\n\n---\n\n${textBlock.text}`
+      return [...messages]
+    }
+  }
+  return messages
 }
