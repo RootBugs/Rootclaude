@@ -149,18 +149,6 @@ import {
   shouldDropPinForProviderSwap,
   type TurnRoutingDecision,
 } from './services/api/smartRouting/index.js'
-import {
-  classifyTask,
-  loadSkillPrompts,
-  injectSkillContext,
-} from './skills/autoTrigger.js'
-import { shouldVerify, runVerification } from './services/verification/autoVerify.js'
-import {
-  extractSuccessPattern,
-  storeSuccessPattern,
-  findRelevantPatterns,
-  getPatternSummary,
-} from './services/memory/successTracker.js'
 import { createBudgetTracker, checkTokenBudget } from './query/tokenBudget.js'
 import { count } from './utils/array.js'
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -1225,60 +1213,6 @@ async function* queryLoop(
     // moving it inside would reset it every attempt and defeat the once-only
     // guarantee.
     let routedFallbackUsed = false
-
-    // ── Auto-skill injection: classify the latest user message and inject ──────
-    // matching skill prompts into the conversation context so the model sees
-    // them as in-context instructions on the very first turn pass.
-    if (
-      state.transition === undefined &&
-      querySource !== 'compact' &&
-      querySource !== 'session_memory'
-    ) {
-      const userText = extractLatestUserText(messagesForQuery)
-      if (userText) {
-        const skillNames = classifyTask(userText)
-        if (skillNames.length > 0) {
-          const skillPrompts = loadSkillPrompts(skillNames)
-          if (skillPrompts.length > 0) {
-            const combinedContent = skillPrompts
-              .map(s => `## Skill: ${s.name}\n${s.content}`)
-              .join('\n\n')
-            messagesForQuery = injectSkillContext(messagesForQuery, combinedContent)
-          }
-        }
-      }
-    }
-
-    // ── Inject past success patterns into context ─────────────────────────
-    // Model learns from past patterns without cross-session memory.
-    if (
-      state.transition === undefined &&
-      querySource !== 'compact' &&
-      querySource !== 'session_memory'
-    ) {
-      const userText = extractLatestUserText(messagesForQuery)
-      if (userText) {
-        const relevantPatterns = findRelevantPatterns(userText, 3)
-        if (relevantPatterns.length > 0) {
-          const patternSummary = getPatternSummary(relevantPatterns)
-          const patternsMsg = `## Past Success Patterns\n${patternSummary}`
-          const lastMsg = messagesForQuery.at(-1)
-          if (lastMsg && lastMsg.type === 'user') {
-            messagesForQuery = [
-              ...messagesForQuery.slice(0, -1),
-              {
-                type: 'user',
-                content: [
-                  { type: 'text' as const, text: patternsMsg },
-                ],
-                isMeta: true,
-              },
-              lastMsg,
-            ]
-          }
-        }
-      }
-    }
 
     queryCheckpoint('query_api_loop_start')
     try {
@@ -2354,22 +2288,6 @@ async function* queryLoop(
         }
       }
 
-      // ── Record success pattern for learning memory ──────────────────────
-      // When a turn completes without tool_use blocks, extract and save the
-      // pattern so future similar tasks benefit from past context.
-      if (querySource !== 'compact') {
-        // @ts-expect-error - extractLatestUserText reads messagesForQuery
-        const userText = extractLatestUserText(messagesForQuery)
-        if (userText && userText.length < 500) {
-          try {
-            const pattern = extractSuccessPattern([], userText, 'success')
-            storeSuccessPattern(pattern)
-          } catch {
-            // non-critical - don't let memory errors crash the turn
-          }
-        }
-      }
-
       return { reason: 'completed' }
     }
 
@@ -2563,32 +2481,6 @@ async function* queryLoop(
     // If a hook indicated to prevent continuation, stop here
     if (shouldPreventContinuation) {
       return { reason: 'hook_stopped' }
-    }
-
-    // ── Self-verification gate: after multi-file edits, run build/typecheck ──
-    // If verification fails, feed the error back to the model for auto-correction.
-    if (
-      querySource !== 'compact' &&
-      querySource !== 'session_memory'
-    ) {
-      const fileChanges = toolUseBlocks.filter(b =>
-        b.name === 'Write' || b.name === 'Edit' ||
-        b.name === 'FileWriteTool' || b.name === 'FileEditTool'
-      )
-      if (fileChanges.length >= 2) {
-        const modifiedFiles = fileChanges
-          .map(b => (b.input as any)?.file_path)
-          .filter(Boolean) as string[]
-        const verifyResult = await runVerification(
-          toolUseContext.cwd || process.cwd(),
-          modifiedFiles,
-        )
-        if (!verifyResult.passed) {
-          const errorMsg = `## Verification failed after edits\n\n${verifyResult.errors.join('\n\n')}`
-          yield createSystemMessage(errorMsg, 'warning')
-          // Don't continue — let the model see the error and fix it
-        }
-      }
     }
 
     const toolFailureLoopDecision = updateToolFailureLoopGuard({
