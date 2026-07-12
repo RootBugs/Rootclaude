@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+﻿import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, resolve, basename } from 'node:path'
 import { arch, platform } from 'node:os'
 import { getCatalogEntriesForRoute } from '../../integrations/index.js'
@@ -56,7 +56,7 @@ export type DiagnosticCheck = {
 export type IssueReport = {
   schemaVersion: 1
   generatedAt: string
-  openclaude: {
+  RootClaude: {
     version: string
     displayVersion?: string
     buildTime?: string
@@ -204,7 +204,7 @@ function readPackageInfo(options?: BuildIssueReportOptions['packageInfo']) {
   return { version, displayVersion, buildTime }
 }
 
-function detectSource(cwd: string): IssueReport['openclaude']['source'] {
+function detectSource(cwd: string): IssueReport['RootClaude']['source'] {
   if (existsSync(resolve(cwd, 'src')) && existsSync(resolve(cwd, 'package.json'))) {
     return 'source'
   }
@@ -577,7 +577,7 @@ export async function buildIssueReport(
   const report: IssueReport = {
     schemaVersion: 1,
     generatedAt: now.toISOString(),
-    openclaude: {
+    RootClaude: {
       version: packageInfo.version,
       ...(packageInfo.displayVersion ? { displayVersion: packageInfo.displayVersion } : {}),
       ...(packageInfo.buildTime ? { buildTime: packageInfo.buildTime } : {}),
@@ -646,10 +646,10 @@ function tableEscape(value: string | number | boolean | null | undefined): strin
 
 export function formatIssueReportAsMarkdown(report: IssueReport): string {
   const lines = [
-    '# OpenClaude diagnostic report',
+    '# RootClaude diagnostic report',
     '',
     '## Summary',
-    `- OpenClaude: ${report.openclaude.displayVersion ?? report.openclaude.version}`,
+    `- RootClaude: ${report.RootClaude.displayVersion ?? report.RootClaude.version}`,
     `- Runtime: ${report.runtime.platform} ${report.runtime.arch}, Node ${report.runtime.node}`,
     `- Provider: ${report.provider.label} (${report.provider.routeId})`,
     `- Model: ${report.provider.model}`,

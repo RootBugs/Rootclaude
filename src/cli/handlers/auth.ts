@@ -1,4 +1,4 @@
-/* eslint-disable custom-rules/no-process-exit -- CLI subcommand handler intentionally exits */
+﻿/* eslint-disable custom-rules/no-process-exit -- CLI subcommand handler intentionally exits */
 
 import {
   clearAuthRelatedCaches,
@@ -97,7 +97,7 @@ export async function installOAuthTokens(tokens: OAuthTokens): Promise<void> {
       logForDebugging(String(err), { level: 'error' }),
     )
   } else {
-    // API key creation is critical for Console users — let it throw.
+    // API key creation is critical for Console users Ã¢â‚¬â€ let it throw.
     const apiKey = await createAndStoreApiKey(tokens.accessToken)
     if (!apiKey) {
       throw new Error(
@@ -128,7 +128,7 @@ export async function authLogin({
   }
 
   const settings = getInitialSettings()
-  // forceLoginMethod is a hard constraint (enterprise setting) — matches ConsoleOAuthFlow behavior.
+  // forceLoginMethod is a hard constraint (enterprise setting) Ã¢â‚¬â€ matches ConsoleOAuthFlow behavior.
   // Without it, --console selects Console; --claudeai (or no flag) selects claude.ai.
   const loginWithClaudeAi = settings.forceLoginMethod
     ? settings.forceLoginMethod === 'claudeai'
@@ -163,7 +163,7 @@ export async function authLogin({
         process.exit(1)
       }
 
-      // Mark onboarding complete — interactive paths handle this via
+      // Mark onboarding complete Ã¢â‚¬â€ interactive paths handle this via
       // the Onboarding component, but the env var path skips it.
       saveGlobalConfig(current => {
         if (current.hasCompletedOnboarding) return current
@@ -194,7 +194,7 @@ export async function authLogin({
 
     const result = await oauthService.startOAuthFlow(
       async url => {
-        process.stdout.write('Opening browser to sign in…\n')
+        process.stdout.write('Opening browser to sign inÃ¢â‚¬Â¦\n')
         process.stdout.write(`If the browser didn't open, visit: ${url}\n`)
       },
       {
@@ -287,7 +287,7 @@ export async function authStatus(opts: {
     }
     if (!loggedIn) {
       process.stdout.write(
-        'Not logged in. Run openclaude auth login to authenticate.\n',
+        'Not logged in. Run `rootclaude auth login` to authenticate.\n',
       )
     }
   } else {

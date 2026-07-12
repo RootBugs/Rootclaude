@@ -4,19 +4,19 @@ import { getGlobalUpdateFailureHint } from './update.js'
 
 describe('getGlobalUpdateFailureHint', () => {
   test('points npm-only builds at npm instead of the native installer', () => {
-    withMockMacro({ PACKAGE_URL: '@gitlawb/openclaude' }, () => {
+    withMockMacro({ PACKAGE_URL: '@gitlawb/RootClaude' }, () => {
       expect(getGlobalUpdateFailureHint(false)).toContain(
-        'npm install -g @gitlawb/openclaude@latest',
+        'npm install -g @gitlawb/RootClaude@latest',
       )
       expect(getGlobalUpdateFailureHint(false)).not.toContain(
-        'openclaude install',
+        'RootClaude install',
       )
     })
   })
 
   test('preserves native installer guidance for native-capable builds', () => {
     expect(getGlobalUpdateFailureHint(true)).toBe(
-      'Or consider using native installation with: openclaude install\n',
+      'Or consider using native installation with: RootClaude install\n',
     )
   })
 })

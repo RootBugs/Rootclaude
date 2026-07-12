@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Shared infrastructure for profiler modules (startupProfiler, queryProfiler,
  * headlessProfiler). All three use the same perf_hooks timeline and the same
  * line format for detailed reports.
@@ -7,10 +7,10 @@
 import type { performance as PerformanceType } from 'perf_hooks'
 import { formatFileSize } from './format.js'
 
-const OPENCLAUDE_PERFORMANCE_PREFIX = 'openclaude:'
+const RootClaude_PERFORMANCE_PREFIX = 'RootClaude:'
 
 // Lazy-load performance API only when profiling is enabled.
-// Shared across all profilers — perf_hooks.performance is a process-wide singleton.
+// Shared across all profilers Ã¢â‚¬â€ perf_hooks.performance is a process-wide singleton.
 let performance: typeof PerformanceType | null = null
 
 export function getPerformance(): typeof PerformanceType {
@@ -26,7 +26,7 @@ export function formatMs(ms: number): string {
 }
 
 function getProfilerPrefix(scope: string): string {
-  return `${OPENCLAUDE_PERFORMANCE_PREFIX}${scope}:`
+  return `${RootClaude_PERFORMANCE_PREFIX}${scope}:`
 }
 
 export function getProfilerMarkName(scope: string, name: string): string {

@@ -1,4 +1,4 @@
-import { getSessionId } from '../../bootstrap/state.js'
+﻿import { getSessionId } from '../../bootstrap/state.js'
 import { firstUsableCredential } from '../../services/api/credentialPool.js'
 import { resolveOpenAICredentialEnvState } from '../../utils/providerProfile.js'
 import { resolveProviderRequest } from '../../services/api/providerConfig.js'
@@ -31,7 +31,7 @@ const DELAY_MS = 3000
 
 /**
  * Extract model family from a versioned model string.
- * e.g. "gpt-5.4-0626" → "gpt-5.4", "codex-mini-latest" → "codex-mini"
+ * e.g. "gpt-5.4-0626" â†’ "gpt-5.4", "codex-mini-latest" â†’ "codex-mini"
  */
 function getModelFamily(model: string | undefined): string {
   if (!model) return 'unknown'
@@ -191,7 +191,7 @@ function formatResult(r: ProbeResult): string {
     lines.push(`  ERROR (HTTP ${r.status}): ${r.error.slice(0, 200)}`)
     return lines.join('\n')
   }
-  lines.push(`  HTTP ${r.status} — ${r.elapsed}ms`)
+  lines.push(`  HTTP ${r.status} â€” ${r.elapsed}ms`)
   if (r.responseId) lines.push(`  response.id: ${r.responseId}`)
 
   if (r.usage) {
@@ -248,7 +248,7 @@ export const call: LocalCommandCall = async (args) => {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${apiKey}`,
-    originator: 'openclaude',
+    originator: 'RootClaude',
   }
   if (isGithub) {
     Object.assign(headers, COPILOT_HEADERS)
@@ -303,8 +303,8 @@ export const call: LocalCommandCall = async (args) => {
   ].join('\n')
   logForDebugging(config)
 
-  // Call 1 — Cold
-  const r1 = await sendProbe(url, headers, body, 'CALL 1 — Cold (no cache)')
+  // Call 1 â€” Cold
+  const r1 = await sendProbe(url, headers, body, 'CALL 1 â€” Cold (no cache)')
   logForDebugging(`[cache-probe]\n${formatResult(r1)}`)
 
   if (r1.error) {
@@ -317,8 +317,8 @@ export const call: LocalCommandCall = async (args) => {
   // Wait
   await new Promise((r) => setTimeout(r, DELAY_MS))
 
-  // Call 2 — Warm
-  const r2 = await sendProbe(url, headers, body, 'CALL 2 — Warm (cache expected)')
+  // Call 2 â€” Warm
+  const r2 = await sendProbe(url, headers, body, 'CALL 2 â€” Warm (cache expected)')
   logForDebugging(`[cache-probe]\n${formatResult(r2)}`)
 
   // --- Comparison ---
@@ -352,7 +352,7 @@ export const call: LocalCommandCall = async (args) => {
 
   comparison.push('')
   comparison.push(
-    `  Latency: ${r1.elapsed}ms → ${r2.elapsed}ms (${r2.elapsed - r1.elapsed > 0 ? '+' : ''}${r2.elapsed - r1.elapsed}ms)`,
+    `  Latency: ${r1.elapsed}ms â†’ ${r2.elapsed}ms (${r2.elapsed - r1.elapsed > 0 ? '+' : ''}${r2.elapsed - r1.elapsed}ms)`,
   )
 
   // Header comparison
@@ -360,7 +360,7 @@ export const call: LocalCommandCall = async (args) => {
     const v1 = r1.headers[h]
     const v2 = r2.headers[h]
     if (v1 || v2) {
-      comparison.push(`  ${h}: ${v1 ?? '-'} → ${v2 ?? '-'}`)
+      comparison.push(`  ${h}: ${v1 ?? '-'} â†’ ${v2 ?? '-'}`)
     }
   }
 
@@ -379,7 +379,7 @@ export const call: LocalCommandCall = async (args) => {
     const rate = input2 > 0 ? Math.round((cached2 / input2) * 100) : '?'
     verdict = `CACHE HIT: ${cached2} cached tokens (${rate}% of input)`
   } else if (input1 === 0 && input2 === 0) {
-    verdict = 'INCONCLUSIVE: Server returns 0 input_tokens — cannot measure'
+    verdict = 'INCONCLUSIVE: Server returns 0 input_tokens â€” cannot measure'
   } else if (r2.elapsed < r1.elapsed * 0.6 && input1 > 100) {
     verdict = `POSSIBLE SILENT CACHING: Call 2 was ${Math.round((1 - r2.elapsed / r1.elapsed) * 100)}% faster but no cached_tokens reported`
   } else {
@@ -389,16 +389,16 @@ export const call: LocalCommandCall = async (args) => {
   comparison.push(`\n  Verdict: ${verdict}`)
 
   // --- Simulate what main's shim code does with this usage ---
-  // codexShim.ts makeUsage() — used for Responses API (GPT-5+/Codex)
+  // codexShim.ts makeUsage() â€” used for Responses API (GPT-5+/Codex)
   function mainMakeUsage(u: any) {
     return {
       input_tokens: u?.input_tokens ?? 0,
       output_tokens: u?.output_tokens ?? 0,
       cache_creation_input_tokens: 0,
-      cache_read_input_tokens: 0,  // ← main hardcodes this to 0
+      cache_read_input_tokens: 0,  // â† main hardcodes this to 0
     }
   }
-  // openaiShim.ts convertChunkUsage() — used for Chat Completions
+  // openaiShim.ts convertChunkUsage() â€” used for Chat Completions
   function mainConvertChunkUsage(u: any) {
     return {
       input_tokens: u?.prompt_tokens ?? 0,
@@ -417,7 +417,7 @@ export const call: LocalCommandCall = async (args) => {
   comparison.push(`  Call 1: cache_read_input_tokens=${shim1.cache_read_input_tokens}`)
   comparison.push(`  Call 2: cache_read_input_tokens=${shim2.cache_read_input_tokens}`)
   if (useResponses && cached2 > 0) {
-    comparison.push(`  BUG: Server returned ${cached2} cached tokens but main's makeUsage() drops it → reports 0`)
+    comparison.push(`  BUG: Server returned ${cached2} cached tokens but main's makeUsage() drops it â†’ reports 0`)
   } else if (!useResponses && shim2.cache_read_input_tokens > 0) {
     comparison.push(`  OK: Chat Completions path on main correctly reads cached_tokens`)
   }
@@ -428,7 +428,7 @@ export const call: LocalCommandCall = async (args) => {
   const mode = noKey ? ' (NO cache key sent)' : ''
   const shimLabel = useResponses ? 'codexShim.makeUsage()' : 'openaiShim.convertChunkUsage()'
   const summary = [
-    `Cache Probe — ${request.resolvedModel} via ${useResponses ? 'Responses API' : 'Chat Completions'}${mode}`,
+    `Cache Probe â€” ${request.resolvedModel} via ${useResponses ? 'Responses API' : 'Chat Completions'}${mode}`,
     '',
     `Call 1: ${r1.elapsed}ms, input=${input1}, cached=${(getField(r1.usage, 'input_tokens_details.cached_tokens') as number) ?? (getField(r1.usage, 'prompt_tokens_details.cached_tokens') as number) ?? 0}`,
     `Call 2: ${r2.elapsed}ms, input=${input2}, cached=${cached2}`,
@@ -436,7 +436,7 @@ export const call: LocalCommandCall = async (args) => {
     verdict,
     '',
     `What main's ${shimLabel} reports:`,
-    `  Call 2 cache_read_input_tokens = ${shim2.cache_read_input_tokens}${useResponses && cached2 > 0 ? '  ← BUG: server sent ' + cached2 + ' but main drops it' : ''}`,
+    `  Call 2 cache_read_input_tokens = ${shim2.cache_read_input_tokens}${useResponses && cached2 > 0 ? '  â† BUG: server sent ' + cached2 + ' but main drops it' : ''}`,
     '',
     'Full details written to debug log.',
   ].join('\n')

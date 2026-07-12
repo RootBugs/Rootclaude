@@ -1,6 +1,6 @@
 Set-StrictMode -Version Latest
 
-function Test-OpenClaudeCommand {
+function Test-RootClaudeCommand {
   [CmdletBinding()]
   param(
     [Parameter(Mandatory = $true)]
@@ -10,7 +10,7 @@ function Test-OpenClaudeCommand {
   return [bool](Get-Command -Name $Name -ErrorAction SilentlyContinue)
 }
 
-function Assert-OpenClaudeCommand {
+function Assert-RootClaudeCommand {
   [CmdletBinding()]
   param(
     [Parameter(Mandatory = $true)]
@@ -19,34 +19,34 @@ function Assert-OpenClaudeCommand {
     [string]$InstallHint
   )
 
-  if (-not (Test-OpenClaudeCommand -Name $Name)) {
+  if (-not (Test-RootClaudeCommand -Name $Name)) {
     throw "Required command '$Name' was not found. $InstallHint"
   }
 }
 
-function Invoke-OpenClaude {
+function Invoke-RootClaude {
   [CmdletBinding()]
   param(
     [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$OpenClaudeArgs
+    [string[]]$RootClaudeArgs
   )
 
-  Assert-OpenClaudeCommand -Name "openclaude" -InstallHint "Install with: npm install -g @gitlawb/openclaude"
+  Assert-RootClaudeCommand -Name "rootclaude" -InstallHint "Install with: npm install -g @gitlawb/rootclaude"
 
-  & openclaude @OpenClaudeArgs
+  & rootclaude @RootClaudeArgs
 
   if ($LASTEXITCODE -ne 0) {
-    throw "openclaude failed with exit code $LASTEXITCODE."
+    throw "rootclaude failed with exit code $LASTEXITCODE."
   }
 }
 
-function Invoke-OpenClaudeWithEnvironment {
+function Invoke-RootClaudeWithEnvironment {
   [CmdletBinding()]
   param(
     [Parameter(Mandatory = $true)]
     [hashtable]$Environment,
     [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$OpenClaudeArgs
+    [string[]]$RootClaudeArgs
   )
 
   $previousValues = @{}
@@ -57,7 +57,7 @@ function Invoke-OpenClaudeWithEnvironment {
   }
 
   try {
-    Invoke-OpenClaude @OpenClaudeArgs
+    Invoke-RootClaude @RootClaudeArgs
   }
   finally {
     foreach ($name in $Environment.Keys) {
@@ -71,16 +71,16 @@ function Invoke-OpenClaudeWithEnvironment {
   }
 }
 
-function Get-OpenClaudeQuickHelp {
+function Get-RootClaudeQuickHelp {
   [CmdletBinding()]
   param()
 
   @(
-    "OpenClaude quick commands:",
-    "  oc [args...]              -> launch OpenClaude using the installed CLI",
-    "  oc-local [args...]        -> launch OpenClaude with local/Ollama OpenAI-compatible environment hints for this invocation only",
-    "  oc-fast [args...]         -> launch OpenClaude with low-latency local defaults for this invocation only",
-    "  oc-provider               -> open the provider manager in OpenClaude",
+    "RootClaude quick commands:",
+    "  oc [args...]              -> launch RootClaude using the installed CLI",
+    "  oc-local [args...]        -> launch RootClaude with local/Ollama OpenAI-compatible environment hints for this invocation only",
+    "  oc-fast [args...]         -> launch RootClaude with low-latency local defaults for this invocation only",
+    "  oc-provider               -> open the provider manager in RootClaude",
     "  oc-check                  -> show Ollama install/listening/model state",
     "  oc-init                   -> pull/check the local model, then launch local/Ollama mode",
     "  oc-help                   -> show this help"
@@ -91,10 +91,10 @@ function oc {
   [CmdletBinding()]
   param(
     [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$OpenClaudeArgs
+    [string[]]$RootClaudeArgs
   )
 
-  Invoke-OpenClaude @OpenClaudeArgs
+  Invoke-RootClaude @RootClaudeArgs
 }
 
 function oc-local {
@@ -102,16 +102,16 @@ function oc-local {
   param(
     [string]$Model = "llama3.1:8b",
     [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$OpenClaudeArgs
+    [string[]]$RootClaudeArgs
   )
 
-  Invoke-OpenClaudeWithEnvironment `
+    Invoke-RootClaudeWithEnvironment `
     -Environment @{
       CLAUDE_CODE_USE_OPENAI = "1"
       OPENAI_BASE_URL        = "http://localhost:11434/v1"
       OPENAI_MODEL           = $Model
     } `
-    @OpenClaudeArgs
+    @RootClaudeArgs
 }
 
 function oc-fast {
@@ -119,24 +119,24 @@ function oc-fast {
   param(
     [string]$Model = "llama3.1:8b",
     [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$OpenClaudeArgs
+    [string[]]$RootClaudeArgs
   )
 
-  Invoke-OpenClaudeWithEnvironment `
+    Invoke-RootClaudeWithEnvironment `
     -Environment @{
       CLAUDE_CODE_USE_OPENAI = "1"
       OPENAI_BASE_URL        = "http://localhost:11434/v1"
       OPENAI_MODEL           = $Model
-      OPENCLAUDE_FAST_MODE   = "1"
+      ROOTCLAUDE_FAST_MODE   = "1"
     } `
-    @OpenClaudeArgs
+    @RootClaudeArgs
 }
 
 function oc-provider {
   [CmdletBinding()]
   param()
 
-  Invoke-OpenClaude "/provider"
+  Invoke-RootClaude "/provider"
 }
 
 function oc-check {
@@ -145,7 +145,7 @@ function oc-check {
     [string]$Model = "llama3.1:8b"
   )
 
-  Assert-OpenClaudeCommand -Name "ollama" -InstallHint "Install Ollama from https://ollama.com/download/windows."
+  Assert-RootClaudeCommand -Name "ollama" -InstallHint "Install Ollama from https://ollama.com/download/windows."
 
   $version = & ollama --version 2>$null
   $modelNames = (& ollama list 2>$null | Select-Object -Skip 1 | ForEach-Object {
@@ -181,7 +181,7 @@ function oc-init {
     [switch]$SkipModelPull
   )
 
-  Assert-OpenClaudeCommand -Name "ollama" -InstallHint "Install Ollama from https://ollama.com/download/windows."
+  Assert-RootClaudeCommand -Name "ollama" -InstallHint "Install Ollama from https://ollama.com/download/windows."
 
   if (-not $SkipModelPull) {
     & ollama pull $Model
@@ -202,5 +202,5 @@ function oc-help {
   [CmdletBinding()]
   param()
 
-  Get-OpenClaudeQuickHelp
+  Get-RootClaudeQuickHelp
 }

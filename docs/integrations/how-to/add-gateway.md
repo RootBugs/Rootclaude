@@ -131,7 +131,7 @@ export default defineGateway({
     kind: 'openai-compatible',
     openaiShim: {
       headers: {
-        'X-Acme-Client': 'openclaude',
+        'X-Acme-Client': 'rootclaude',
       },
       supportsApiFormatSelection: false,
       supportsAuthHeaders: true,
@@ -507,7 +507,7 @@ transportConfig: {
   kind: 'openai-compatible',
   openaiShim: {
     headers: {
-      'X-Acme-Client': 'openclaude',
+      'X-Acme-Client': 'rootclaude',
     },
     supportsApiFormatSelection: false,
     supportsAuthHeaders: true,

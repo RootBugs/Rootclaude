@@ -1,4 +1,4 @@
-import { c as _c } from "react-compiler-runtime";
+﻿import { c as _c } from "react-compiler-runtime";
 import { feature } from 'bun:bundle';
 import { plot as asciichart } from 'asciichart';
 import chalk from 'chalk';
@@ -98,7 +98,7 @@ export function Stats(t0: Props): React.ReactNode {
   const allTimePromise: Promise<StatsResult> = t1;
   let t2;
   if ($[1] === Symbol.for("react.memo_cache_sentinel")) {
-    t2 = <Box marginTop={1}><Spinner /><Text> Loading your OpenClaude stats…</Text></Box>;
+    t2 = <Box marginTop={1}><Spinner /><Text> Loading your RootClaude statsâ€¦</Text></Box>;
     $[1] = t2;
   } else {
     t2 = $[1];
@@ -246,7 +246,7 @@ function StatsContent(t0: StatsContentProps): React.ReactNode {
   if (allTimeResult.type === "empty") {
     let t7;
     if ($[15] === Symbol.for("react.memo_cache_sentinel")) {
-      t7 = <Box marginTop={1}><Text color="warning">No stats available yet. Start using OpenClaude!</Text></Box>;
+      t7 = <Box marginTop={1}><Text color="warning">No stats available yet. Start using RootClaude!</Text></Box>;
       $[15] = t7;
     } else {
       t7 = $[15];
@@ -256,7 +256,7 @@ function StatsContent(t0: StatsContentProps): React.ReactNode {
   if (!displayStats || !allTimeStats) {
     let t7;
     if ($[16] === Symbol.for("react.memo_cache_sentinel")) {
-      t7 = <Box marginTop={1}><Spinner /><Text> Loading stats…</Text></Box>;
+      t7 = <Box marginTop={1}><Spinner /><Text> Loading statsâ€¦</Text></Box>;
       $[16] = t7;
     } else {
       t7 = $[16];
@@ -293,10 +293,10 @@ function StatsContent(t0: StatsContentProps): React.ReactNode {
   } else {
     t9 = $[28];
   }
-  const t10 = copyStatus ? ` · ${copyStatus}` : "";
+  const t10 = copyStatus ? ` Â· ${copyStatus}` : "";
   let t11;
   if ($[29] !== t10) {
-    t11 = <Box paddingLeft={2}><Text dimColor={true}>Esc to cancel · r to cycle dates · ctrl+s to copy{t10}</Text></Box>;
+    t11 = <Box paddingLeft={2}><Text dimColor={true}>Esc to cancel Â· r to cycle dates Â· ctrl+s to copy{t10}</Text></Box>;
     $[29] = t10;
     $[30] = t11;
   } else {
@@ -328,7 +328,7 @@ function DateRangeSelector(t0: DateRangeSelectorProps): React.ReactNode {
   } = t0;
   let t1;
   if ($[0] !== dateRange) {
-    t1 = DATE_RANGE_ORDER.map((range, i) => <Text key={range}>{i > 0 && <Text dimColor={true}> · </Text>}{range === dateRange ? <Text bold={true} color="claude">{DATE_RANGE_LABELS[range]}</Text> : <Text dimColor={true}>{DATE_RANGE_LABELS[range]}</Text>}</Text>);
+    t1 = DATE_RANGE_ORDER.map((range, i) => <Text key={range}>{i > 0 && <Text dimColor={true}> Â· </Text>}{range === dateRange ? <Text bold={true} color="claude">{DATE_RANGE_LABELS[range]}</Text> : <Text dimColor={true}>{DATE_RANGE_LABELS[range]}</Text>}</Text>);
     $[0] = dateRange;
     $[1] = t1;
   } else {
@@ -641,7 +641,7 @@ const BOOK_COMPARISONS = [{
   name: 'The Count of Monte Cristo',
   tokens: 603000
 }, {
-  name: 'Les Misérables',
+  name: 'Les MisÃ©rables',
   tokens: 689000
 }, {
   name: 'War and Peace',
@@ -798,7 +798,7 @@ function ModelsTab(t0: ModelsTabProps): React.ReactNode {
   }
   let t10;
   if ($[9] !== canScrollDown || $[10] !== canScrollUp || $[11] !== modelEntries || $[12] !== scrollOffset || $[13] !== showScrollHint) {
-    t10 = showScrollHint && <Box marginTop={1}><Text color="subtle">{canScrollUp ? figures.arrowUp : " "}{" "}{canScrollDown ? figures.arrowDown : " "} {scrollOffset + 1}-{Math.min(scrollOffset + 4, modelEntries.length)} of{" "}{modelEntries.length} models (↑↓ to scroll)</Text></Box>;
+    t10 = showScrollHint && <Box marginTop={1}><Text color="subtle">{canScrollUp ? figures.arrowUp : " "}{" "}{canScrollDown ? figures.arrowDown : " "} {scrollOffset + 1}-{Math.min(scrollOffset + 4, modelEntries.length)} of{" "}{modelEntries.length} models (â†‘â†“ to scroll)</Text></Box>;
     $[9] = canScrollDown;
     $[10] = canScrollUp;
     $[11] = modelEntries;
@@ -910,7 +910,7 @@ function ModelEntry(t0: ModelEntryProps): React.ReactNode {
   }
   let t9;
   if ($[15] !== t7 || $[16] !== t8) {
-    t9 = <Text color="subtle">{"  "}In: {t7} · Out:{" "}{t8}</Text>;
+    t9 = <Text color="subtle">{"  "}In: {t7} Â· Out:{" "}{t8}</Text>;
     $[15] = t7;
     $[16] = t8;
     $[17] = t9;
@@ -1057,7 +1057,7 @@ function generateXAxisLabels(data: DailyModelTokens[], _chartWidth: number, yAxi
 
 // Screenshot functionality
 async function handleScreenshot(stats: ClaudeCodeStats, activeTab: 'Overview' | 'Models', setStatus: (status: string | null) => void): Promise<void> {
-  setStatus('copying…');
+  setStatus('copyingâ€¦');
   const ansiText = renderStatsToAnsi(stats, activeTab);
   const result = await copyAnsiToClipboard(ansiText);
   setStatus(result.success ? 'copied!' : 'copy failed');
@@ -1200,13 +1200,13 @@ function renderModelsToAnsi(stats: ClaudeCodeStats): string[] {
     lines.push(chartOutput.chart);
     lines.push(chalk.gray(chartOutput.xAxisLabels));
     // Legend - use pre-colored bullets from chart output
-    const legendLine = chartOutput.legend.map(item => `${item.coloredBullet} ${item.model}`).join(' · ');
+    const legendLine = chartOutput.legend.map(item => `${item.coloredBullet} ${item.model}`).join(' Â· ');
     lines.push(legendLine);
     lines.push('');
   }
 
   // Summary
-  lines.push(`${figures.star} Favorite: ${chalk.magenta.bold(renderModelName(favoriteModel?.[0] || ''))} · ${figures.circle} Total: ${chalk.magenta(formatNumber(totalTokens))} tokens`);
+  lines.push(`${figures.star} Favorite: ${chalk.magenta.bold(renderModelName(favoriteModel?.[0] || ''))} Â· ${figures.circle} Total: ${chalk.magenta(formatNumber(totalTokens))} tokens`);
   lines.push('');
 
   // Model breakdown - only show top 3 for screenshot
@@ -1215,7 +1215,7 @@ function renderModelsToAnsi(stats: ClaudeCodeStats): string[] {
     const modelTokens = usage.inputTokens + usage.outputTokens;
     const percentage = (modelTokens / totalTokens * 100).toFixed(1);
     lines.push(`${figures.bullet} ${chalk.bold(renderModelName(model))} ${chalk.gray(`(${percentage}%)`)}`);
-    lines.push(chalk.dim(`  In: ${formatNumber(usage.inputTokens)} · Out: ${formatNumber(usage.outputTokens)}`));
+    lines.push(chalk.dim(`  In: ${formatNumber(usage.inputTokens)} Â· Out: ${formatNumber(usage.outputTokens)}`));
   }
   return lines;
 }

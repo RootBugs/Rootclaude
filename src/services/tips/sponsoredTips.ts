@@ -1,4 +1,4 @@
-import { color } from '../../components/design-system/color.js'
+﻿import { color } from '../../components/design-system/color.js'
 import { getSettings_DEPRECATED } from '../../utils/settings/settings.js'
 import { renderSponsorLink } from './tipLink.js'
 import type { Tip, TipContext, TipSponsor } from './types.js'
@@ -44,9 +44,9 @@ function renderSponsoredTip(
   // Sponsor name becomes a clickable hyperlink to its URL rather than printing
   // the raw URL inline; falls back to the dimmed URL where OSC 8 is unsupported.
   const { display, trailing } = renderSponsorLink(sponsor.name, sponsor.url)
-  const badge = green(`${label} · ${display}`)
+  const badge = green(`${label} Â· ${display}`)
   const text = green(body)
-  return `${badge} — ${text}${trailing}`
+  return `${badge} â€” ${text}${trailing}`
 }
 
 export const sponsoredTips: Tip[] = [
@@ -68,7 +68,7 @@ export const sponsoredTips: Tip[] = [
     content: async ctx =>
       renderSponsoredTip(
         ATOMIC,
-        'Atomic Chat local models give you free access to OpenClaude',
+        'Atomic Chat local models give you free access to RootClaude',
         ctx,
       ),
     cooldownSessions: 20,
@@ -164,7 +164,7 @@ export const sponsoredTips: Tip[] = [
     content: async ctx =>
       renderSponsoredTip(
         ATLAS_CLOUD,
-        'Single AI API · full-modal AI inference platform · 300+ curated models',
+        'Single AI API Â· full-modal AI inference platform Â· 300+ curated models',
         ctx,
       ),
     cooldownSessions: 20,

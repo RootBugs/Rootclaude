@@ -1,4 +1,4 @@
-﻿import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { chdir } from 'node:process'
@@ -85,7 +85,7 @@ describe('builtInCommandNames', () => {
       },
     })
     try {
-      const skillDir = join(cwd, '.openclaude', 'skills', 'debug')
+      const skillDir = join(cwd, '.RootClaude', 'skills', 'debug')
       await mkdir(skillDir, { recursive: true })
       await writeFile(
         join(skillDir, 'SKILL.md'),
@@ -119,7 +119,7 @@ describe('builtInCommandNames', () => {
     const originalIsDemo = process.env['IS_DEMO']
     delete process.env['USER_TYPE']
     delete process.env['IS_DEMO']
-    // Clear ALL command caches — including the zero-arg COMMANDS() memoize that
+    // Clear ALL command caches � including the zero-arg COMMANDS() memoize that
     // captures USER_TYPE at first call and never re-evaluates it. Without this,
     // a prior test that ran with USER_TYPE=ant would pollute the COMMANDS cache
     // and make bughunter appear gated even in a "normal user" run.
@@ -148,7 +148,7 @@ describe('builtInCommandNames', () => {
   })
 
   test('getCommands() includes bughunter-security and bughunter-perf for normal users', async () => {
-    // Sibling subcommands of /bughunter — must stay in the public COMMANDS list,
+    // Sibling subcommands of /bughunter � must stay in the public COMMANDS list,
     // not in INTERNAL_ONLY_COMMANDS, so normal users can invoke them.
     const originalUserType = process.env['USER_TYPE']
     const originalIsDemo = process.env['IS_DEMO']
@@ -299,7 +299,7 @@ describe('builtInCommandNames', () => {
   // All three bughunter commands share the same git-context block template
   // and the same lineLimits call, so we parameterize the regression tests
   // over the sibling names. A regression in any one of them (e.g. losing
-  // the HEAD~10 → git log swap, or dropping the 400-line cap) would fail
+  // the HEAD~10 ? git log swap, or dropping the 400-line cap) would fail
   // here even if a sibling's prompt was edited in isolation.
   const BUGHUNTER_SIBLINGS = [
     'bughunter',
@@ -345,9 +345,9 @@ describe('builtInCommandNames', () => {
         const promptText =
           promptBlocks[0].type === 'text' ? promptBlocks[0].text : ''
         // git status should mention the new untracked b.txt (not "(Bash completed
-        // with no output)" — that would mean the catch-all stripped it).
+        // with no output)" � that would mean the catch-all stripped it).
         expect(promptText).toContain('b.txt')
-        // The diff block should at least mention the file or the diff marker —
+        // The diff block should at least mention the file or the diff marker �
         // and crucially must not be the "head -10 revision" error.
         expect(promptText).not.toMatch(/unknown revision|HEAD~10/)
       } finally {
@@ -374,7 +374,7 @@ describe('builtInCommandNames', () => {
     test(`${cmdName} diff block is bounded to 400 lines`, async () => {
       // Regression: the prompt label advertises "first 400 lines" but commit
       // 73d0bcb dropped the `| head -400` cap. Reproduce with a 1000-line diff
-      // and assert the diff code block in the rendered prompt has ≤ 400 lines.
+      // and assert the diff code block in the rendered prompt has = 400 lines.
       const originalUserType = process.env['USER_TYPE']
       const originalIsDemo = process.env['IS_DEMO']
       delete process.env['USER_TYPE']
@@ -652,10 +652,10 @@ describe('formatDescriptionWithSource', () => {
     expect(formatDescriptionWithSource(command)).toBe('Review a pull request')
 
     useLanguage('vietnamese')
-    expect(formatDescriptionWithSource(command)).toBe('Đánh giá pull request')
+    expect(formatDescriptionWithSource(command)).toBe('��nh gi� pull request')
   })
 
-  test('falls back to English when an OpenClaude localization key is missing', () => {
+  test('falls back to English when an RootClaude localization key is missing', () => {
     const command = {
       name: 'example',
       type: 'prompt',
@@ -748,7 +748,7 @@ describe('formatDescriptionWithSource', () => {
 
     useLanguage('vietnamese')
     expect(formatDescriptionWithSource(command)).toBe(
-      'Sao chép phản hồi gần nhất của Claude vào clipboard (hoặc /copy N cho phản hồi thứ N gần nhất)',
+      'Sao ch�p ph?n h?i g?n nh?t c?a Claude v�o clipboard (ho?c /copy N cho ph?n h?i th? N g?n nh?t)',
     )
 
     useLanguage('english')
@@ -782,8 +782,8 @@ describe('bundled skill localization', () => {
         : 'Enable debug logging for this session and help diagnose issues'
     const expectedDebugVietnamese =
       process.env.USER_TYPE === 'ant'
-        ? 'Debug phiên Claude Code hiện tại bằng cách đọc debug log của phiên. Bao gồm toàn bộ event logging'
-        : 'Bật debug logging cho phiên này và hỗ trợ chẩn đoán sự cố'
+        ? 'Debug phi�n Claude Code hi?n t?i b?ng c�ch d?c debug log c?a phi�n. Bao g?m to�n b? event logging'
+        : 'B?t debug logging cho phi�n n�y v� h? tr? ch?n do�n s? c?'
 
     expect(batch).toBeDefined()
     expect(debug).toBeDefined()
@@ -796,7 +796,7 @@ describe('bundled skill localization', () => {
 
     useLanguage('english')
     expect(batch!.description).toBe(
-      'Research and plan a large-scale change, then execute it in parallel across 5–30 isolated worktree agents that each open a PR.',
+      'Research and plan a large-scale change, then execute it in parallel across 5�30 isolated worktree agents that each open a PR.',
     )
     expect(debug!.description).toBe(expectedDebugEnglish)
     expect(loop!.description).toBe(
@@ -814,20 +814,20 @@ describe('bundled skill localization', () => {
 
     useLanguage('vietnamese')
     expect(batch!.description).toBe(
-      'Nghiên cứu và lập kế hoạch cho một thay đổi quy mô lớn, rồi thực thi song song trên 5–30 agent worktree cô lập, mỗi agent mở một PR.',
+      'Nghi�n c?u v� l?p k? ho?ch cho m?t thay d?i quy m� l?n, r?i th?c thi song song tr�n 5�30 agent worktree c� l?p, m?i agent m? m?t PR.',
     )
     expect(debug!.description).toBe(expectedDebugVietnamese)
     expect(loop!.description).toBe(
-      'Chạy một prompt theo khoảng thời gian cố định hoặc lên lịch lại động, bao gồm cả chế độ bảo trì lặp lại.',
+      'Ch?y m?t prompt theo kho?ng th?i gian c? d?nh ho?c l�n l?ch l?i d?ng, bao g?m c? ch? d? b?o tr� l?p l?i.',
     )
     expect(loop!.whenToUse).toBe(
-      'Khi người dùng muốn kiểm tra trạng thái, giám sát quy trình, chạy bảo trì định kỳ, hoặc chạy lại một prompt trong phiên hiện tại.',
+      'Khi ngu?i d�ng mu?n ki?m tra tr?ng th�i, gi�m s�t quy tr�nh, ch?y b?o tr� d?nh k?, ho?c ch?y l?i m?t prompt trong phi�n hi?n t?i.',
     )
     expect(simplify!.description).toBe(
-      'Đánh giá code đã thay đổi về mặt tái sử dụng, chất lượng và hiệu suất, sau đó sửa các vấn đề tìm được.',
+      '��nh gi� code d� thay d?i v? m?t t�i s? d?ng, ch?t lu?ng v� hi?u su?t, sau d� s?a c�c v?n d? t�m du?c.',
     )
     expect(updateConfig!.description).toStartWith(
-      'Sử dụng skill này để cấu hình Claude Code qua settings.json.',
+      'S? d?ng skill n�y d? c?u h�nh Claude Code qua settings.json.',
     )
 
     useLanguage('english')

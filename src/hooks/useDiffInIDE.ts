@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto'
+﻿import { randomUUID } from 'crypto'
 import { basename } from 'path'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { logEvent } from 'src/services/analytics/index.js'
@@ -60,7 +60,7 @@ export function useDiffInIDE({
 
   const sha = useMemo(() => randomUUID().slice(0, 6), [])
   const tabName = useMemo(
-    () => `✻ [OpenClaude] ${basename(filePath)} (${sha}) ⧉`,
+    () => `âœ» [RootClaude] ${basename(filePath)} (${sha}) â§‰`,
     [filePath, sha],
   )
 

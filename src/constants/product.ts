@@ -1,4 +1,4 @@
-export const PRODUCT_DISPLAY_NAME = 'RootClaude'
+﻿export const PRODUCT_DISPLAY_NAME = 'RootClaude'
 export const PRODUCT_URL = 'https://claude.com/claude-code'
 
 // Claude Code Remote session URLs
@@ -29,7 +29,7 @@ function getIngressHostname(ingressUrl?: string): string | undefined {
  * Hostname of the staging remote-session ingress/API. This is the default
  * `sessionIngressUrl` host in staging builds: both bridge entry points fall
  * back to `getBridgeBaseUrl()` (`https://api-staging.anthropic.com`) when
- * `CLAUDE_BRIDGE_SESSION_INGRESS_URL` is unset — see src/constants/oauth.ts
+ * `CLAUDE_BRIDGE_SESSION_INGRESS_URL` is unset â€” see src/constants/oauth.ts
  * and src/bridge/bridgeMain.ts. It carries no bare `staging` dot-label, so a
  * generic label match would miss it.
  */
@@ -37,7 +37,7 @@ const STAGING_INGRESS_HOSTNAME = 'api-staging.anthropic.com'
 
 /**
  * Dot-anchored suffix of the staging zone (`claude-ai.staging.ant.dev`,
- * `platform.staging.ant.dev`, …). Anchored on a leading `.` so it matches a
+ * `platform.staging.ant.dev`, â€¦). Anchored on a leading `.` so it matches a
  * subdomain of the zone but never an unrelated host that merely embeds the
  * label, e.g. `foo.staging.example.com`.
  */
@@ -110,7 +110,7 @@ export function getClaudeAiBaseUrl(
 /**
  * Get the full session URL for a remote session.
  *
- * The cse_→session_ translation is a temporary shim gated by
+ * The cse_â†’session_ translation is a temporary shim gated by
  * tengu_bridge_repl_v2_cse_shim_enabled (see isCseShimEnabled). Worker
  * endpoints (/v1/code/sessions/{id}/worker/*) want `cse_*` but the claude.ai
  * frontend currently routes on `session_*` (compat/convert.go:27 validates

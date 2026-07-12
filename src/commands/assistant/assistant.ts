@@ -1,4 +1,4 @@
-// Stub — assistant command not included in source snapshot
+﻿// Stub â€” assistant command not included in source snapshot
 import { homedir } from 'os'
 import { join } from 'path'
 import { useEffect } from 'react'
@@ -25,7 +25,7 @@ export function NewInstallWizard(props: NewInstallWizardProps): null {
 }
 
 export async function computeDefaultInstallDir(): Promise<string> {
-  return join(homedir(), '.openclaude', 'assistant')
+  return join(homedir(), '.RootClaude', 'assistant')
 }
 
 export default null

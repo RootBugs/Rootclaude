@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Stub-leak detection helpers for the SDK barrel.
  *
  * The esbuild sdk-missing-stub plugin marks every build stub with
  * `__stub: true`. Core SDK modules (QueryEngine, getTools, init) must never
- * resolve to a stub at runtime — if one does, a TUI/CLI dependency leaked into
+ * resolve to a stub at runtime â€” if one does, a TUI/CLI dependency leaked into
  * the SDK bundle. These helpers are split out of the SDK entry point so the
  * real detection path can be unit-tested directly with stub-shaped fixtures
  * (the entry point only runs the check as an import side effect).
@@ -44,7 +44,7 @@ export function checkCriticalImportsForStubs(
       throw new Error(
         `SDK init error: "${name}" resolved to a build stub at runtime. ` +
           `This means a TUI/CLI dependency leaked into the SDK bundle. ` +
-          `Report this at https://github.com/Gitlawb/openclaude/issues`,
+          `Report this at https://github.com/Gitlawb/RootClaude/issues`,
       )
     }
   }

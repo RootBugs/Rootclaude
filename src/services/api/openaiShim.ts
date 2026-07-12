@@ -1,4 +1,4 @@
-/**
+﻿/**
  * OpenAI-compatible API shim for Claude Code.
  *
  * Translates Anthropic SDK calls (anthropic.beta.messages.create) into
@@ -9,30 +9,30 @@
  * Together, Groq, Fireworks, DeepSeek, Mistral, and any OpenAI-compatible API.
  *
  * Environment variables:
- *   CLAUDE_CODE_USE_OPENAI=1          — enable this provider
- *   OPENAI_API_KEY=sk-...             — API key (optional for local models)
- *   OPENAI_API_KEYS=sk-a,sk-b         — optional comma-separated key pool for rotation
- *   OPENAI_AUTH_HEADER=api-key        — optional custom auth header name
- *   OPENAI_AUTH_HEADER_VALUE=...      — optional custom auth header value
- *   OPENAI_AUTH_SCHEME=bearer|raw     — auth scheme for Authorization/custom header handling
- *   OPENAI_API_FORMAT=chat_completions|responses — request format for compatible APIs
- *   OPENAI_BASE_URL=http://...        — base URL (default: https://api.openai.com/v1)
- *   OPENAI_MODEL=gpt-4o              — default model override
- *   CODEX_API_KEY / ~/.codex/auth.json — Codex auth for codexplan/codexspark
+ *   CLAUDE_CODE_USE_OPENAI=1          â€” enable this provider
+ *   OPENAI_API_KEY=sk-...             â€” API key (optional for local models)
+ *   OPENAI_API_KEYS=sk-a,sk-b         â€” optional comma-separated key pool for rotation
+ *   OPENAI_AUTH_HEADER=api-key        â€” optional custom auth header name
+ *   OPENAI_AUTH_HEADER_VALUE=...      â€” optional custom auth header value
+ *   OPENAI_AUTH_SCHEME=bearer|raw     â€” auth scheme for Authorization/custom header handling
+ *   OPENAI_API_FORMAT=chat_completions|responses â€” request format for compatible APIs
+ *   OPENAI_BASE_URL=http://...        â€” base URL (default: https://api.openai.com/v1)
+ *   OPENAI_MODEL=gpt-4o              â€” default model override
+ *   CODEX_API_KEY / ~/.codex/auth.json â€” Codex auth for codexplan/codexspark
  *
  * Smart auto-routing (opt-in; startup defaults, overridden by settings.smartRouting):
- *   OPENCLAUDE_SMART_ROUTING=1|true   — route simple turns to a cheaper model
- *   OPENCLAUDE_SMART_ROUTING_SIMPLE=<key> — agentModels key or model id for simple turns
- *   OPENCLAUDE_SMART_ROUTING_STRONG=<key> — agentModels key or model id for strong turns
+ *   RootClaude_SMART_ROUTING=1|true   â€” route simple turns to a cheaper model
+ *   RootClaude_SMART_ROUTING_SIMPLE=<key> â€” agentModels key or model id for simple turns
+ *   RootClaude_SMART_ROUTING_STRONG=<key> â€” agentModels key or model id for strong turns
  *
  * GitHub Copilot API (api.githubcopilot.com), OpenAI-compatible:
- *   CLAUDE_CODE_USE_GITHUB=1         — enable GitHub inference (no need for USE_OPENAI)
- *   GITHUB_TOKEN or GH_TOKEN         — Copilot API token (mapped to Bearer auth)
- *   OPENAI_MODEL                     — optional; use github:copilot or openai/gpt-4.1 style IDs
+ *   CLAUDE_CODE_USE_GITHUB=1         â€” enable GitHub inference (no need for USE_OPENAI)
+ *   GITHUB_TOKEN or GH_TOKEN         â€” Copilot API token (mapped to Bearer auth)
+ *   OPENAI_MODEL                     â€” optional; use github:copilot or openai/gpt-4.1 style IDs
  *
  * Azure OpenAI / Microsoft Foundry (OpenAI-compatible chat):
- *   AZURE_OPENAI_API_VERSION         — query param for chat/completions (default: 2024-12-01-preview)
- *   OPENAI_AZURE_STYLE=1             — force Azure deployment URL + api-key header when the hostname
+ *   AZURE_OPENAI_API_VERSION         â€” query param for chat/completions (default: 2024-12-01-preview)
+ *   OPENAI_AZURE_STYLE=1             â€” force Azure deployment URL + api-key header when the hostname
  *                                     would not otherwise match (for example inference.ml.azure.com)
  */
 
@@ -427,11 +427,11 @@ function sleepMs(ms: number): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// Types — minimal subset of Anthropic SDK types we need to produce
+// Types â€” minimal subset of Anthropic SDK types we need to produce
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// Message format conversion: Anthropic → OpenAI
+// Message format conversion: Anthropic â†’ OpenAI
 // ---------------------------------------------------------------------------
 
 interface OpenAIMessage {
@@ -511,7 +511,7 @@ function parsePositiveIntegerEnv(value: string | undefined): number | null {
 
 function getOllamaNumCtx(): number {
   return (
-    parsePositiveIntegerEnv(process.env.OPENCLAUDE_OLLAMA_NUM_CTX) ??
+    parsePositiveIntegerEnv(process.env.RootClaude_OLLAMA_NUM_CTX) ??
     parsePositiveIntegerEnv(process.env.OLLAMA_CONTEXT_LENGTH) ??
     MIN_RECOMMENDED_OLLAMA_CONTEXT_TOKENS
   )
@@ -872,7 +872,7 @@ function convertSystemPrompt(
       .map((block: { type?: string; text?: string }) =>
         block.type === 'text' ? block.text ?? '' : '',
       )
-      // Drop the Anthropic billing/attribution block — it's only meaningful to
+      // Drop the Anthropic billing/attribution block â€” it's only meaningful to
       // Anthropic's `_parse_cc_header` and is dead weight (plus a churning
       // per-build fingerprint that busts prefix KV cache) for OpenAI-compat
       // providers like local Ollama / llama.cpp / Codex pass-throughs.
@@ -923,7 +923,7 @@ function convertToolResultContent(
       continue
     }
 
-    // ToolSearch results are tool_reference blocks with no text payload —
+    // ToolSearch results are tool_reference blocks with no text payload â€”
     // render them so the model learns which deferred tools were loaded
     // (their schemas arrive in the next request's tools array).
     if (block?.type === 'tool_reference' && typeof block.tool_name === 'string') {
@@ -1361,8 +1361,8 @@ function convertMessages(
   }
 
   // Coalescing pass: merge consecutive messages of the same role.
-  // OpenAI/vLLM/Ollama require strict user↔assistant alternation.
-  // Multiple consecutive tool messages are allowed (assistant → tool* → user).
+  // OpenAI/vLLM/Ollama require strict userâ†”assistant alternation.
+  // Multiple consecutive tool messages are allowed (assistant â†’ tool* â†’ user).
   // Consecutive user or assistant messages must be merged to avoid Jinja
   // template errors like "roles must alternate" (Devstral, Mistral models).
   const coalesced: OpenAIMessage[] = []
@@ -1452,7 +1452,7 @@ function normalizeSchemaForOpenAI(
       // Keep only the properties that were originally marked required in the schema.
       // Adding every property to required[] (the previous behaviour) caused strict
       // OpenAI-compatible providers (Groq, Azure, etc.) to reject tool calls because
-      // the model correctly omits optional arguments — but the provider treats them
+      // the model correctly omits optional arguments â€” but the provider treats them
       // as missing required fields and returns a 400 / tool_use_failed error.
       record.required = existingRequired.filter(k => k in normalizedProps)
       // additionalProperties: false is still required by strict-mode providers.
@@ -1493,7 +1493,7 @@ function convertTools(
   const isGemini = isGeminiMode()
   const strict =
     !isGemini &&
-    !isEnvTruthy(process.env.OPENCLAUDE_DISABLE_STRICT_TOOLS) &&
+    !isEnvTruthy(process.env.RootClaude_DISABLE_STRICT_TOOLS) &&
     !options.skipStrict
 
   return tools
@@ -1524,7 +1524,7 @@ function convertTools(
 }
 
 // ---------------------------------------------------------------------------
-// Streaming: OpenAI SSE → Anthropic stream events
+// Streaming: OpenAI SSE â†’ Anthropic stream events
 // ---------------------------------------------------------------------------
 
 interface OpenAIStreamChunk {
@@ -1770,13 +1770,13 @@ export function parseTextToolCalls(text: string): {
   const seen = new Set<string>()
   const fencedRanges: Array<[number, number]> = []
   // acceptedRanges tracks only ranges where parseAndAdd confirmed a valid tool
-  // call was emitted — these are what callers strip from text.  fencedRanges
+  // call was emitted â€” these are what callers strip from text.  fencedRanges
   // (all fenced blocks regardless of acceptance) is kept separately so Pass 2
   // can skip over them and avoid double-processing.
   const acceptedRanges: Array<[number, number]> = []
 
-  // Pass 1: fenced code blocks — regex is safe, ``` bounds the non-greedy match.
-  // Context guard: same heuristic as Pass 2 — if non-whitespace, non-`{` text
+  // Pass 1: fenced code blocks â€” regex is safe, ``` bounds the non-greedy match.
+  // Context guard: same heuristic as Pass 2 â€” if non-whitespace, non-`{` text
   // immediately follows the closing fence, the model is explaining a format rather
   // than calling a tool; skip to avoid false positives on fenced examples.
   for (const match of text.matchAll(FENCED_TOOL_CALL_RE)) {
@@ -1790,7 +1790,7 @@ export function parseTextToolCalls(text: string): {
     }
   }
 
-  // Pass 2: bare JSON — use the brace scanner so nested objects are captured fully.
+  // Pass 2: bare JSON â€” use the brace scanner so nested objects are captured fully.
   // processedRanges grows as we extract; inner objects nested inside an outer
   // tool call are skipped because their start falls inside an already-extracted range.
   const processedRanges: Array<[number, number]> = [...fencedRanges]
@@ -1800,7 +1800,7 @@ export function parseTextToolCalls(text: string): {
     const raw = extractBalancedJson(text, start)
     if (raw) {
       // Context guard: if non-whitespace, non-`{` text immediately follows the JSON
-      // the model is likely explaining, not calling — skip to avoid false positives.
+      // the model is likely explaining, not calling â€” skip to avoid false positives.
       const after = text.slice(start + raw.length).trimStart()
       if (after.length > 0 && !after.startsWith('{')) continue
       const range: [number, number] = [start, start + raw.length]
@@ -1820,12 +1820,12 @@ export function parseTextToolCalls(text: string): {
 // Several open models routed through OpenAI-compatible gateways emit tool
 // calls as XML text inside the assistant message rather than as structured
 // `tool_calls`. Without recovery these leak into visible prose and never
-// execute — the turn then ends with no tool_use block, so the agent appears
+// execute â€” the turn then ends with no tool_use block, so the agent appears
 // to "forget" and stop mid-task. We support the three dialects seen in the
 // wild:
-//   A. <tool_call><function=NAME><parameter=KEY>VALUE</parameter>…</function></tool_call>
-//   B. <tool_call>NAME<arg_key>KEY</arg_key><arg_value>VALUE</arg_value>…</tool_call>  (GLM native)
-//   C. <tool_call>{"name":"NAME","arguments":{…}}</tool_call>                          (Hermes JSON)
+//   A. <tool_call><function=NAME><parameter=KEY>VALUE</parameter>â€¦</function></tool_call>
+//   B. <tool_call>NAME<arg_key>KEY</arg_key><arg_value>VALUE</arg_value>â€¦</tool_call>  (GLM native)
+//   C. <tool_call>{"name":"NAME","arguments":{â€¦}}</tool_call>                          (Hermes JSON)
 // ---------------------------------------------------------------------------
 
 // The streaming finalize path buffers from this opener onward so the raw XML
@@ -1883,7 +1883,7 @@ export function parseXmlToolCalls(text: string): {
 
     const fnMatch = inner.match(XML_FUNCTION_NAME_RE)
     if (fnMatch) {
-      // Dialect A: <function=NAME><parameter=KEY>VALUE</parameter>…
+      // Dialect A: <function=NAME><parameter=KEY>VALUE</parameter>â€¦
       name = fnMatch[1]
       for (const p of inner.matchAll(XML_PARAMETER_RE)) {
         const key = p[1]
@@ -1942,7 +1942,7 @@ export function parseXmlToolCalls(text: string): {
  */
 /**
  * Passthrough for Anthropic Messages API SSE streams.
- * The response events are already in AnthropicStreamEvent format —
+ * The response events are already in AnthropicStreamEvent format â€”
  * we just parse the SSE frames and yield them directly.
  */
 async function* anthropicSsePassthrough(
@@ -2435,7 +2435,7 @@ async function* openaiStreamToAnthropic(
   let ollamaTextBuffer = ''
   const streamState = createStreamState()
   let bufferedRawToolCallsText: string | null = null
-  // XML tool-call fallback (GLM/Qwen-style `<tool_call><function=…>` emitted as
+  // XML tool-call fallback (GLM/Qwen-style `<tool_call><function=â€¦>` emitted as
   // text). Once the opener is seen we stop emitting text and buffer the
   // remainder in xmlToolCallText, converting it to tool_use blocks at finalize.
   // xmlHoldback retains a trailing partial opener split across deltas.
@@ -2482,7 +2482,7 @@ async function* openaiStreamToAnthropic(
     // completion. Route it through the shared non-streaming converter so this
     // fallback preserves tool_calls, Anthropic stop-reason mapping, array
     // content normalization, <think>-tag stripping, and raw text tool-call
-    // recovery — then re-emit the resulting message as stream events.
+    // recovery â€” then re-emit the resulting message as stream events.
     const message = convertNonStreamingResponseToAnthropicMessage(parsed, model)
 
     yield {
@@ -2771,7 +2771,7 @@ async function* openaiStreamToAnthropic(
           }
         }
 
-        // Text content — use != null to distinguish absent field from empty string,
+        // Text content â€” use != null to distinguish absent field from empty string,
         // some providers send "" as first delta to signal streaming start
         if (delta.content != null && delta.content !== '') {
           // Close thinking block if transitioning from reasoning to content
@@ -2789,7 +2789,7 @@ async function* openaiStreamToAnthropic(
               ollamaTextBuffer += visible
             }
           } else if (xmlToolCallText !== null) {
-            // Inside an XML tool-call region — buffer, emit nothing visible.
+            // Inside an XML tool-call region â€” buffer, emit nothing visible.
             xmlToolCallText += delta.content
           } else if (
             !hasEmittedContentStart &&
@@ -2829,7 +2829,7 @@ async function* openaiStreamToAnthropic(
 
         // Tool calls
         if (delta.tool_calls) {
-          // Structured tool calls arrived — any held-back XML was a false
+          // Structured tool calls arrived â€” any held-back XML was a false
           // positive (the model uses one mechanism or the other). Flush it
           // as text so nothing is lost.
           if (xmlToolCallText !== null) {
@@ -2854,7 +2854,7 @@ async function* openaiStreamToAnthropic(
           }
           for (const tc of delta.tool_calls) {
             if (tc.id && tc.function?.name) {
-              // New tool call starting — close any open thinking block first
+              // New tool call starting â€” close any open thinking block first
               if (hasEmittedThinkingStart && !hasClosedThinking) {
                 throwIfStreamAborted(signal)
                 yield { type: 'content_block_stop', index: contentBlockIndex }
@@ -2960,7 +2960,7 @@ async function* openaiStreamToAnthropic(
           }
         }
 
-        // Finish — guard ensures we only process finish_reason once even if
+        // Finish â€” guard ensures we only process finish_reason once even if
         // multiple chunks arrive with finish_reason set (some providers do this)
         if (choice.finish_reason && !hasProcessedFinishReason) {
           hasProcessedFinishReason = true
@@ -2994,7 +2994,7 @@ async function* openaiStreamToAnthropic(
               const stripped = stripRanges(accumulatedText, toolCallRanges).trim()
               const strippedVisible = stripThinkTags(stripped).trim()
               if (hasEmittedContentStart) {
-                // Text block was already open — emit stripped prose then close it.
+                // Text block was already open â€” emit stripped prose then close it.
                 if (strippedVisible) {
                   throwIfStreamAborted(signal)
                   yield {
@@ -3046,7 +3046,7 @@ async function* openaiStreamToAnthropic(
                 choice.finish_reason = 'tool_calls'
               }
             } else if (ollamaTextBuffer) {
-              // No tool calls — flush the buffered text before the normal close below.
+              // No tool calls â€” flush the buffered text before the normal close below.
               // Open a text block first if one is not already open (guards the edge case
               // where hasEmittedContentStart is false but the buffer has content).
               if (!hasEmittedContentStart) {
@@ -3068,7 +3068,7 @@ async function* openaiStreamToAnthropic(
           }
 
           // XML tool-call fallback for non-Ollama OpenAI-compatible providers
-          // (GLM/Qwen emit `<tool_call><function=…>` as text). Mirror the Ollama
+          // (GLM/Qwen emit `<tool_call><function=â€¦>` as text). Mirror the Ollama
           // path: convert buffered XML to tool_use blocks and strip the raw XML.
           let xmlClosedContentBlock = false
           if (!isOllamaStream && xmlToolCallText !== null) {
@@ -3110,7 +3110,7 @@ async function* openaiStreamToAnthropic(
                 choice.finish_reason = 'tool_calls'
               }
             } else {
-              // No valid tool calls parsed — the buffered text was a false
+              // No valid tool calls parsed â€” the buffered text was a false
               // positive (e.g. the model wrote about `<tool_call>` literally).
               // Emit it verbatim so nothing is lost.
               yield* emitTextDelta(buffered)
@@ -3143,7 +3143,7 @@ async function* openaiStreamToAnthropic(
             if (tc.normalizeAtStop) {
               let partialJson: string
               if (choice.finish_reason === 'length') {
-                // Truncated by max tokens — preserve raw buffer to avoid
+                // Truncated by max tokens â€” preserve raw buffer to avoid
                 // turning an incomplete tool call into an executable command
                 partialJson = tc.jsonBuffer
               } else {
@@ -3230,7 +3230,7 @@ async function* openaiStreamToAnthropic(
               delta: { type: 'text_delta', text: '\n\n[Content blocked by provider safety filter]' },
             }
           } else if (choice.finish_reason === 'length') {
-            // Response was truncated — either the model hit max_tokens, or
+            // Response was truncated â€” either the model hit max_tokens, or
             // an upstream/gateway watchdog synthesized a graceful end after
             // detecting a stalled stream. Either way, the user should know
             // the answer they're seeing isn't complete.
@@ -3247,7 +3247,7 @@ async function* openaiStreamToAnthropic(
             yield {
               type: 'content_block_delta',
               index: contentBlockIndex,
-              delta: { type: 'text_delta', text: '\n\n[Response truncated — reached length limit or upstream stalled. Ask the model to continue.]' },
+              delta: { type: 'text_delta', text: '\n\n[Response truncated â€” reached length limit or upstream stalled. Ask the model to continue.]' },
             }
           }
           lastStopReason = stopReason
@@ -3307,7 +3307,7 @@ async function* openaiStreamToAnthropic(
 }
 
 // ---------------------------------------------------------------------------
-// The shim client — duck-types as Anthropic SDK
+// The shim client â€” duck-types as Anthropic SDK
 // ---------------------------------------------------------------------------
 
 class OpenAIShimStream {
@@ -3492,7 +3492,7 @@ class OpenAIShimMessages {
         }
       }
 
-      // Anthropic Messages API response — already in Anthropic format,
+      // Anthropic Messages API response â€” already in Anthropic format,
       // pass through directly without conversion.
       if (isMessagesNonStream) {
         const contentType = response.headers.get('content-type') ?? ''
@@ -3501,7 +3501,7 @@ class OpenAIShimMessages {
         }
       }
 
-      // Google AI SDK response — convert to Anthropic format
+      // Google AI SDK response â€” convert to Anthropic format
       if (isGeminiNonStream) {
         const contentType = response.headers.get('content-type') ?? ''
         if (contentType.includes('application/json')) {
@@ -3655,7 +3655,7 @@ class OpenAIShimMessages {
     params: ShimCreateParams,
     options?: { signal?: AbortSignal; headers?: Record<string, string> },
   ): Promise<Response> {
-    // Local backends (llama.cpp, vLLM, Ollama, LM Studio, …) do not implement
+    // Local backends (llama.cpp, vLLM, Ollama, LM Studio, â€¦) do not implement
     // the cloud-side caching/strict-validation behaviours that several of our
     // pre-send transforms target. Computing the fast-path config once here
     // lets us skip those transforms uniformly. See providerConfig.ts.
@@ -3679,9 +3679,9 @@ class OpenAIShimMessages {
     const shimConfig = runtimeShimContext.openaiShimConfig
     // When endpointPath is overridden, the body format must match the target
     // API contract rather than request.transport from providerConfig.
-    // - /responses         → OpenAI Responses API (input, max_output_tokens, instructions)
-    // - /messages          → Anthropic Messages API (system, max_tokens, content blocks)
-    // - /models/gemini-*   → Google AI SDK (contents, systemInstruction, generationConfig)
+    // - /responses         â†’ OpenAI Responses API (input, max_output_tokens, instructions)
+    // - /messages          â†’ Anthropic Messages API (system, max_tokens, content blocks)
+    // - /models/gemini-*   â†’ Google AI SDK (contents, systemInstruction, generationConfig)
     const effectiveTransport = shimConfig.endpointPath === '/responses'
       ? 'responses'
       : shimConfig.endpointPath === '/messages'
@@ -3927,7 +3927,7 @@ class OpenAIShimMessages {
       return responsesBody
     }
 
-    // Anthropic Messages API body — used when endpointPath is /messages.
+    // Anthropic Messages API body â€” used when endpointPath is /messages.
     // params.messages, params.tools, etc. are already in Anthropic format
     // (they originate from the Anthropic SDK). We pass them through directly,
     // only adding the top-level system (as string or content-block array)
@@ -3988,13 +3988,13 @@ class OpenAIShimMessages {
       return anthropicBody
     }
 
-    // Google AI SDK body — used when endpointPath is /models/gemini-*.
+    // Google AI SDK body â€” used when endpointPath is /models/gemini-*.
     // Converts Anthropic-format params to Google AI SDK format.
     let omitGeminiTools = false
     const buildGeminiBody = (): Record<string, unknown> => {
       const contents: Array<{ role: string; parts: Array<Record<string, unknown>> }> = []
 
-      // Build a lookup from tool_use_id → function name so tool_result
+      // Build a lookup from tool_use_id â†’ function name so tool_result
       // blocks can emit the correct functionResponse.name (Gemini requires
       // the function name, not the Anthropic tool_use_id).
       const toolUseIdToName = new Map<string, string>()
@@ -4086,7 +4086,7 @@ class OpenAIShimMessages {
         geminiBody.generationConfig = genConfig
       }
 
-      // Tools — convert Anthropic tool format to Google functionDeclarations
+      // Tools â€” convert Anthropic tool format to Google functionDeclarations
       if (!omitGeminiTools && params.tools && params.tools.length > 0) {
         const functionDeclarations = (params.tools as Array<{
           name?: string
@@ -4120,7 +4120,7 @@ class OpenAIShimMessages {
     })
     // xAI OAuth: when the active route is xAI and no API key is set, fall
     // back to a stored OAuth access token (auto-refreshed). The token is
-    // sent as a Bearer to api.x.ai/v1 — same surface as an API key.
+    // sent as a Bearer to api.x.ai/v1 â€” same surface as an API key.
     const isXaiRoute =
       runtimeShimContext.routeId === 'xai' || isXaiBaseUrl(request.baseUrl)
     const openAIApiKeysPoolRaw =
@@ -4233,7 +4233,7 @@ class OpenAIShimMessages {
             hostname.includes('services.ai') ||
             hostname.includes('inference.ml'))
       } catch {
-        /* malformed URL — not Azure */
+        /* malformed URL â€” not Azure */
       }
     }
 
@@ -4242,7 +4242,7 @@ class OpenAIShimMessages {
       isBankr =
         runtimeShimContext.routeId === 'bankr' ||
         request.baseUrl.toLowerCase().includes('bankr')
-    } catch { /* malformed URL — not Bankr */ }
+    } catch { /* malformed URL â€” not Bankr */ }
 
     const credentialPool = explicitCustomAuthHeaderValue
       ? null
@@ -4600,7 +4600,7 @@ class OpenAIShimMessages {
         throwClassifiedTransportError(error, requestUrl, failure)
       }
 
-      // After the try/catch, response is guaranteed to be defined — the catch
+      // After the try/catch, response is guaranteed to be defined â€” the catch
       // block always throws (throwClassifiedTransportError returns never).
       if (!response) continue
 
@@ -4629,7 +4629,7 @@ class OpenAIShimMessages {
             const originalUrl = response.url
             const originalType = response.type
             // Recreate the response immediately after reading the body, before
-            // JSON.parse — if parsing fails, downstream code can still read the
+            // JSON.parse â€” if parsing fails, downstream code can still read the
             // body from the fresh Response instead of hitting "Body already used".
             response = new Response(bodyText, {
               status: response.status,
@@ -4659,7 +4659,7 @@ class OpenAIShimMessages {
             const data = JSON.parse(bodyText)
             tokensIn = data.usage?.prompt_tokens ?? 0
             tokensOut = data.usage?.completion_tokens ?? 0
-          } catch { /* ignore — response is already recreated with the body intact */ }
+          } catch { /* ignore â€” response is already recreated with the body intact */ }
         }
         logApiCallEnd(correlationId, startTime, request.resolvedModel, 'success', tokensIn, tokensOut, false)
         return response
@@ -4678,7 +4678,7 @@ class OpenAIShimMessages {
         await sleepMs(delaySec * 1000)
         continue
       }
-      // Read body exactly once here — Response body is a stream that can only
+      // Read body exactly once here â€” Response body is a stream that can only
       // be consumed a single time.
       const errorBody = await response.text().catch(() => 'unknown error')
       const rateHint =

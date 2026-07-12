@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+﻿import { readFileSync } from 'node:fs'
 
 const ENV_KEY_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/
 
@@ -88,7 +88,7 @@ const ALLOWED_ENV_FILE_KEYS = new Set([
   'OPENCODE_API_KEY',
   'OPENGATEWAY_API_KEY',
   'OPENGATEWAY_BASE_URL',
-  'OPENCLAUDE_OLLAMA_NUM_CTX',
+  'RootClaude_OLLAMA_NUM_CTX',
   'OPENROUTER_API_KEY',
   'OPENAI_API_BASE',
   'OPENAI_API_FORMAT',

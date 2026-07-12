@@ -1,7 +1,7 @@
-import { feature } from 'bun:bundle';
+﻿import { feature } from 'bun:bundle';
 
 // Defensive compatibility guard for environments where globalThis.File is
-// unexpectedly absent. OpenClaude's supported runtime is Node >=22; this is
+// unexpectedly absent. RootClaude's supported runtime is Node >=22; this is
 // not a Node 18 support guarantee. The guard is harmless on supported Node
 // versions and prevents undici's module evaluation from throwing in unusual
 // embedded/runtime setups.
@@ -27,9 +27,9 @@ if (typeof globalThis.File === 'undefined') {
   }
 }
 
-// OpenClaude: disable experimental API betas by default.
+// RootClaude: disable experimental API betas by default.
 // Tool search (defer_loading), global cache scope, and context management
-// require internal API support not available to external accounts → 500.
+// require internal API support not available to external accounts Ã¢â€ â€™ 500.
 // Users can opt-in with CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=false.
 // eslint-disable-next-line custom-rules/no-top-level-side-effects
 process.env.CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS ??= 'true'
@@ -225,7 +225,7 @@ if (!process.env.NODE_OPTIONS?.includes('--max-old-space-size')) {
 
 // Harness-science L0 ablation baseline. Inlined here (not init.ts) because
 // BashTool/AgentTool/PowerShellTool capture DISABLE_BACKGROUND_TASKS into
-// module-level consts at import time — init() runs too late. feature() gate
+// module-level consts at import time Ã¢â‚¬â€ init() runs too late. feature() gate
 // DCEs this entire block from external builds.
 // eslint-disable-next-line custom-rules/no-top-level-side-effects, custom-rules/no-process-env-top-level
 if (feature('ABLATION_BASELINE') && process.env.CLAUDE_CODE_ABLATION_BASELINE) {
@@ -324,11 +324,11 @@ export async function main(
   if (args.length === 1 && (args[0] === '--version' || args[0] === '-v' || args[0] === '-V')) {
     // MACRO.VERSION is inlined at build time
     // biome-ignore lint/suspicious/noConsole:: intentional console output
-    console.log(`${MACRO.DISPLAY_VERSION ?? MACRO.VERSION} (OpenClaude)`);
+    console.log(`${MACRO.DISPLAY_VERSION ?? MACRO.VERSION} (RootClaude)`);
     return;
   }
 
-  // Fast-path for `openclaude ps|logs|attach|kill`.
+  // Fast-path for `rootclaude ps|logs|attach|kill`.
   // Session management is entirely local, so it should not require config,
   // profile, credential, provider-validation, or startup-screen work.
   if (bgSessionsEnabled && (args[0] === 'ps' || args[0] === 'logs' || args[0] === 'attach' || args[0] === 'kill')) {
@@ -495,7 +495,7 @@ export async function main(
     await importers.providerValidation()
   await validateProviderEnvForStartupOrExit()
 
-  // #808: --model alone (no --provider) — route to the env var matching the
+  // #808: --model alone (no --provider) Ã¢â‚¬â€ route to the env var matching the
   // active provider before the banner prints so the override is visible.
   if (args.includes('--model')) {
     const { applyModelFlagFromArgs } = await importers.providerFlag()
@@ -564,9 +564,9 @@ export async function main(
     return;
   }
 
-  // Fast-path for `--daemon-worker=<kind>` (internal — supervisor spawns this).
+  // Fast-path for `--daemon-worker=<kind>` (internal Ã¢â‚¬â€ supervisor spawns this).
   // Must come before the daemon subcommand check: spawned per-worker, so
-  // perf-sensitive. No enableConfigs(), no analytics sinks at this layer —
+  // perf-sensitive. No enableConfigs(), no analytics sinks at this layer Ã¢â‚¬â€
   // workers are lean. If a worker kind needs configs/auth (assistant will),
   // it calls them inside its run() fn.
   if (feature('DAEMON') && args[0] === '--daemon-worker') {
@@ -601,7 +601,7 @@ export async function main(
       exitWithError
     } = await import('../utils/process.js');
 
-    // Auth check must come before the GrowthBook gate check — without auth,
+    // Auth check must come before the GrowthBook gate check Ã¢â‚¬â€ without auth,
     // GrowthBook has no user context and would return a stale/default false.
     // getBridgeDisabledReason awaits GB init, so the returned value is fresh
     // (not the stale disk cache), but init still needs auth headers to work.
@@ -658,7 +658,7 @@ export async function main(
       templatesMain
     } = await import('../cli/handlers/templateJobs.js');
     await templatesMain(args);
-    // process.exit (not return) — mountFleetView's Ink TUI can leave event
+    // process.exit (not return) Ã¢â‚¬â€ mountFleetView's Ink TUI can leave event
     // loop handles that prevent natural exit.
     // eslint-disable-next-line custom-rules/no-process-exit
     process.exit(0);
@@ -728,7 +728,7 @@ export async function main(
   }
 
   // No special flags detected, load and run the full CLI
-  if (process.env.OPENCLAUDE_DISABLE_EARLY_INPUT !== '1') {
+  if (process.env.RootClaude_DISABLE_EARLY_INPUT !== '1') {
     const {
       startCapturingEarlyInput
     } = await importers.earlyInput();
@@ -744,6 +744,6 @@ export async function main(
 }
 
 // eslint-disable-next-line custom-rules/no-top-level-side-effects, custom-rules/no-process-env-top-level
-if (process.env.OPENCLAUDE_DISABLE_CLI_ENTRYPOINT_AUTO_RUN !== '1') {
+if (process.env.RootClaude_DISABLE_CLI_ENTRYPOINT_AUTO_RUN !== '1') {
   await main();
 }

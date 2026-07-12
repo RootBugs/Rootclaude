@@ -45,7 +45,7 @@ const envKeys = [
   'OPENAI_API_KEY',
   'OPENAI_BASE_URL',
   'OPENAI_MODEL',
-  'OPENCLAUDE_MAX_RETRIES',
+  'RootClaude_MAX_RETRIES',
   'VCR_RECORD',
 ] as const
 const originalEnv = { ...process.env }
@@ -338,7 +338,7 @@ afterEach(() => {
 describe('Claude API lifecycle tracking', () => {
   test('ends a failed streaming dispatch before retry backoff is reported', async () => {
     setClientTestEnv()
-    process.env.OPENCLAUDE_MAX_RETRIES = '1'
+    process.env.RootClaude_MAX_RETRIES = '1'
     const queryLifecycle = new QueryLifecycleOperationTracker()
     const dispatchSnapshots: ReturnType<
       QueryLifecycleOperationTracker['snapshot']
@@ -384,7 +384,7 @@ describe('Claude API lifecycle tracking', () => {
 
   test('preserves provider override and query source during 404 non-streaming fallback', async () => {
     setClientTestEnv()
-    process.env.OPENCLAUDE_MAX_RETRIES = '0'
+    process.env.RootClaude_MAX_RETRIES = '0'
     const queryLifecycle = new QueryLifecycleOperationTracker()
     const providerBaseURL = 'https://provider.example/v1'
     const requests: {
@@ -461,7 +461,7 @@ describe('Claude API lifecycle tracking', () => {
 
   test('parent abort during OpenAI-compatible stream does not start non-streaming fallback', async () => {
     setClientTestEnv()
-    process.env.OPENCLAUDE_MAX_RETRIES = '0'
+    process.env.RootClaude_MAX_RETRIES = '0'
     process.env.CLAUDE_STREAM_IDLE_TIMEOUT_MS = '1000'
     const queryLifecycle = new QueryLifecycleOperationTracker()
     const parent = new AbortController()
@@ -553,7 +553,7 @@ describe('Claude API lifecycle tracking', () => {
 
   test('stream idle timeout respects disabled non-streaming fallback guard', async () => {
     setClientTestEnv()
-    process.env.OPENCLAUDE_MAX_RETRIES = '0'
+    process.env.RootClaude_MAX_RETRIES = '0'
     process.env.CLAUDE_STREAM_IDLE_TIMEOUT_MS = String(TEST_STREAM_IDLE_TIMEOUT_MS)
     process.env.CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK = '1'
     const queryLifecycle = new QueryLifecycleOperationTracker()
@@ -663,7 +663,7 @@ describe('Claude API lifecycle tracking', () => {
 
   test('clears non-streaming fallback lifecycle entries after request errors', async () => {
     setClientTestEnv()
-    process.env.OPENCLAUDE_MAX_RETRIES = '0'
+    process.env.RootClaude_MAX_RETRIES = '0'
     const queryLifecycle = new QueryLifecycleOperationTracker()
     const requestSnapshots: ReturnType<
       QueryLifecycleOperationTracker['snapshot']

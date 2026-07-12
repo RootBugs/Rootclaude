@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Session Persistence - Save/restore conversation state
  * 
  * Provides session storage. Sessions are stored as plain JSON
@@ -57,8 +57,8 @@ function getConfigDir(): string {
 
 function getSessionsDir(): string {
   // Test override for temp directory
-  if (process.env.OPENCLAUDE_TEST_SESSIONS_DIR) {
-    return process.env.OPENCLAUDE_TEST_SESSIONS_DIR
+  if (process.env.RootClaude_TEST_SESSIONS_DIR) {
+    return process.env.RootClaude_TEST_SESSIONS_DIR
   }
   return path.join(getConfigDir(), 'sessions')
 }

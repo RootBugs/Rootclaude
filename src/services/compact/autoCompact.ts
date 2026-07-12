@@ -1,4 +1,4 @@
-import { feature } from 'bun:bundle'
+﻿import { feature } from 'bun:bundle'
 import { markPostCompaction } from 'src/bootstrap/state.js'
 import { getSdkBetas } from '../../bootstrap/state.js'
 import type { QuerySource } from '../../constants/querySource.js'
@@ -81,7 +81,7 @@ export const MANUAL_COMPACT_BUFFER_TOKENS = 3_000
 
 export const AUTOCOMPACT_FAILURE_COOLDOWN_MS = 5 * 60 * 1000
 
-// Minimum cooldown override allowed via OPENCLAUDE_AUTOCOMPACT_FAILURE_COOLDOWN_MS.
+// Minimum cooldown override allowed via RootClaude_AUTOCOMPACT_FAILURE_COOLDOWN_MS.
 // Values below this floor are rejected (function falls back to the default) so
 // misconfiguration cannot effectively disable the circuit breaker.
 export const MIN_AUTOCOMPACT_FAILURE_COOLDOWN_MS = 10_000
@@ -92,7 +92,7 @@ export const MIN_AUTOCOMPACT_FAILURE_COOLDOWN_MS = 10_000
 export const MAX_CONSECUTIVE_AUTOCOMPACT_FAILURES = 3
 
 export function getAutoCompactFailureCooldownMs(): number {
-  const override = process.env.OPENCLAUDE_AUTOCOMPACT_FAILURE_COOLDOWN_MS
+  const override = process.env.RootClaude_AUTOCOMPACT_FAILURE_COOLDOWN_MS
   if (override) {
     const trimmed = override.trim()
     const parsed = Number(trimmed)
@@ -277,7 +277,7 @@ export async function shouldAutoCompact(
   if (querySource === 'session_memory' || querySource === 'compact') {
     return false
   }
-  // marble_origami is the ctx-agent — if ITS context blows up and
+  // marble_origami is the ctx-agent â€” if ITS context blows up and
   // autocompact fires, runPostCompactCleanup calls resetContextCollapse()
   // which destroys the MAIN thread's committed log (module-level state
   // shared across forks). Inside feature() so the string DCEs from
@@ -296,7 +296,7 @@ export async function shouldAutoCompact(
   // catch the API's prompt-too-long. feature() wrapper keeps the flag string
   // out of external builds (REACTIVE_COMPACT is internal-only).
   // Note: returning false here also means autoCompactIfNeeded never reaches
-  // trySessionMemoryCompaction in the query loop — the /compact call site
+  // trySessionMemoryCompaction in the query loop â€” the /compact call site
   // still tries session memory first. Revisit if reactive-only graduates.
   if (feature('REACTIVE_COMPACT')) {
     if (
@@ -308,7 +308,7 @@ export async function shouldAutoCompact(
   }
 
   // Context-collapse mode: same suppression. Collapse IS the context
-  // management system when it's on — the 90% commit / 95% blocking-spawn
+  // management system when it's on â€” the 90% commit / 95% blocking-spawn
   // flow owns the headroom problem. Autocompact firing at effective-13k
   // (~93% of effective) sits right between collapse's commit-start (90%)
   // and blocking (95%), so it would race collapse and usually win, nuking
@@ -555,7 +555,7 @@ export async function autoCompactIfNeeded(
       : undefined
     if (circuitBreakerTripped) {
       logForDebugging(
-        `autocompact: circuit breaker tripped after ${nextFailures} consecutive failures — retrying after cooldown`,
+        `autocompact: circuit breaker tripped after ${nextFailures} consecutive failures â€” retrying after cooldown`,
         { level: 'warn' },
       )
     }

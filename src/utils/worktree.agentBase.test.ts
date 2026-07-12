@@ -51,8 +51,8 @@ function runCreateAgentWorktree(
 test(
   'agent worktree is based on the parent session HEAD, not origin/main',
   () => {
-    const cfgDir = mkdtempSync(join(tmpdir(), 'openclaude-wt-cfg-'))
-    const repoDir = mkdtempSync(join(tmpdir(), 'openclaude-wt-repo-'))
+    const cfgDir = mkdtempSync(join(tmpdir(), 'RootClaude-wt-cfg-'))
+    const repoDir = mkdtempSync(join(tmpdir(), 'RootClaude-wt-repo-'))
 
     try {
       git(repoDir, 'init', '-b', 'main')

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Centralized rate limit message generation
  * Single source of truth for all rate limit-related messages
  */
@@ -146,7 +146,7 @@ function getLimitReachedText(limits: ClaudeAILimits, model: string): string {
   const overageResetTime = limits.overageResetsAt
     ? formatResetTime(limits.overageResetsAt, true)
     : undefined
-  const resetMessage = resetTime ? ` · resets ${resetTime}` : ''
+  const resetMessage = resetTime ? ` Â· resets ${resetTime}` : ''
 
   // if BOTH subscription (checked before this method) and overage are exhausted
   if (limits.overageStatus === 'rejected') {
@@ -155,14 +155,14 @@ function getLimitReachedText(limits: ClaudeAILimits, model: string): string {
     if (resetsAt && limits.overageResetsAt) {
       // Both timestamps present - use the earlier one
       if (resetsAt < limits.overageResetsAt) {
-        overageResetMessage = ` · resets ${resetTime}`
+        overageResetMessage = ` Â· resets ${resetTime}`
       } else {
-        overageResetMessage = ` · resets ${overageResetTime}`
+        overageResetMessage = ` Â· resets ${overageResetTime}`
       }
     } else if (resetTime) {
-      overageResetMessage = ` · resets ${resetTime}`
+      overageResetMessage = ` Â· resets ${resetTime}`
     } else if (overageResetTime) {
-      overageResetMessage = ` · resets ${overageResetTime}`
+      overageResetMessage = ` Â· resets ${overageResetTime}`
     }
 
     if (limits.overageDisabledReason === 'out_of_credits') {
@@ -230,13 +230,13 @@ function getEarlyWarningText(limits: ClaudeAILimits): string | null {
   const upsell = getWarningUpsellText(limits.rateLimitType)
 
   if (used && resetTime) {
-    const base = `You've used ${used}% of your ${limitName} · resets ${resetTime}`
-    return upsell ? `${base} · ${upsell}` : base
+    const base = `You've used ${used}% of your ${limitName} Â· resets ${resetTime}`
+    return upsell ? `${base} Â· ${upsell}` : base
   }
 
   if (used) {
     const base = `You've used ${used}% of your ${limitName}`
-    return upsell ? `${base} · ${upsell}` : base
+    return upsell ? `${base} Â· ${upsell}` : base
   }
 
   if (limits.rateLimitType === 'overage') {
@@ -245,12 +245,12 @@ function getEarlyWarningText(limits: ClaudeAILimits): string | null {
   }
 
   if (resetTime) {
-    const base = `Approaching ${limitName} · resets ${resetTime}`
-    return upsell ? `${base} · ${upsell}` : base
+    const base = `Approaching ${limitName} Â· resets ${resetTime}`
+    return upsell ? `${base} Â· ${upsell}` : base
   }
 
   const base = `Approaching ${limitName}`
-  return upsell ? `${base} · ${upsell}` : base
+  return upsell ? `${base} Â· ${upsell}` : base
 }
 
 /**
@@ -279,7 +279,7 @@ function getWarningUpsellText(
 
     // Pro/Max users: prompt to upgrade
     if (subscriptionType === 'pro' || subscriptionType === 'max') {
-      return '/upgrade to keep using OpenClaude'
+      return '/upgrade to keep using RootClaude'
     }
   }
 
@@ -325,7 +325,7 @@ export function getUsingOverageText(limits: ClaudeAILimits): string {
   }
 
   const resetMessage = resetTime
-    ? ` · Your ${limitName} resets ${resetTime}`
+    ? ` Â· Your ${limitName} resets ${resetTime}`
     : ''
   return `You're now using extra usage${resetMessage}`
 }

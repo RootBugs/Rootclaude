@@ -1,4 +1,4 @@
-import {
+﻿import {
   mkdir,
   readFile,
   readdir,
@@ -507,7 +507,7 @@ type BackgroundSessionProcessState = 'alive' | 'dead' | 'unknown'
 
 // A spaced path or prompt is a single argv entry, but the raw command line
 // quotes it, so a whitespace split fuses a quote onto the edge tokens. Windows
-// `Get-CimInstance ... CommandLine` returns exactly this form — e.g.
+// `Get-CimInstance ... CommandLine` returns exactly this form Ã¢â‚¬â€ e.g.
 //   "C:\Program Files\nodejs\node.exe" ...\cli.mjs --from-pr 1642 --print "refactor auth"
 // splits to `"C:\Program`, `Files\nodejs\node.exe"`, ..., `"refactor`, `auth"`.
 // The stored argv holds those same values unquoted, so trim a single leading
@@ -529,14 +529,14 @@ function commandLineContainsArgs(commandLine: string, args: string[]): boolean {
   // reused PID whose command line merely contains those digits), so a dead
   // session stayed classified as running. See #1770.
   //
-  // A stored arg can itself contain whitespace — a prompt like "refactor auth"
-  // is a single argv entry but `ps` renders it as separate words — so expand
+  // A stored arg can itself contain whitespace Ã¢â‚¬â€ a prompt like "refactor auth"
+  // is a single argv entry but `ps` renders it as separate words Ã¢â‚¬â€ so expand
   // each arg into its own tokens and require the flattened sequence to appear as
   // one CONTIGUOUS run of whole command tokens. An ordered-subsequence match
   // (skipping unrelated tokens between matches) would let a reused PID whose
-  // command line merely interleaves the stored tokens pass — e.g. stored
-  // ["node", "openclaude", "1642"] satisfied by "node attacker openclaude extra
-  // 1642 --serve" — reopening the same wrong-process `kill` risk for token
+  // command line merely interleaves the stored tokens pass Ã¢â‚¬â€ e.g. stored
+  // ["node", "RootClaude", "1642"] satisfied by "node attacker rootclaude extra
+  // 1642 --serve" Ã¢â‚¬â€ reopening the same wrong-process `kill` risk for token
   // insertion collisions. The real launch invocation appears as an unbroken run
   // (only the interpreter path or trailing flags differ), so leading/trailing
   // tokens are fine but interspersed ones are not.

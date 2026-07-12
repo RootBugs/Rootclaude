@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Custom API provider adapter.
  *
  * Supports:
@@ -19,7 +19,7 @@
  * 1. HTTPS-only by default (opt-out: WEB_CUSTOM_ALLOW_HTTP=true)
  * 2. Private / loopback / link-local IPs are blocked by default
  *    (opt-out: WEB_CUSTOM_ALLOW_PRIVATE=true)
- * 3. Built-in allowlist of header names — arbitrary headers require
+ * 3. Built-in allowlist of header names â€” arbitrary headers require
  *    WEB_CUSTOM_ALLOW_ARBITRARY_HEADERS=true
  * 4. Max body size guard (300 KB for POST)
  * 5. Request timeout (default 120s, configurable via WEB_CUSTOM_TIMEOUT_SEC)
@@ -64,7 +64,7 @@ interface ProviderPreset {
 
 const BUILT_IN_PROVIDERS: Record<string, ProviderPreset> = {
   searxng: {
-    // NOTE: default uses https://localhost — users must override WEB_SEARCH_API
+    // NOTE: default uses https://localhost â€” users must override WEB_SEARCH_API
     // for their actual instance. The http:// default was intentionally removed
     // to comply with the HTTPS-only guardrail.
     urlTemplate: 'https://localhost:8080/search',
@@ -85,7 +85,7 @@ const BUILT_IN_PROVIDERS: Record<string, ProviderPreset> = {
     // no Bearer-token auth path. Set WEB_KEY=<api-key> and
     // GOOGLE_CSE_ID=<engine-id>.
     //
-    // ⚠️  Google has announced this API will be discontinued on 2027-01-01
+    // âš ï¸  Google has announced this API will be discontinued on 2027-01-01
     // and is closed to new customers. Prefer Brave/Tavily/Exa where possible.
     urlTemplate: 'https://www.googleapis.com/customsearch/v1',
     queryParam: 'q',
@@ -164,11 +164,11 @@ const SAFE_HEADER_NAMES = new Set([
  *
  * Operates on the hostname produced by WHATWG `new URL(...)`, which already
  * normalizes short-form, numeric, hex, and octal IPv4 to dotted-quad
- * (e.g. `127.1`, `2130706433`, `0x7f000001`, `0177.0.0.1` → `127.0.0.1`),
+ * (e.g. `127.1`, `2130706433`, `0x7f000001`, `0177.0.0.1` â†’ `127.0.0.1`),
  * and which preserves IPv6 in bracketed compressed form
- * (e.g. `[::ffff:127.0.0.1]` → `[::ffff:7f00:1]`).
+ * (e.g. `[::ffff:127.0.0.1]` â†’ `[::ffff:7f00:1]`).
  *
- * DNS resolution to private IPs is NOT blocked here — resolving before
+ * DNS resolution to private IPs is NOT blocked here â€” resolving before
  * fetch is not exposed by Node's fetch. This guard blocks literal-address
  * bypasses, which is what the original regex was trying (and failing) to do.
  */
@@ -270,7 +270,7 @@ function isPrivateIPv6(bytes: Uint8Array): boolean {
     const n = ((bytes[12]! << 24) | (bytes[13]! << 16) | (bytes[14]! << 8) | bytes[15]!) >>> 0
     return isPrivateIPv4Int(n)
   }
-  // IPv4-compatible (deprecated) ::a.b.c.d — treat as private if embedded v4 is
+  // IPv4-compatible (deprecated) ::a.b.c.d â€” treat as private if embedded v4 is
   let isV4Compat = true
   for (let i = 0; i < 12; i++) if (bytes[i] !== 0) { isV4Compat = false; break }
   if (isV4Compat) {
@@ -354,15 +354,15 @@ function auditLogCustomSearch(url: string): void {
   if (auditLogged) return
   auditLogged = true
   console.warn(
-    `[web-search] ⚠️  Custom search provider is active. ` +
+    `[web-search] âš ï¸  Custom search provider is active. ` +
     `Outbound requests go to: ${safeHostname(url) ?? url}. ` +
     `Ensure this endpoint is trusted. ` +
-    `See: https://github.com/Gitlawb/openclaude/pull/512#security`,
+    `See: https://github.com/Gitlawb/RootClaude/pull/512#security`,
   )
 }
 
 // ---------------------------------------------------------------------------
-// Auth — preset overrides for built-in providers
+// Auth â€” preset overrides for built-in providers
 // ---------------------------------------------------------------------------
 
 export function buildAuthHeadersForPreset(preset?: ProviderPreset): Record<string, string> {
@@ -384,7 +384,7 @@ export function buildAuthHeadersForPreset(preset?: ProviderPreset): Record<strin
   const scheme = process.env.WEB_AUTH_SCHEME !== undefined
     ? process.env.WEB_AUTH_SCHEME
     : (preset?.authScheme ?? 'Bearer')
-  // Empty scheme → bare key, no leading space (e.g. Brave's X-Subscription-Token)
+  // Empty scheme â†’ bare key, no leading space (e.g. Brave's X-Subscription-Token)
   const value = scheme ? `${scheme} ${apiKey}` : apiKey
   return { [headerName]: value }
 }
@@ -532,7 +532,7 @@ function buildRequest(query: string) {
 }
 
 // ---------------------------------------------------------------------------
-// Response parsing — flexible, handles many shapes
+// Response parsing â€” flexible, handles many shapes
 // ---------------------------------------------------------------------------
 
 function walkJsonPath(obj: any, path: string): any {
@@ -552,7 +552,7 @@ function extractFromNode(node: any): SearchHit[] {
     for (const sub of Object.values(node)) all.push(...extractFromNode(sub))
     return all
   }
-  // node is a primitive (string/number) — not a valid hit structure
+  // node is a primitive (string/number) â€” not a valid hit structure
   return []
 }
 
@@ -608,7 +608,7 @@ async function fetchWithRetry(url: string, init: RequestInit, signal?: AbortSign
     } catch (err) {
       lastErr = err instanceof Error ? err : new Error(String(err))
 
-      // Caller-initiated abort wins — propagate without retry or rewrite.
+      // Caller-initiated abort wins â€” propagate without retry or rewrite.
       if (signal?.aborted) throw lastErr
 
       // Timeout (TimeoutError on Bun/Node, or AbortError with timeout signal aborted).

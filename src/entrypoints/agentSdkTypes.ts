@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Main entrypoint for Claude Code Agent SDK types.
  *
  * This file re-exports the public SDK API from:
@@ -26,7 +26,7 @@ export type { Settings } from './sdk/settingsTypes.generated.js'
 export * from './sdk/toolTypes.js'
 
 // ============================================================================
-// Functions — re-exported from the real SDK implementation
+// Functions â€” re-exported from the real SDK implementation
 // ============================================================================
 
 // Re-export function implementations from ./sdk.js
@@ -77,7 +77,7 @@ export type {
 // ============================================================================
 
 /**
- * A scheduled task from `<dir>/.openclaude/scheduled_tasks.json`.
+ * A scheduled task from `<dir>/.RootClaude/scheduled_tasks.json`.
  * @internal
  */
 export type CronTask = {
@@ -128,16 +128,16 @@ export type ScheduledTasksHandle = {
 }
 
 /**
- * Watch `<dir>/.openclaude/scheduled_tasks.json` and yield events as tasks fire.
+ * Watch `<dir>/.RootClaude/scheduled_tasks.json` and yield events as tasks fire.
  *
  * Acquires the per-directory scheduler lock (PID-based liveness) so a REPL
  * session in the same dir won't double-fire. Releases the lock and closes
  * the file watcher when the signal aborts.
  *
- * - `fire` — a task whose cron schedule was met. One-shot tasks are already
+ * - `fire` â€” a task whose cron schedule was met. One-shot tasks are already
  *   deleted from the file when this yields; recurring tasks are rescheduled
  *   (or deleted if aged out).
- * - `missed` — one-shot tasks whose window passed while the daemon was down.
+ * - `missed` â€” one-shot tasks whose window passed while the daemon was down.
  *   Yielded once on initial load; a background delete removes them from the
  *   file shortly after.
  *
@@ -210,17 +210,17 @@ export type RemoteControlHandle = {
 /**
  * Hold a claude.ai remote-control bridge connection from a daemon process.
  *
- * The daemon owns the WebSocket in the PARENT process — if the agent
+ * The daemon owns the WebSocket in the PARENT process â€” if the agent
  * subprocess (spawned via `query()`) crashes, the daemon respawns it while
  * claude.ai keeps the same session. Contrast with `query.enableRemoteControl`
  * which puts the WS in the CHILD process (dies with the agent).
  *
  * Pipe `query()` yields through `write()` + `sendResult()`. Read
  * `inboundPrompts()` (user typed on claude.ai) into `query()`'s input
- * stream. Handle `controlRequests()` locally (interrupt → abort, set_model
- * → reconfigure).
+ * stream. Handle `controlRequests()` locally (interrupt â†’ abort, set_model
+ * â†’ reconfigure).
  *
- * Skips the `tengu_ccr_bridge` gate and policy-limits check — @internal
+ * Skips the `tengu_ccr_bridge` gate and policy-limits check â€” @internal
  * caller is pre-entitled. OAuth is still required (env var or keychain).
  *
  * Returns null on no-OAuth or registration failure.

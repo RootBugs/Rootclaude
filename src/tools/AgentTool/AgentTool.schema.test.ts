@@ -96,7 +96,7 @@ describe('AgentTool input schema isolation contract', () => {
       fullInputSchema().safeParse({
         ...baseInput,
         isolation: 'worktree',
-        cwd: '/tmp/openclaude-agent',
+        cwd: '/tmp/RootClaude-agent',
       }).success,
     ).toBe(false)
   })
@@ -105,7 +105,7 @@ describe('AgentTool input schema isolation contract', () => {
     expect(
       fullInputSchema().safeParse({
         ...baseInput,
-        cwd: '/tmp/openclaude-agent',
+        cwd: '/tmp/RootClaude-agent',
       }).success,
     ).toBe(true)
   })
@@ -124,21 +124,21 @@ describe('AgentTool input schema isolation contract', () => {
 
   test('rejects cwd for any effective worktree isolation source', () => {
     expect(() =>
-      assertAgentToolCwdAllowed('/tmp/openclaude-agent', 'worktree'),
+      assertAgentToolCwdAllowed('/tmp/RootClaude-agent', 'worktree'),
     ).toThrow('cwd is mutually exclusive with isolation: "worktree".')
     expect(() =>
-      assertAgentToolCwdAllowed('/tmp/openclaude-agent', undefined),
+      assertAgentToolCwdAllowed('/tmp/RootClaude-agent', undefined),
     ).not.toThrow()
   })
 
   test('prefers worktree cwd over explicit cwd when both are present defensively', () => {
     expect(
-      resolveAgentToolCwdOverride('/tmp/openclaude-agent', {
-        worktreePath: '/tmp/openclaude-worktree',
+      resolveAgentToolCwdOverride('/tmp/RootClaude-agent', {
+        worktreePath: '/tmp/RootClaude-worktree',
       }),
-    ).toBe('/tmp/openclaude-worktree')
-    expect(resolveAgentToolCwdOverride('/tmp/openclaude-agent', null)).toBe(
-      '/tmp/openclaude-agent',
+    ).toBe('/tmp/RootClaude-worktree')
+    expect(resolveAgentToolCwdOverride('/tmp/RootClaude-agent', null)).toBe(
+      '/tmp/RootClaude-agent',
     )
   })
 })
@@ -161,7 +161,7 @@ describe('AgentTool output status contract', () => {
         agentId: 'agent-1',
         description: baseInput.description,
         prompt: baseInput.prompt,
-        outputFile: '/tmp/openclaude-agent-output.txt',
+        outputFile: '/tmp/RootClaude-agent-output.txt',
         canReadOutputFile: true,
       },
       'toolu_1',
@@ -170,7 +170,7 @@ describe('AgentTool output status contract', () => {
     expect(block.type).toBe('tool_result')
     const text = block.content[0]?.type === 'text' ? block.content[0].text : ''
     expect(text).toContain('Async agent launched successfully')
-    expect(text).toContain('output_file: /tmp/openclaude-agent-output.txt')
+    expect(text).toContain('output_file: /tmp/RootClaude-agent-output.txt')
   })
 
   test('throws for unsupported output statuses', () => {
@@ -190,7 +190,7 @@ describe('AgentTool output status contract', () => {
           agentId: 'agent-1',
           description: baseInput.description,
           prompt: baseInput.prompt,
-          outputFile: '/tmp/openclaude-agent-output.txt',
+          outputFile: '/tmp/RootClaude-agent-output.txt',
           canReadOutputFile: true,
         },
         [],

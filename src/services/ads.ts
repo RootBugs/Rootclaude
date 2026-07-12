@@ -1,13 +1,14 @@
-/**
+﻿/**
  * Client for the Gitlawb Ads service (ads.gitlawb.com).
  *
- * openclaude shows opt-in "sponsored tips" during inference waits; a viewer who
+ * rootclaude shows opt-in "sponsored tips" during inference waits; a viewer who
  * dwells on one earns opengateway credits. This module is the thin HTTP client:
  * fetch the next tip, then confirm it after the dwell so the viewer is credited.
  * The viewer is identified by an earn code (issued in the opengateway Earn tab,
- * stored in openclaude config), sent as the `x-earn-code` header.
+ * stored in rootclaude config)
+ *, sent as the `x-earn-code` header.
  *
- * Earning is bounded and server-authoritative — the gateway/ads service signs
+ * Earning is bounded and server-authoritative Ã¢â‚¬â€ the gateway/ads service signs
  * the impression token and measures dwell itself; this client just relays it.
  */
 import { fetchWithProxyRetry } from './api/fetchWithProxyRetry.js'
@@ -36,12 +37,12 @@ export type ConfirmResult = {
 
 const COMMON_HEADERS = (earnCode: string): Record<string, string> => ({
   'content-type': 'application/json',
-  'user-agent': 'gitlawb-openclaude-ads',
+  'user-agent': 'gitlawb-RootClaude-ads',
   'x-earn-code': earnCode,
 })
 
 // Hard deadline on each ads request. fetchNextTip runs in the spinner-tip path,
-// so a stalled connection must never hang it — "ads never block" is the rule.
+// so a stalled connection must never hang it Ã¢â‚¬â€ "ads never block" is the rule.
 const ADS_REQUEST_TIMEOUT_MS = 5_000
 
 /**
@@ -49,7 +50,7 @@ const ADS_REQUEST_TIMEOUT_MS = 5_000
  * fetch (so the signal is honored) and treats AbortError as non-retryable. The
  * timer is unref'd so it never keeps a short-lived CLI process alive.
  *
- * Note: this is a per-CALL deadline, not per-attempt — the one signal covers all
+ * Note: this is a per-CALL deadline, not per-attempt Ã¢â‚¬â€ the one signal covers all
  * of fetchWithProxyRetry's retries, so a slow first attempt leaves the retry
  * less time. That's intentional: the whole request is bounded so ads can never
  * block the spinner path.
@@ -62,7 +63,7 @@ function withAbortTimeout(ms: number): { signal: AbortSignal; cancel: () => void
 }
 
 // Cap on how much of the prompt we ever share, and best-effort redaction of the
-// obvious secret/PII shapes. Heuristic — bias toward over-redaction. The ads
+// obvious secret/PII shapes. Heuristic Ã¢â‚¬â€ bias toward over-redaction. The ads
 // service re-bounds size server-side too.
 const MAX_CONTEXT_CHARS = 500
 
@@ -85,12 +86,12 @@ export function sanitizeForAds(text: string): string {
  * Fetch the next sponsored tip for this viewer. When the viewer has enabled
  * sponsored tips (which discloses prompt sharing), the sanitized latest prompt
  * is POSTed for contextual ad matching; otherwise we GET (identity-only).
- * Returns null on empty inventory / no contextual match / any error — ads must
+ * Returns null on empty inventory / no contextual match / any error Ã¢â‚¬â€ ads must
  * never break or block the host CLI, so failures degrade silently to "no tip".
  */
 export async function fetchNextTip(
   earnCode: string,
-  surface = 'openclaude',
+  surface = 'RootClaude',
   userMessage?: string,
 ): Promise<SponsoredTip | null> {
   const { signal, cancel } = withAbortTimeout(ADS_REQUEST_TIMEOUT_MS)
@@ -111,12 +112,12 @@ export async function fetchNextTip(
     if (!resp.ok) return null
     const data = (await resp.json()) as Record<string, unknown>
     // A real tip is identified by a string `token` (the signed impression). The
-    // empty-slot response is `{ ad: null }` and a malformed one has no token —
+    // empty-slot response is `{ ad: null }` and a malformed one has no token Ã¢â‚¬â€
     // both lack a string token, so this single check covers them. We deliberately
     // don't gate on an `ad` field: a served tip carries no `ad` key at all, so a
     // `data.ad == null` test would (wrongly) suppress every valid tip.
     if (!data || typeof data.token !== 'string') return null
-    // Clamp dwell to a finite, non-negative integer — a malformed dwell_ms must
+    // Clamp dwell to a finite, non-negative integer Ã¢â‚¬â€ a malformed dwell_ms must
     // not yield NaN/Infinity and break the confirm-delay math downstream.
     const rawDwell = Number(data.dwell_ms ?? 5000)
     const dwellMs =

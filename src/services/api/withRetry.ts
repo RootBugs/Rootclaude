@@ -1,4 +1,4 @@
-import { feature } from 'bun:bundle'
+﻿import { feature } from 'bun:bundle'
 import type Anthropic from '@anthropic-ai/sdk'
 import {
   APIConnectionError,
@@ -66,11 +66,11 @@ export const DEFAULT_RETRY_DELAY_MS = 500
 export const BASE_DELAY_MS = DEFAULT_RETRY_DELAY_MS
 const MAX_RETRY_DELAY_BASE_MS = 60_000
 
-// Foreground query sources where the user IS blocking on the result — these
+// Foreground query sources where the user IS blocking on the result â€” these
 // retry on 529. Everything else (summaries, titles, suggestions, classifiers)
-// bails immediately: during a capacity cascade each retry is 3-10× gateway
+// bails immediately: during a capacity cascade each retry is 3-10Ã— gateway
 // amplification, and the user never sees those fail anyway. New sources
-// default to no-retry — add here only if the user is waiting on the result.
+// default to no-retry â€” add here only if the user is waiting on the result.
 const FOREGROUND_529_RETRY_SOURCES = new Set<QuerySource>([
   'repl_main_thread',
   'repl_main_thread:outputStyle:custom',
@@ -85,8 +85,8 @@ const FOREGROUND_529_RETRY_SOURCES = new Set<QuerySource>([
   'hook_prompt',
   'verification_agent',
   'side_question',
-  // Security classifiers — must complete for auto-mode correctness.
-  // yoloClassifier.ts uses 'auto_mode' (not 'yolo_classifier' — that's
+  // Security classifiers â€” must complete for auto-mode correctness.
+  // yoloClassifier.ts uses 'auto_mode' (not 'yolo_classifier' â€” that's
   // type-only). bash_classifier is internal-only; feature-gate so the string
   // tree-shakes out of external builds (excluded-strings.txt).
   'auto_mode',
@@ -94,7 +94,7 @@ const FOREGROUND_529_RETRY_SOURCES = new Set<QuerySource>([
 ])
 
 function shouldRetry529(querySource: QuerySource | undefined): boolean {
-  // undefined → retry (conservative for untagged call paths)
+  // undefined â†’ retry (conservative for untagged call paths)
   return (
     querySource === undefined || FOREGROUND_529_RETRY_SOURCES.has(querySource)
   )
@@ -110,7 +110,7 @@ const PERSISTENT_RESET_CAP_MS = 6 * 60 * 60 * 1000
 const HEARTBEAT_INTERVAL_MS = 30_000
 const PERSISTENT_MAX_ATTEMPTS = 100
 // Exposed for unit-test assertion only. The persistent retry cap itself is
-// driven by isPersistentRetryEnabled() — there is no runtime override seam
+// driven by isPersistentRetryEnabled() â€” there is no runtime override seam
 // (tests must enable UNATTENDED_RETRY via `bun test --feature=UNATTENDED_RETRY`
 // and set CLAUDE_CODE_UNATTENDED_RETRY to exercise this path).
 export { PERSISTENT_MAX_ATTEMPTS as _PERSISTENT_MAX_ATTEMPTS_FOR_TEST, isPersistentRetryEnabled }
@@ -176,7 +176,7 @@ interface RetryOptions {
   querySource?: QuerySource
   /**
    * Pre-seed the consecutive 529 counter. Used when this retry loop is a
-   * non-streaming fallback after a streaming 529 — the streaming 529 should
+   * non-streaming fallback after a streaming 529 â€” the streaming 529 should
    * count toward MAX_529_RETRIES so total 529s-before-fallback is consistent
    * regardless of which request mode hit the overload.
    */
@@ -267,7 +267,7 @@ export async function* withRetry<T>(
         )
       ) {
         logForDebugging(
-          'Stale connection (ECONNRESET/EPIPE) — disabling keep-alive for retry',
+          'Stale connection (ECONNRESET/EPIPE) â€” disabling keep-alive for retry',
         )
         disableKeepAlive()
       }
@@ -391,7 +391,7 @@ export async function* withRetry<T>(
         continue
       }
 
-      // Non-foreground sources bail immediately on 529 — no retry amplification
+      // Non-foreground sources bail immediately on 529 â€” no retry amplification
       // during capacity cascades. User never sees these fail.
       if (is529Error(error) && !shouldRetry529(options.querySource)) {
         logEvent('tengu_api_529_background_dropped', {
@@ -479,7 +479,7 @@ export async function* withRetry<T>(
       // OpenRouter / OpenAI-compatible quota gateways: HTTP 402 with the
       // affordable max_tokens in the message. Retry once at the affordable
       // cap instead of failing on a credits-vs-max_tokens mismatch the user
-      // can't see in their shell (#1125). One adjustment per chain — if 402
+      // can't see in their shell (#1125). One adjustment per chain â€” if 402
       // recurs after this, fail instead of spending the normal retry budget.
       if (error instanceof APIError) {
         const affordData = parseOpenRouterAffordableMaxTokensError(error)
@@ -493,7 +493,7 @@ export async function* withRetry<T>(
           // Surface the credit pressure so the user understands why output
           // shrank. Single line; the provider already explained the why.
           console.error(
-            `Provider returned 402 — retrying with max_tokens=${affordData.affordableMaxTokens} (was ${affordData.requestedMaxTokens}). Top up credits to restore the full budget.`,
+            `Provider returned 402 â€” retrying with max_tokens=${affordData.affordableMaxTokens} (was ${affordData.requestedMaxTokens}). Top up credits to restore the full budget.`,
           )
           continue
         }
@@ -569,7 +569,7 @@ export async function* withRetry<T>(
       } else if (persistent) {
         persistentAttempt++
         // Retry-After is a server directive and bypasses maxDelayMs inside
-        // getRetryDelay (intentional — honoring it is correct). Cap at the
+        // getRetryDelay (intentional â€” honoring it is correct). Cap at the
         // 6hr reset-cap here so a pathological header can't wait unbounded.
         delayMs = Math.min(
           getRetryDelay(
@@ -856,7 +856,7 @@ function shouldRetry(error: APIError, persistentRetryEnabled: boolean): boolean 
     return false
   }
 
-  // OpenCode Go subscription quota exhaustion is terminal — retrying burns
+  // OpenCode Go subscription quota exhaustion is terminal â€” retrying burns
   // the same 429 and confuses the user with repeated "mysterious stop"
   // failures. getAssistantMessageFromError surfaces the actionable message.
   if (isOpenCodeGoQuotaError(error)) {
@@ -890,7 +890,7 @@ function shouldRetry(error: APIError, persistentRetryEnabled: boolean): boolean 
 
   // CCR mode: auth is via infrastructure-provided JWTs, so a 401/403 is a
   // transient blip (auth service flap, network hiccup) rather than bad
-  // credentials. Bypass x-should-retry:false — the server assumes we'd retry
+  // credentials. Bypass x-should-retry:false â€” the server assumes we'd retry
   // the same bad key, but our key is fine.
   if (
     isEnvTruthy(process.env.CLAUDE_CODE_REMOTE) &&
@@ -966,18 +966,18 @@ function shouldRetry(error: APIError, persistentRetryEnabled: boolean): boolean 
 }
 
 export function getDefaultMaxRetries(): number {
-  const openClaudeMaxRetries = process.env.OPENCLAUDE_MAX_RETRIES
-  if (openClaudeMaxRetries) {
+  const RootClaudeMaxRetries = process.env.RootClaude_MAX_RETRIES
+  if (RootClaudeMaxRetries) {
     return validateRetryAttemptsEnvVar(
-      'OPENCLAUDE_MAX_RETRIES',
-      openClaudeMaxRetries,
+      'RootClaude_MAX_RETRIES',
+      RootClaudeMaxRetries,
     )
   }
 
   const legacyMaxRetries = process.env.CLAUDE_CODE_MAX_RETRIES
   if (legacyMaxRetries) {
     logForDebugging(
-      'CLAUDE_CODE_MAX_RETRIES is deprecated; use OPENCLAUDE_MAX_RETRIES instead',
+      'CLAUDE_CODE_MAX_RETRIES is deprecated; use RootClaude_MAX_RETRIES instead',
     )
     return validateRetryAttemptsEnvVar(
       'CLAUDE_CODE_MAX_RETRIES',
@@ -990,8 +990,8 @@ export function getDefaultMaxRetries(): number {
 
 export function getDefaultRetryDelayMs(): number {
   return validateBoundedIntEnvVar(
-    'OPENCLAUDE_RETRY_DELAY_MS',
-    process.env.OPENCLAUDE_RETRY_DELAY_MS,
+    'RootClaude_RETRY_DELAY_MS',
+    process.env.RootClaude_RETRY_DELAY_MS,
     DEFAULT_RETRY_DELAY_MS,
     MAX_RETRY_DELAY_BASE_MS,
   ).effective
@@ -1081,7 +1081,7 @@ export function getRateLimitResetDelayMs(error: APIError): number | null {
     return Math.min(delayMs, PERSISTENT_RESET_CAP_MS)
   }
 
-  // bedrock, vertex, foundry, gemini — no standard reset header
+  // bedrock, vertex, foundry, gemini â€” no standard reset header
   return null
 }
 

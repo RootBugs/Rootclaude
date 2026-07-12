@@ -1,4 +1,4 @@
-// biome-ignore-all assist/source/organizeImports: internal-only import markers must not be reordered
+﻿// biome-ignore-all assist/source/organizeImports: internal-only import markers must not be reordered
 import { feature } from 'bun:bundle'
 import { readFile, stat } from 'fs/promises'
 import { dirname } from 'path'
@@ -369,7 +369,6 @@ import { initializeGrowthBook } from '../services/analytics/growthbook.js'
 import { errorMessage, toError } from '../utils/errors.js'
 import { sleep } from '../utils/sleep.js'
 import { isExtractModeActive } from '../memdir/paths.js'
-
 // Dead code elimination: conditional imports
 /* eslint-disable @typescript-eslint/no-require-imports */
 const coordinatorModeModule = feature('COORDINATOR_MODE')
@@ -386,13 +385,12 @@ const extractMemoriesModule = feature('EXTRACT_MEMORIES')
   ? (require('../services/extractMemories/extractMemories.js') as typeof import('../services/extractMemories/extractMemories.js'))
   : null
 /* eslint-enable @typescript-eslint/no-require-imports */
-
 /**
  * Select the model options that are safe to expose through the SDK `models`
  * response. `getModelOptions()` also returns inactive-provider-profile entries
  * whose `value` is an encoded `__switch_profile__:<id>:<model>` string (issue
- * #1119). Those are UI-only affordances for the interactive `/model` switcher —
- * they are not real, selectable model ids — so they must never reach SDK
+ * #1119). Those are UI-only affordances for the interactive `/model` switcher â€”
+ * they are not real, selectable model ids â€” so they must never reach SDK
  * consumers. Exported so the exclusion is unit-testable.
  *
  * Filter on the explicit `switchToProfileId` marker rather than the encoded
@@ -403,26 +401,20 @@ const extractMemoriesModule = feature('EXTRACT_MEMORIES')
 export function selectSdkModelOptions(options: ModelOption[]): ModelOption[] {
   return options.filter(option => option.switchToProfileId === undefined)
 }
-
 const SHUTDOWN_TEAM_PROMPT = `<system-reminder>
 You are running in non-interactive mode and cannot return a response to the user until your team is shut down.
-
 You MUST shut down your team before preparing your final response:
 1. Use requestShutdown to ask each team member to shut down gracefully
 2. Wait for shutdown approvals
 3. Use the cleanup operation to clean up the team
 4. Only then provide your final response to the user
-
 The user cannot receive your response until the team is completely shut down.
 </system-reminder>
-
 Shut down your team and prepare your final response for the user.`
-
 // Track message UUIDs received during the current session runtime
 const MAX_RECEIVED_UUIDS = 10_000
 const receivedMessageUuids = new Set<UUID>()
 const receivedMessageUuidsOrder: UUID[] = []
-
 function trackReceivedMessageUuid(uuid: UUID): boolean {
   if (receivedMessageUuids.has(uuid)) {
     return false // duplicate
@@ -441,13 +433,10 @@ function trackReceivedMessageUuid(uuid: UUID): boolean {
   }
   return true // new UUID
 }
-
 type PromptValue = string | ContentBlockParam[]
-
 function toBlocks(v: PromptValue): ContentBlockParam[] {
   return typeof v === 'string' ? [{ type: 'text', text: v }] : v
 }
-
 /**
  * Join prompt values from multiple queued commands into one. Strings are
  * newline-joined; if any value is a block array, all values are normalized
@@ -460,7 +449,6 @@ export function joinPromptValues(values: PromptValue[]): PromptValue {
   }
   return values.flatMap(toBlocks)
 }
-
 /**
  * Whether `next` can be batched into the same ask() call as `head`. Only
  * prompt-mode commands batch, and only when the workload tag matches (so the
@@ -479,7 +467,6 @@ export function canBatchWith(
     next.isMeta === head.isMeta
   )
 }
-
 export async function runHeadless(
   inputPrompt: string | AsyncIterable<string>,
   getAppState: () => AppState,
@@ -531,7 +518,6 @@ export async function runHeadless(
     // eslint-disable-next-line custom-rules/no-process-exit
     process.exit(0)
   }
-
   // Fire user settings download now so it overlaps with the MCP/tool setup
   // below. Managed settings already started in main.tsx preAction; this gives
   // user settings a similar head start. The cached promise is joined in
@@ -543,13 +529,11 @@ export async function runHeadless(
   ) {
     void downloadUserSettings()
   }
-
   // In headless mode there is no React tree, so the useSettingsChange hook
   // never runs. Subscribe directly so that settings changes (including
   // managed-settings / policy updates) are fully applied.
   settingsChangeDetector.subscribe(source => {
     applySettingsChange(source, setAppState)
-
     // In headless mode, also sync the denormalized fastMode field from
     // settings. The TUI manages fastMode via the UI so it skips this.
     if (isFastModeEnabled()) {
@@ -560,7 +544,6 @@ export async function runHeadless(
       })
     }
   })
-
   // Proactive activation is now handled in main.tsx before getTools() so
   // SleepTool passes isEnabled() filtering. This fallback covers the case
   // where CLAUDE_CODE_PROACTIVE is set but main.tsx's check didn't fire
@@ -573,7 +556,6 @@ export async function runHeadless(
   ) {
     proactiveModule.activateProactive('command')
   }
-
   // Periodically force a full GC to keep memory usage in check. The package
   // launcher starts Node with --expose-gc; Bun exposes Bun.gc directly.
   const forceGc =
@@ -586,23 +568,18 @@ export async function runHeadless(
     const gcTimer = setInterval(forceGc, 1000)
     gcTimer.unref()
   }
-
   // Start headless profiler for first turn
   headlessProfilerStartTurn()
   headlessProfilerCheckpoint('runHeadless_entry')
-
   // Check Grove requirements for non-interactive consumer subscribers
   if (await isQualifiedForGrove()) {
     await checkGroveForNonInteractive()
   }
   headlessProfilerCheckpoint('after_grove_check')
-
   // Initialize GrowthBook so feature flags take effect in headless mode.
   // Without this, the disk cache is empty and all flags fall back to defaults.
   void initializeGrowthBook()
-
   const hasRequestedResumeSource = Boolean(options.resume || options.fromPr)
-
   if (options.resumeSessionAt && !hasRequestedResumeSource) {
     process.stderr.write(
       `Error: --resume-session-at requires --resume or --from-pr\n`,
@@ -610,7 +587,6 @@ export async function runHeadless(
     gracefulShutdownSync(1)
     return
   }
-
   if (options.rewindFiles && !hasRequestedResumeSource) {
     process.stderr.write(
       `Error: --rewind-files requires --resume or --from-pr\n`,
@@ -618,7 +594,6 @@ export async function runHeadless(
     gracefulShutdownSync(1)
     return
   }
-
   if (options.rewindFiles && inputPrompt) {
     process.stderr.write(
       `Error: --rewind-files is a standalone operation and cannot be used with a prompt\n`,
@@ -626,9 +601,7 @@ export async function runHeadless(
     gracefulShutdownSync(1)
     return
   }
-
   const structuredIO = getStructuredIO(inputPrompt, options)
-
   // When emitting NDJSON for SDK clients, any stray write to stdout (debug
   // prints, dependency console.log, library banners) breaks the client's
   // line-by-line JSON parser. Install a guard that diverts non-JSON lines to
@@ -637,7 +610,6 @@ export async function runHeadless(
   if (options.outputFormat === 'stream-json') {
     installStreamJsonStdoutGuard()
   }
-
   let streamJsonDrainStarted = false
   const emitStructuredHeartbeat = createHeadlessHeartbeatStructuredEmitter(
     structuredIO,
@@ -662,7 +634,6 @@ export async function runHeadless(
     heartbeat?.start()
   }
   registerCleanup(async () => heartbeat?.stop())
-
   // #34044: if user explicitly set sandbox.enabled=true but deps are missing,
   // isSandboxingEnabled() returns false silently. Surface the reason so users
   // know their security config isn't being enforced.
@@ -671,14 +642,14 @@ export async function runHeadless(
     if (SandboxManager.isSandboxRequired()) {
       process.stderr.write(
         `\nError: sandbox required but unavailable: ${sandboxUnavailableReason}\n` +
-          `  sandbox.failIfUnavailable is set — refusing to start without a working sandbox.\n\n`,
+          `  sandbox.failIfUnavailable is set â€” refusing to start without a working sandbox.\n\n`,
       )
       heartbeat?.stop()
       gracefulShutdownSync(1)
       return
     }
     process.stderr.write(
-      `\n⚠ Sandbox disabled: ${sandboxUnavailableReason}\n` +
+      `\nâš  Sandbox disabled: ${sandboxUnavailableReason}\n` +
         `  Commands will run WITHOUT sandboxing. Network and filesystem restrictions will NOT be enforced.\n\n`,
     )
   } else if (SandboxManager.isSandboxingEnabled()) {
@@ -688,13 +659,12 @@ export async function runHeadless(
     try {
       await SandboxManager.initialize(structuredIO.createSandboxAskCallback())
     } catch (err) {
-      process.stderr.write(`\n❌ Sandbox Error: ${errorMessage(err)}\n`)
+      process.stderr.write(`\nâŒ Sandbox Error: ${errorMessage(err)}\n`)
       heartbeat?.stop()
       gracefulShutdownSync(1, 'other')
       return
     }
   }
-
   if (options.outputFormat === 'stream-json' && options.verbose) {
     registerHookEventHandler(event => {
       const message: StdoutMessage = (() => {
@@ -745,14 +715,12 @@ export async function runHeadless(
         .catch(() => {})
     })
   }
-
   if (options.setupTrigger) {
     heartbeat?.setPhase('startup')
     await runWithHeartbeatErrorCleanup(heartbeat, () =>
       processSetupHooks(options.setupTrigger!),
     )
   }
-
   headlessProfilerCheckpoint('before_loadInitialMessages')
   heartbeat?.setPhase('loading_session')
   const appState = getAppState()
@@ -777,8 +745,7 @@ export async function runHeadless(
     turnInterruptionState,
     agentSetting: resumedAgentSetting,
   } = initialMessagesResult
-
-  // SessionStart hooks can emit initialUserMessage — the first user turn for
+  // SessionStart hooks can emit initialUserMessage â€” the first user turn for
   // headless orchestrator sessions where stdin is empty and additionalContext
   // alone (an attachment, not a turn) would leave the REPL with nothing to
   // respond to. The hook promise is awaited inside loadInitialMessages, so the
@@ -787,7 +754,6 @@ export async function runHeadless(
   if (hookInitialUserMessage) {
     structuredIO.prependUserMessage(hookInitialUserMessage)
   }
-
   // Restore agent setting from the resumed session (if not overridden by current --agent flag
   // or settings-based agent, which would already have set mainThreadAgentType in main.tsx)
   if (!options.agent && !getMainThreadAgentType() && resumedAgentSetting) {
@@ -809,7 +775,6 @@ export async function runHeadless(
       saveAgentSetting(restoredAgent.agentType)
     }
   }
-
   // gracefulShutdownSync schedules an async shutdown and sets process.exitCode.
   // If a loadInitialMessages error path triggered it, bail early to avoid
   // unnecessary work while the process winds down.
@@ -817,7 +782,6 @@ export async function runHeadless(
     heartbeat?.stop()
     return
   }
-
   // Handle --rewind-files: restore filesystem and exit immediately
   if (options.rewindFiles) {
     // File history snapshots are only created for user messages,
@@ -825,7 +789,6 @@ export async function runHeadless(
     const targetMessage = initialMessages.find(
       m => m.uuid === options.rewindFiles,
     )
-
     if (!targetMessage || targetMessage.type !== 'user') {
       process.stderr.write(
         `Error: --rewind-files requires a user message UUID, but ${options.rewindFiles} is not a user message in this session\n`,
@@ -834,7 +797,6 @@ export async function runHeadless(
       gracefulShutdownSync(1)
       return
     }
-
     const currentAppState = getAppState()
     const result = await runWithHeartbeatErrorCleanup(heartbeat, () =>
       handleRewindFiles(
@@ -850,7 +812,6 @@ export async function runHeadless(
       gracefulShutdownSync(1)
       return
     }
-
     // Rewind complete - exit successfully
     process.stdout.write(
       `Files rewound to state at message ${options.rewindFiles}\n`,
@@ -859,7 +820,6 @@ export async function runHeadless(
     gracefulShutdownSync(0)
     return
   }
-
   // Check if we need input prompt - skip if we're resuming with a valid session ID/JSONL file or using SDK URL
   const hasValidResumeSessionId =
     typeof options.resume === 'string' &&
@@ -867,7 +827,6 @@ export async function runHeadless(
   const hasValidResumeSource =
     hasValidResumeSessionId || Boolean(options.fromPr)
   const isUsingSdkUrl = Boolean(options.sdkUrl)
-
   if (!inputPrompt && !hasValidResumeSource && !isUsingSdkUrl) {
     process.stderr.write(
       `Error: Input must be provided either through stdin or as a prompt argument when using --print\n`,
@@ -876,7 +835,6 @@ export async function runHeadless(
     gracefulShutdownSync(1)
     return
   }
-
   if (options.outputFormat === 'stream-json' && !options.verbose) {
     process.stderr.write(
       'Error: When using --print, --output-format=stream-json requires --verbose\n',
@@ -885,19 +843,16 @@ export async function runHeadless(
     gracefulShutdownSync(1)
     return
   }
-
   // Filter out MCP tools that are in the deny list
   const allowedMcpTools = filterToolsByDenyRules(
     appState.mcp.tools,
     appState.toolPermissionContext,
   )
   let filteredTools = [...tools, ...allowedMcpTools]
-
   // When using SDK URL, always use stdio permission prompting to delegate to the SDK
   const effectivePermissionPromptToolName = options.sdkUrl
     ? 'stdio'
     : options.permissionPromptToolName
-
   // Callback for when a permission prompt is shown
   const onPermissionPrompt = (details: RequiresActionDetails) => {
     heartbeat?.setPhase('waiting_for_permission')
@@ -912,7 +867,6 @@ export async function runHeadless(
     }
     notifySessionStateChanged('requires_action', details)
   }
-
   const canUseTool = getCanUseToolFn(
     effectivePermissionPromptToolName,
     structuredIO,
@@ -925,20 +879,15 @@ export async function runHeadless(
       tool => !toolMatchesName(tool, options.permissionPromptToolName!),
     )
   }
-
   // Install errors handlers to gracefully handle broken pipes (e.g., when parent process dies)
   registerProcessOutputErrorHandlers()
-
   headlessProfilerCheckpoint('after_loadInitialMessages')
-
   // Ensure model strings are initialized before generating model options.
   // For Bedrock users, this waits for the profile fetch to get correct region strings.
   await runWithHeartbeatErrorCleanup(heartbeat, ensureModelStringsInitialized)
   headlessProfilerCheckpoint('after_modelStrings')
-
   // UDS inbox store registration is deferred until after `run` is defined
   // so we can pass `run` as the onEnqueue callback (see below).
-
   // Only `json` + `verbose` needs the full array (jsonStringify(messages) below).
   // For stream-json (SDK/CCR) and default text output, only the last message is
   // read for the exit code / final result. Avoid accumulating every message in
@@ -954,7 +903,6 @@ export async function runHeadless(
     options.outputFormat === 'stream-json'
       ? createStreamlinedTransformer()
       : null
-
   headlessProfilerCheckpoint('before_runHeadlessStreaming')
   streamJsonDrainStarted = true
   if (deferHeartbeatStartUntilStreamDrain) {
@@ -1011,7 +959,6 @@ export async function runHeadless(
     heartbeat?.setPhase('flushing')
     heartbeat?.stop()
   }
-
   switch (options.outputFormat) {
     case 'json':
       if (!lastMessage || lastMessage.type !== 'result') {
@@ -1053,31 +1000,26 @@ export async function runHeadless(
           )
       }
   }
-
   // Log headless latency metrics for the final turn
   logHeadlessProfilerTurn()
-
   // Drain any in-flight memory extraction before shutdown. The response is
-  // already flushed above, so this adds no user-visible latency — it just
+  // already flushed above, so this adds no user-visible latency â€” it just
   // delays process exit so gracefulShutdownSync's 5s failsafe doesn't kill
   // the forked agent mid-flight. Gated by isExtractModeActive so the
   // tengu_slate_thimble flag controls non-interactive extraction end-to-end.
   if (feature('EXTRACT_MEMORIES') && isExtractModeActive()) {
     await extractMemoriesModule!.drainPendingExtraction()
   }
-
   gracefulShutdownSync(
     lastMessage?.type === 'result' && lastMessage?.is_error ? 1 : 0,
   )
 }
-
 type HeadlessHeartbeatStructuredTarget = {
   write: (message: HeadlessHeartbeatEvent) => void | Promise<void>
   outbound: {
     enqueue: (message: HeadlessHeartbeatEvent) => void
   }
 }
-
 type RunHeadlessHeartbeatOptions = {
   intervalMs: number | undefined
   outputFormat: string | undefined
@@ -1092,7 +1034,6 @@ type RunHeadlessHeartbeatOptions = {
   clearInterval?: (timer: unknown) => void
   createUuid?: () => string
 }
-
 /** @internal */
 export async function runWithHeartbeatErrorCleanup<T>(
   heartbeat: Pick<HeadlessHeartbeat, 'stop'> | undefined,
@@ -1105,7 +1046,6 @@ export async function runWithHeartbeatErrorCleanup<T>(
     throw error
   }
 }
-
 /** @internal */
 export function createHeadlessHeartbeatStructuredEmitter(
   structuredIO: HeadlessHeartbeatStructuredTarget,
@@ -1120,7 +1060,6 @@ export function createHeadlessHeartbeatStructuredEmitter(
     structuredIO.outbound.enqueue(message)
   }
 }
-
 /** @internal */
 export function createRunHeadlessHeartbeat(
   options: RunHeadlessHeartbeatOptions,
@@ -1128,7 +1067,6 @@ export function createRunHeadlessHeartbeat(
   if (options.intervalMs === undefined) {
     return undefined
   }
-
   return createHeadlessHeartbeat({
     intervalMs: options.intervalMs,
     outputFormat:
@@ -1147,7 +1085,6 @@ export function createRunHeadlessHeartbeat(
     createUuid: options.createUuid,
   })
 }
-
 function getBackgroundTaskCounts(appState: AppState): Record<string, number> {
   const counts: Record<string, number> = {}
   for (const task of getRunningTasks(appState)) {
@@ -1157,7 +1094,6 @@ function getBackgroundTaskCounts(appState: AppState): Record<string, number> {
   }
   return counts
 }
-
 function runHeadlessStreaming(
   structuredIO: StructuredIO,
   mcpClients: MCPServerConnection[],
@@ -1204,9 +1140,8 @@ function runHeadlessStreaming(
   let shutdownPromptInjected = false
   let heldBackResult: StdoutMessage | null = null
   let abortController: AbortController | undefined
-  // Same queue sendRequest() enqueues to — one FIFO for everything.
+  // Same queue sendRequest() enqueues to â€” one FIFO for everything.
   const output = structuredIO.outbound
-
   // Ctrl+C in -p mode: abort the in-flight query, then shut down gracefully.
   // gracefulShutdown persists session state and flushes analytics, with a
   // failsafe timer that force-exits if cleanup hangs.
@@ -1219,7 +1154,6 @@ function runHeadlessStreaming(
     void gracefulShutdown(0)
   }
   process.on('SIGINT', sigintHandler)
-
   // Dump run()'s state at SIGTERM so a stuck session's healthsweep can name
   // the do/while(waitingForAgents) poll without reading the transcript.
   registerCleanup(async () => {
@@ -1235,11 +1169,10 @@ function runHeadlessStreaming(
       bg_tasks: bg,
     })
   })
-
   // Wire the central onChangeAppState mode-diff hook to the SDK output stream.
-  // This fires whenever ANY code path mutates toolPermissionContext.mode —
+  // This fires whenever ANY code path mutates toolPermissionContext.mode â€”
   // Shift+Tab, ExitPlanMode dialog, /plan slash command, rewind, bridge
-  // set_permission_mode, the query loop, stop_task — rather than the two
+  // set_permission_mode, the query loop, stop_task â€” rather than the two
   // paths that previously went through a bespoke wrapper.
   // The wrapper's body was fully redundant (it enqueued here AND called
   // notifySessionMetadataChanged, both of which onChangeAppState now covers);
@@ -1265,7 +1198,6 @@ function runHeadlessStreaming(
       })
     }
   })
-
   // Prompt suggestion tracking (push model)
   const suggestionState: {
     abortController: AbortController | null
@@ -1294,7 +1226,6 @@ function runHeadlessStreaming(
     pendingSuggestion: null,
     pendingLastEmittedEntry: null,
   }
-
   // Set up AWS auth status listener if enabled
   let unsubscribeAuthStatus: (() => void) | undefined
   if (options.enableAuthStatus) {
@@ -1310,7 +1241,6 @@ function runHeadlessStreaming(
       })
     })
   }
-
   // Set up rate limit status listener to emit SDKRateLimitEvent for all status changes.
   // Emitting for all statuses (including 'allowed') ensures consumers can clear warnings
   // when rate limits reset. The upstream emitStatusChange already deduplicates via isEqual.
@@ -1326,12 +1256,10 @@ function runHeadlessStreaming(
     }
   }
   statusListeners.add(rateLimitListener)
-
   // Messages for internal tracking, directly mutated by ask(). These messages
   // include Assistant, User, Attachment, and Progress messages.
   // TODO: Clean up this code to avoid passing around a mutable array.
   const mutableMessages: Message[] = initialMessages
-
   // Seed the readFileState cache from the transcript (content the model saw,
   // with message timestamps) so getChangedFiles can detect external edits.
   // This cache instance must persist across ask() calls, since the edit tool
@@ -1341,9 +1269,8 @@ function runHeadlessStreaming(
     cwd(),
     READ_FILE_STATE_CACHE_SIZE,
   )
-
   // Client-supplied readFileState seeds (via seed_read_state control request).
-  // The stdin IIFE runs concurrently with ask() — a seed arriving mid-turn
+  // The stdin IIFE runs concurrently with ask() â€” a seed arriving mid-turn
   // would be lost to ask()'s clone-then-replace (QueryEngine.ts finally block)
   // if written directly into readFileState. Instead, seeds land here, merge
   // into getReadFileCache's view (readFileState-wins-ties: seeds fill gaps),
@@ -1353,7 +1280,6 @@ function runHeadlessStreaming(
   const pendingSeeds = createFileStateCacheWithSizeLimit(
     READ_FILE_STATE_CACHE_SIZE,
   )
-
   // Auto-resume interrupted turns on restart so CC continues from where it
   // left off without requiring the SDK to re-send the prompt.
   const resumeInterruptedTurnEnv =
@@ -1366,7 +1292,6 @@ function runHeadlessStreaming(
     logForDebugging(
       `[print.ts] Auto-resuming interrupted turn (kind: ${turnInterruptionState.kind})`,
     )
-
     // Remove the interrupted message and its sentinel, then re-enqueue so
     // the model sees it exactly once. For mid-turn interruptions, the
     // deserialization layer transforms them into interrupted_prompt by
@@ -1378,7 +1303,6 @@ function runHeadlessStreaming(
       uuid: randomUUID(),
     })
   }
-
   const modelOptions = selectSdkModelOptions(getModelOptions())
   const modelInfos: ModelInfo[] = modelOptions.map((option): ModelInfo => {
     const modelId = option.value === null ? 'default' : option.value
@@ -1404,7 +1328,6 @@ function runHeadlessStreaming(
     }
   })
   let activeUserSpecifiedModel = options.userSpecifiedModel
-
   function injectModelSwitchBreadcrumbs(
     modelArg: string,
     resolvedModel: string,
@@ -1431,14 +1354,11 @@ function runHeadlessStreaming(
       }
     }
   }
-
   // Cache SDK MCP clients to avoid reconnecting on each run
   let sdkClients: MCPServerConnection[] = []
   let sdkTools: Tools = []
-
   // Track which MCP clients have had elicitation handlers registered
   const elicitationRegistered = new Set<string>()
-
   /**
    * Register elicitation request/completion handlers on connected MCP clients
    * that haven't been registered yet. SDK MCP servers are excluded because they
@@ -1454,12 +1374,11 @@ function runHeadlessStreaming(
       ) {
         continue
       }
-      // Skip SDK MCP servers — elicitation flows through SdkControlClientTransport
+      // Skip SDK MCP servers â€” elicitation flows through SdkControlClientTransport
       if (connection.config.type === 'sdk') {
         continue
       }
       const serverName = connection.name
-
       // Wrapped in try/catch because setRequestHandler throws if the client wasn't
       // created with elicitation capability declared (e.g., SDK-created clients).
       try {
@@ -1470,14 +1389,11 @@ function runHeadlessStreaming(
               serverName,
               `Elicitation request received in print mode: ${jsonStringify(request)}`,
             )
-
             const mode = request.params.mode === 'url' ? 'url' : 'form'
-
             logEvent('tengu_mcp_elicitation_shown', {
               mode: mode as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
             })
-
-            // Run elicitation hooks first — they can provide a response programmatically
+            // Run elicitation hooks first â€” they can provide a response programmatically
             const hookResponse = await runElicitationHooks(
               serverName,
               request.params,
@@ -1495,7 +1411,6 @@ function runHeadlessStreaming(
               })
               return hookResponse
             }
-
             // Delegate to SDK consumer via control protocol
             const url =
               'url' in request.params
@@ -1507,12 +1422,10 @@ function runHeadlessStreaming(
                     | Record<string, unknown>
                     | undefined)
                 : undefined
-
             const elicitationId =
               'elicitationId' in request.params
                 ? (request.params.elicitationId as string | undefined)
                 : undefined
-
             const rawResult = await structuredIO.handleElicitation(
               serverName,
               request.params.message,
@@ -1522,7 +1435,6 @@ function runHeadlessStreaming(
               url,
               elicitationId,
             )
-
             const result = await runElicitationResultHooks(
               serverName,
               rawResult,
@@ -1530,7 +1442,6 @@ function runHeadlessStreaming(
               mode,
               elicitationId,
             )
-
             logEvent('tengu_mcp_elicitation_response', {
               mode: mode as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
               action:
@@ -1539,7 +1450,6 @@ function runHeadlessStreaming(
             return result
           },
         )
-
         // Surface completion notifications to SDK consumers (URL mode)
         connection.client.setNotificationHandler(
           ElicitationCompleteNotificationSchema,
@@ -1563,20 +1473,17 @@ function runHeadlessStreaming(
             })
           },
         )
-
         elicitationRegistered.add(serverName)
       } catch {
         // setRequestHandler throws if the client wasn't created with
-        // elicitation capability — skip silently
+        // elicitation capability â€” skip silently
       }
     }
   }
-
   async function updateSdkMcp() {
     // Check if SDK MCP servers need to be updated (new servers added or removed)
     const currentServerNames = new Set(Object.keys(sdkMcpConfigs))
     const connectedServerNames = new Set(sdkClients.map(c => c.name))
-
     // Check if there are any differences (additions or removals)
     const hasNewServers = Array.from(currentServerNames).some(
       name => !connectedServerNames.has(name),
@@ -1588,16 +1495,14 @@ function runHeadlessStreaming(
     const hasPendingSdkClients = sdkClients.some(c => c.type === 'pending')
     // Check if any SDK clients failed their handshake and need to be retried.
     // Without this, a client that lands in 'failed' (e.g. handshake timeout on
-    // a WS reconnect race) stays failed forever — its name satisfies the
+    // a WS reconnect race) stays failed forever â€” its name satisfies the
     // connectedServerNames diff but it contributes zero tools.
     const hasFailedSdkClients = sdkClients.some(c => c.type === 'failed')
-
     const haveServersChanged =
       hasNewServers ||
       hasRemovedServers ||
       hasPendingSdkClients ||
       hasFailedSdkClients
-
     if (haveServersChanged) {
       // Clean up removed servers
       for (const client of sdkClients) {
@@ -1607,7 +1512,6 @@ function runHeadlessStreaming(
           }
         }
       }
-
       // Re-initialize all SDK MCP servers with current config
       const sdkSetup = await setupSdkMcpClients(
         sdkMcpConfigs,
@@ -1616,9 +1520,8 @@ function runHeadlessStreaming(
       )
       sdkClients = sdkSetup.clients
       sdkTools = sdkSetup.tools
-
       // Store SDK MCP tools in appState so subagents can access them via
-      // assembleToolPool. Only tools are stored here — SDK clients are already
+      // assembleToolPool. Only tools are stored here â€” SDK clients are already
       // merged separately in the query loop (allMcpClients) and mcp_status handler.
       // Use both old (connectedServerNames) and new (currentServerNames) to remove
       // stale SDK tools when servers are added or removed.
@@ -1638,14 +1541,11 @@ function runHeadlessStreaming(
           ],
         },
       }))
-
       // Set up the special internal VSCode MCP server if necessary.
       setupVscodeSdkMcp(sdkClients)
     }
   }
-
   void updateSdkMcp()
-
   // State for dynamically added MCP servers (via mcp_set_servers control message)
   // These are separate from SDK MCP servers and support all transport types
   let dynamicMcpState: DynamicMcpState = {
@@ -1653,7 +1553,6 @@ function runHeadlessStreaming(
     tools: [],
     configs: {},
   }
-
   // Shared tool assembly for ask() and the get_context_usage control request.
   // Closes over the mutable sdkTools/dynamicMcpState bindings so both call
   // sites see late-connecting servers.
@@ -1684,21 +1583,19 @@ function runHeadlessStreaming(
     }
     return allTools
   }
-
   // Bridge handle for remote-control (SDK control message).
   // Mirrors the REPL's useReplBridge hook: the handle is created when
   // `remote_control` is enabled and torn down when disabled.
   let bridgeHandle: ReplBridgeHandle | null = null
-  // Cursor into mutableMessages — tracks how far we've forwarded.
+  // Cursor into mutableMessages â€” tracks how far we've forwarded.
   // Same index-based diff as useReplBridge's lastWrittenIndexRef.
   let bridgeLastForwardedIndex = 0
-
   // Forward new messages from mutableMessages to the bridge.
   // Called incrementally during each turn (so claude.ai sees progress
   // and stays alive during permission waits) and again after the turn.
   //
   // writeMessages has its own UUID-based dedup (initialMessageUUIDs,
-  // recentPostedUUIDs) — the index cursor here is a pre-filter to avoid
+  // recentPostedUUIDs) â€” the index cursor here is a pre-filter to avoid
   // O(n) re-scanning of already-sent messages on every call.
   function forwardMessagesToBridge(): void {
     if (!bridgeHandle) return
@@ -1715,7 +1612,6 @@ function runHeadlessStreaming(
       bridgeHandle.writeMessages(newMessages)
     }
   }
-
   // Helper to apply MCP server changes - used by both mcp_set_servers control message
   // and background plugin installation.
   // NOTE: Nested function required - mutates closure state (sdkMcpConfigs, sdkClients, etc.)
@@ -1730,7 +1626,6 @@ function runHeadlessStreaming(
     },
     sdkServersChanged: false,
   })
-
   function applyMcpServerChanges(
     servers: Record<string, McpServerConfigForProcessTransport>,
   ): Promise<{
@@ -1744,14 +1639,12 @@ function runHeadlessStreaming(
       sdkServersChanged: boolean
     }> => {
       const oldSdkClientNames = new Set(sdkClients.map(c => c.name))
-
       const result = await handleMcpSetServers(
         servers,
         { configs: sdkMcpConfigs, clients: sdkClients, tools: sdkTools },
         dynamicMcpState,
         setAppState,
       )
-
       // Update SDK state (need to mutate sdkMcpConfigs since it's shared)
       for (const key of Object.keys(sdkMcpConfigs)) {
         delete sdkMcpConfigs[key]
@@ -1760,7 +1653,6 @@ function runHeadlessStreaming(
       sdkClients = result.newSdkState.clients
       sdkTools = result.newSdkState.tools
       dynamicMcpState = result.newDynamicState
-
       // Keep appState.mcp.tools in sync so subagents can see SDK MCP tools.
       // Use both old and new SDK client names to remove stale tools.
       if (result.sdkServersChanged) {
@@ -1782,17 +1674,14 @@ function runHeadlessStreaming(
           },
         }))
       }
-
       return {
         response: result.response,
         sdkServersChanged: result.sdkServersChanged,
       }
     }
-
     mcpChangesPromise = mcpChangesPromise.then(doWork, doWork)
     return mcpChangesPromise
   }
-
   // Build McpServerStatus[] for control responses. Shared by mcp_status and
   // reload_plugins handlers. Reads closure state: sdkClients, dynamicMcpState.
   function buildMcpServerStatuses(): McpServerStatus[] {
@@ -1851,7 +1740,7 @@ function runHeadlessStreaming(
           : undefined
       // Capabilities passthrough with allowlist pre-filter. The IDE reads
       // experimental['claude/channel'] to decide whether to show the
-      // Enable-channel prompt — only echo it if channel_enable would
+      // Enable-channel prompt â€” only echo it if channel_enable would
       // actually pass the allowlist. Not a security boundary (the
       // handler re-runs the full gate); just avoids dead buttons.
       let capabilities: { experimental?: Record<string, unknown> } | undefined
@@ -1885,7 +1774,6 @@ function runHeadlessStreaming(
       }
     })
   }
-
   // NOTE: Nested function required - needs closure access to applyMcpServerChanges and updateSdkMcp
   async function installPluginsAndApplyMcpInBackground(): Promise<void> {
     try {
@@ -1903,9 +1791,7 @@ function runHeadlessStreaming(
           waitForRemoteManagedSettingsToLoad(),
         ),
       ])
-
       const pluginsInstalled = await installPluginsForHeadless()
-
       if (pluginsInstalled) {
         await applyPluginMcpDiff()
       }
@@ -1913,7 +1799,6 @@ function runHeadlessStreaming(
       logError(error)
     }
   }
-
   // Background plugin installation for all headless users
   // Installs marketplaces from extraKnownMarketplaces and missing enabled plugins
   // CLAUDE_CODE_SYNC_PLUGIN_INSTALL=true: resolved in run() before the first
@@ -1928,14 +1813,11 @@ function runHeadlessStreaming(
       void installPluginsAndApplyMcpInBackground()
     }
   }
-
   // Idle timeout management
   const idleTimeout = createIdleTimeoutManager(() => !running)
-
   // Mutable commands and agents for hot reloading
   let currentCommands = commands
   let currentAgents = agents
-
   // Clear all plugin-related caches, reload commands/agents/hooks.
   // Called after CLAUDE_CODE_SYNC_PLUGIN_INSTALL completes (before first query)
   // and after non-sync background install finishes.
@@ -1949,27 +1831,24 @@ function runHeadlessStreaming(
     // AppState.agentDefinitions, registers hooks, and bumps mcp.pluginReconnectKey.
     const { agentDefinitions: freshAgentDefs } =
       await refreshActivePlugins(setAppState)
-
     // Headless-specific: currentCommands/currentAgents are local mutable refs
     // captured by the query loop (REPL uses AppState instead). getCommands is
     // fresh because refreshActivePlugins cleared its cache.
     currentCommands = await getCommands(cwd())
-
     // Preserve SDK-provided agents (--agents CLI flag or SDK initialize
-    // control_request) — both inject via parseAgentsFromJson with
+    // control_request) â€” both inject via parseAgentsFromJson with
     // source='flagSettings'. loadMarkdownFilesForSubdir never assigns this
     // source, so it cleanly discriminates "injected, not disk-loadable".
     //
     // The previous filter used a negative set-diff (!freshAgentTypes.has(a))
     // which also matched plugin agents that were in the poisoned initial
     // currentAgents but correctly excluded from freshAgentDefs after managed
-    // settings applied — leaking policy-blocked agents into the init message.
+    // settings applied â€” leaking policy-blocked agents into the init message.
     // See gh-23085: isBridgeEnabled() at Commander-definition time poisoned
     // the settings cache before setEligibility(true) ran.
     const sdkAgents = currentAgents.filter(a => a.source === 'flagSettings')
     currentAgents = [...freshAgentDefs.allAgents, ...sdkAgents]
   }
-
   // Re-diff MCP configs after plugin state changes. Filters to
   // process-transport-supported types and carries SDK-mode servers through
   // so applyMcpServerChanges' diff doesn't close their transports.
@@ -2005,7 +1884,6 @@ function runHeadlessStreaming(
       `Headless MCP refresh: added=${response.added.length}, removed=${response.removed.length}`,
     )
   }
-
   // Subscribe to skill changes for hot reloading
   const unsubscribeSkillChanges = skillChangeDetector.subscribe(() => {
     clearCommandsCache()
@@ -2013,7 +1891,6 @@ function runHeadlessStreaming(
       currentCommands = newCommands
     })
   })
-
   // Proactive mode: schedule a tick to keep the model looping autonomously.
   // setTimeout(0) yields to the event loop so pending stdin messages
   // (interrupts, user messages) are processed before the tick fires.
@@ -2040,31 +1917,25 @@ function runHeadlessStreaming(
           }, 0)
         }
       : undefined
-
   // Abort the current operation when a 'now' priority message arrives.
   subscribeToCommandQueue(() => {
     if (abortController && getCommandsByMaxPriority('now').length > 0) {
       abortController.abort('interrupt')
     }
   })
-
   const run = async () => {
     if (running) {
       return
     }
-
     running = true
     runPhase = undefined
     options.heartbeat?.setPhase('draining_commands')
     notifySessionStateChanged('running')
     idleTimeout.stop()
-
     headlessProfilerCheckpoint('run_entry')
     // TODO(custom-tool-refactor): Should move to the init message, like browser
-
     await updateSdkMcp()
     headlessProfilerCheckpoint('after_updateSdkMcp')
-
     // Resolve deferred plugin installation (CLAUDE_CODE_SYNC_PLUGIN_INSTALL).
     // The promise was started eagerly so installation overlaps with other init.
     // Awaiting here guarantees plugins are available before the first ask().
@@ -2092,10 +1963,8 @@ function runHeadlessStreaming(
         await pluginInstallPromise
       }
       pluginInstallPromise = null
-
       // Refresh commands, agents, and hooks now that plugins are installed
       await refreshPluginState()
-
       // Set up hot-reload for plugin hooks now that the initial install is done.
       // In sync-install mode, setup.ts skips this to avoid racing with the install.
       const { setupPluginHookHotReload } = await import(
@@ -2103,17 +1972,14 @@ function runHeadlessStreaming(
       )
       setupPluginHookHotReload()
     }
-
-    // Only main-thread commands (agentId===undefined) — subagent
+    // Only main-thread commands (agentId===undefined) â€” subagent
     // notifications are drained by the subagent's mid-turn gate in query.ts.
     // Defined outside the try block so it's accessible in the post-finally
     // queue re-checks at the bottom of run().
     const isMainThread = (cmd: QueuedCommand) => cmd.agentId === undefined
-
     try {
       let command: QueuedCommand | undefined
       let waitingForAgents = false
-
       // Extract command processing into a named function for the do-while pattern.
       // Drains the queue, batching consecutive prompt-mode commands into one
       // ask() call so messages that queued up during a long turn coalesce
@@ -2129,7 +1995,6 @@ function runHeadlessStreaming(
               'only prompt commands are supported in streaming mode',
             )
           }
-
           // Non-prompt commands (task-notification, orphaned-permission) carry
           // side effects or orphanedPermission state, so they process singly.
           // Prompt commands greedily collect followers with matching workload.
@@ -2147,7 +2012,6 @@ function runHeadlessStreaming(
             }
           }
           const batchUuids = batch.map(c => c.uuid).filter(u => u !== undefined)
-
           // QueryEngine will emit a replay for command.uuid (the last uuid in
           // the batch) via its messagesToAck path. Emit replays here for the
           // rest so consumers that track per-uuid delivery (clank's
@@ -2167,7 +2031,6 @@ function runHeadlessStreaming(
               }
             }
           }
-
           // Combine all MCP clients. appState.mcp is populated incrementally
           // per-server by main.tsx (mirrors useManageMCPConnections). Reading
           // fresh per-command means late-connecting servers are visible on the
@@ -2181,19 +2044,16 @@ function runHeadlessStreaming(
           registerElicitationHandlers(allMcpClients)
           // Channel handlers for servers allowlisted via --channels at
           // construction time (or enableChannel() mid-session). Runs every
-          // turn like registerElicitationHandlers — idempotent per-client
+          // turn like registerElicitationHandlers â€” idempotent per-client
           // (setNotificationHandler replaces, not stacks) and no-ops for
           // non-allowlisted servers (one feature-flag check).
           for (const client of allMcpClients) {
             reregisterChannelHandlerAfterReconnect(client)
           }
-
           const allTools = buildAllTools(appState)
-
           for (const uuid of batchUuids) {
             notifyCommandLifecycle(uuid, 'started')
           }
-
           // Task notifications arrive when background agents complete.
           // Emit an SDK system event for SDK consumers, then fall through
           // to ask() so the model sees the agent result and can act on it.
@@ -2218,7 +2078,6 @@ function runHeadlessStreaming(
             const summaryMatch = notificationText.match(
               /<summary>([^<]+)<\/summary>/,
             )
-
             const isValidStatus = (
               s: string | undefined,
             ): s is 'completed' | 'failed' | 'stopped' | 'killed' =>
@@ -2232,7 +2091,6 @@ function runHeadlessStreaming(
                 ? 'stopped'
                 : rawStatus
               : 'completed'
-
             const usageMatch = notificationText.match(
               /<usage>([\s\S]*?)<\/usage>/,
             )
@@ -2246,9 +2104,8 @@ function runHeadlessStreaming(
             const durationMsMatch = usageContent.match(
               /<duration_ms>(\d+)<\/duration_ms>/,
             )
-
             // Only emit a task_notification SDK event when a <status> tag is
-            // present — that means this is a terminal notification (completed/
+            // present â€” that means this is a terminal notification (completed/
             // failed/stopped). Stream events from enqueueStreamEvent carry no
             // <status> (they're progress pings); emitting them here would
             // default to 'completed' and falsely close the task for SDK
@@ -2279,15 +2136,12 @@ function runHeadlessStreaming(
             }
             // No continue -- fall through to ask() so the model processes the result
           }
-
           const input = command.value
-
           if (structuredIO instanceof RemoteIO && command.mode === 'prompt') {
             logEvent('tengu_bridge_message_received', {
               is_repl: false,
             })
           }
-
           // Abort any in-flight suggestion generation and track acceptance
           suggestionState.abortController?.abort()
           suggestionState.abortController = null
@@ -2316,12 +2170,10 @@ function runHeadlessStreaming(
               suggestionState.lastEmitted = null
             }
           }
-
           abortController = createAbortController()
           const turnStartTime = feature('FILE_PERSISTENCE')
             ? Date.now()
             : undefined
-
           options.heartbeat?.setPhase('in_turn')
           headlessProfilerCheckpoint('before_ask')
           startQueryProfile()
@@ -2400,13 +2252,11 @@ function runHeadlessStreaming(
               // claude.ai sees progress and the connection stays alive
               // while blocked on permission requests.
               forwardMessagesToBridge()
-
               if (message.type === 'result') {
                 // Flush pending SDK events so they appear before result on the stream.
                 for (const event of drainSdkEvents()) {
                   output.enqueue(event)
                 }
-
                 // Hold-back: don't emit result while background agents are running
                 const currentState = getAppState()
                 if (
@@ -2432,15 +2282,12 @@ function runHeadlessStreaming(
               }
             }
           }) // end runWithWorkload
-
           for (const uuid of batchUuids) {
             notifyCommandLifecycle(uuid, 'completed')
           }
-
           // Forward messages to bridge after each turn
           forwardMessagesToBridge()
           bridgeHandle?.sendResult()
-
           if (feature('FILE_PERSISTENCE') && turnStartTime !== undefined) {
             void executeFilePersistence(
               turnStartTime,
@@ -2458,7 +2305,6 @@ function runHeadlessStreaming(
               },
             )
           }
-
           // Generate and emit prompt suggestion for SDK consumers
           if (
             options.promptSuggestions &&
@@ -2470,7 +2316,6 @@ function runHeadlessStreaming(
             state.abortController?.abort()
             const localAbort = new AbortController()
             suggestionState.abortController = localAbort
-
             const cacheSafeParams = getLastCacheSafeParams()
             if (!cacheSafeParams) {
               logSuggestionSuppressed(
@@ -2545,14 +2390,12 @@ function runHeadlessStreaming(
               suggestionState.inflightPromise = ref.promise
             }
           }
-
           // Log headless profiler metrics for this turn and start next turn
           logHeadlessProfilerTurn()
           logQueryProfileReport()
           headlessProfilerStartTurn()
         }
       }
-
       // Use a do-while loop to drain commands and then wait for any
       // background agents that are still running. When agents complete,
       // their notifications are enqueued and the loop re-drains.
@@ -2562,13 +2405,11 @@ function runHeadlessStreaming(
         for (const event of drainSdkEvents()) {
           output.enqueue(event)
         }
-
         runPhase = 'draining_commands'
         options.heartbeat?.setPhase('draining_commands')
         await drainCommandQueue()
-
         // Check for running background tasks before exiting.
-        // Exclude in_process_teammate — teammates are long-lived by design
+        // Exclude in_process_teammate â€” teammates are long-lived by design
         // (status: 'running' for their whole lifetime, cleaned up by the
         // shutdown protocol, not by transitioning to 'completed'). Waiting
         // on them here loops forever (gh-30008). Same exclusion already
@@ -2594,7 +2435,6 @@ function runHeadlessStreaming(
           }
         }
       } while (waitingForAgents)
-
       if (heldBackResult) {
         output.enqueue(heldBackResult)
         heldBackResult = null
@@ -2665,7 +2505,6 @@ function runHeadlessStreaming(
       // Start idle timer when we finish processing and are waiting for input
       idleTimeout.start()
     }
-
     // Proactive tick: if proactive is active and queue is empty, inject a tick
     if (
       (feature('PROACTIVE') || feature('KAIROS')) &&
@@ -2677,7 +2516,6 @@ function runHeadlessStreaming(
         return
       }
     }
-
     // Re-check the queue after releasing the mutex. A message may have
     // arrived (and called run()) between the last dequeue() returning
     // undefined and `running = false` above. In that case the caller
@@ -2687,22 +2525,18 @@ function runHeadlessStreaming(
       void run()
       return
     }
-
     // Check for unread teammate messages and process them
     // This mirrors what useInboxPoller does in interactive REPL mode
     // Poll until no more messages (teammates may still be working)
     {
       const currentAppState = getAppState()
       const teamContext = currentAppState.teamContext
-
       if (teamContext && isTeamLead(teamContext)) {
         const agentName = 'team-lead'
-
         // Poll for messages while teammates are active
         // This is needed because teammates may send messages while we're waiting
         // Keep polling until the team is shut down
         const POLL_INTERVAL_MS = 500
-
         while (true) {
           // Check if teammates are still active
           const refreshedState = getAppState()
@@ -2710,30 +2544,25 @@ function runHeadlessStreaming(
             hasActiveInProcessTeammates(refreshedState) ||
             (refreshedState.teamContext &&
               Object.keys(refreshedState.teamContext.teammates).length > 0)
-
           if (!hasActiveTeammates) {
             logForDebugging(
               '[print.ts] No more active teammates, stopping poll',
             )
             break
           }
-
           const unread = await readUnreadMessages(
             agentName,
             refreshedState.teamContext?.teamName,
           )
-
           if (unread.length > 0) {
             logForDebugging(
               `[print.ts] Team-lead found ${unread.length} unread messages`,
             )
-
             // Mark as read immediately to avoid duplicate processing
             await markMessagesAsRead(
               agentName,
               refreshedState.teamContext?.teamName,
             )
-
             // Process shutdown_approved messages - remove teammates from team file
             // This mirrors what useInboxPoller does in interactive mode (lines 546-606)
             const teamName = refreshedState.teamContext?.teamName
@@ -2744,14 +2573,12 @@ function runHeadlessStreaming(
                 logForDebugging(
                   `[print.ts] Processing shutdown_approved from ${teammateToRemove}`,
                 )
-
                 // Find the teammate ID by name
                 const teammateId = refreshedState.teamContext?.teammates
                   ? Object.entries(refreshedState.teamContext.teammates).find(
                       ([, t]) => t.name === teammateToRemove,
                     )?.[0]
                   : undefined
-
                 if (teammateId) {
                   // Remove from team file
                   removeTeammateFromTeamFile(teamName, {
@@ -2761,7 +2588,6 @@ function runHeadlessStreaming(
                   logForDebugging(
                     `[print.ts] Removed ${teammateToRemove} from team file`,
                   )
-
                   // Unassign tasks owned by this teammate
                   await unassignTeammateTasks(
                     teamName,
@@ -2769,7 +2595,6 @@ function runHeadlessStreaming(
                     teammateToRemove,
                     'shutdown',
                   )
-
                   // Remove from teamContext in AppState
                   setAppState(prev => {
                     if (!prev.teamContext?.teammates) return prev
@@ -2787,7 +2612,6 @@ function runHeadlessStreaming(
                 }
               }
             }
-
             // Format messages same as useInboxPoller
             const formatted = unread
               .map(
@@ -2795,7 +2619,6 @@ function runHeadlessStreaming(
                   `<${TEAMMATE_MESSAGE_TAG} teammate_id="${m.from}"${m.color ? ` color="${m.color}"` : ''}>\n${m.text}\n</${TEAMMATE_MESSAGE_TAG}>`,
               )
               .join('\n\n')
-
             // Enqueue and process
             enqueue({
               mode: 'prompt',
@@ -2805,7 +2628,6 @@ function runHeadlessStreaming(
             void run()
             return // run() will come back here after processing
           }
-
           // No messages - check if we need to prompt for shutdown
           // If input is closed and teammates are active, inject shutdown prompt once
           if (inputClosed && !shutdownPromptInjected) {
@@ -2821,13 +2643,11 @@ function runHeadlessStreaming(
             void run()
             return // run() will come back here after processing
           }
-
           // Wait and check again
           await sleep(POLL_INTERVAL_MS)
         }
       }
     }
-
     if (inputClosed) {
       // Check for active swarm that needs shutdown
       const hasActiveSwarm = await (async () => {
@@ -2836,20 +2656,17 @@ function runHeadlessStreaming(
         if (hasWorkingInProcessTeammates(currentAppState)) {
           await waitForTeammatesToBecomeIdle(setAppState, currentAppState)
         }
-
         // Re-fetch state after potential wait
         const refreshedAppState = getAppState()
         const refreshedTeamContext = refreshedAppState.teamContext
         const hasTeamMembersNotCleanedUp =
           refreshedTeamContext &&
           Object.keys(refreshedTeamContext.teammates).length > 0
-
         return (
           hasTeamMembersNotCleanedUp ||
           hasActiveInProcessTeammates(refreshedAppState)
         )
       })()
-
       if (hasActiveSwarm) {
         // Team members are idle or pane-based - inject prompt to shut down team
         enqueue({
@@ -2873,7 +2690,6 @@ function runHeadlessStreaming(
       }
     }
   }
-
   // Set up UDS inbox callback so the query loop is kicked off
   // when a message arrives via the UDS socket in headless mode.
   if (feature('UDS_INBOX')) {
@@ -2886,10 +2702,9 @@ function runHeadlessStreaming(
       }
     })
   }
-
   // Cron scheduler: runs scheduled_tasks.json tasks in SDK/-p mode.
   // Mirrors REPL's useScheduledTasks hook. Fired prompts enqueue + kick
-  // off run() directly — unlike REPL, there's no queue subscriber here
+  // off run() directly â€” unlike REPL, there's no queue subscriber here
   // that drains on enqueue while idle. The run() mutex makes this safe
   // during an active turn: the call no-ops and the post-run recheck at
   // the end of run() picks up the queued command.
@@ -2904,8 +2719,8 @@ function runHeadlessStreaming(
           value: prompt,
           uuid: randomUUID(),
           priority: 'later',
-          // System-generated — matches useScheduledTasks.ts REPL equivalent.
-          // Without this, messages.ts metaProp eval is {} → prompt leaks
+          // System-generated â€” matches useScheduledTasks.ts REPL equivalent.
+          // Without this, messages.ts metaProp eval is {} â†’ prompt leaks
           // into visible transcript when cron fires mid-turn in -p mode.
           isMeta: true,
           // Threaded to cc_workload= in the billing-header attribution block
@@ -2922,7 +2737,6 @@ function runHeadlessStreaming(
     })
     cronScheduler.start()
   }
-
   const sendControlResponseSuccess = function (
     message: SDKControlRequest,
     response?: Record<string, unknown>,
@@ -2936,7 +2750,6 @@ function runHeadlessStreaming(
       },
     })
   }
-
   const sendControlResponseError = function (
     message: SDKControlRequest,
     errorMessage: string,
@@ -2950,7 +2763,6 @@ function runHeadlessStreaming(
       },
     })
   }
-
   // Handle unexpected permission responses by looking up the unresolved tool
   // call in the transcript and executing it
   const handledOrphanedToolUseIds = new Set<string>()
@@ -2966,7 +2778,6 @@ function runHeadlessStreaming(
       },
     })
   })
-
   // Track active OAuth flows per server so we can abort a previous flow
   // when a new mcp_authenticate request arrives for the same server.
   const activeOAuthFlows = new Map<string, AbortController>()
@@ -2977,23 +2788,21 @@ function runHeadlessStreaming(
     (callbackUrl: string) => void
   >()
   // Track servers where the manual callback was actually invoked (so the
-  // automatic reconnect path knows to skip — the extension will reconnect).
+  // automatic reconnect path knows to skip â€” the extension will reconnect).
   const oauthManualCallbackUsed = new Set<string>()
   // Track OAuth auth-only promises so mcp_oauth_callback_url can await
   // token exchange completion. Reconnect is handled separately by the
-  // extension via handleAuthDone → mcp_reconnect.
+  // extension via handleAuthDone â†’ mcp_reconnect.
   const oauthAuthPromises = new Map<string, Promise<void>>()
-
   // In-flight Anthropic OAuth flow (claude_authenticate). Single-slot: a
   // second authenticate request cleans up the first. The service holds the
   // PKCE verifier + localhost listener; the promise settles after
-  // installOAuthTokens — after it resolves, the in-process memoized token
+  // installOAuthTokens â€” after it resolves, the in-process memoized token
   // cache is already cleared and the next API call picks up the new creds.
   let claudeOAuth: {
     service: OAuthService
     flow: Promise<void>
   } | null = null
-
   // This is essentially spawning a parallel async task- we have two
   // running in parallel- one reading from stdin and adding to the
   // queue to be processed and another reading from the queue,
@@ -3004,7 +2813,7 @@ function runHeadlessStreaming(
     let initialized = false
     logForDiagnosticsNoPII('info', 'cli_message_loop_started')
     for await (const message of structuredIO.structuredInput) {
-      // Non-user events are handled inline (no queue). started→completed in
+      // Non-user events are handled inline (no queue). startedâ†’completed in
       // the same tick carries no information, so only fire completed.
       // control_response is reported by StructuredIO.processLine (which also
       // sees orphans that never yield here).
@@ -3016,7 +2825,6 @@ function runHeadlessStreaming(
       ) {
         notifyCommandLifecycle(eventId, 'completed')
       }
-
       if (message.type === 'control_request') {
         if (message.request.subtype === 'interrupt') {
           // Track escapes for attribution (internal-only feature)
@@ -3049,7 +2857,7 @@ function runHeadlessStreaming(
           suggestionState.lastEmitted = null
           suggestionState.pendingSuggestion = null
           sendControlResponseSuccess(message)
-          break // exits for-await → falls through to inputClosed=true drain below
+          break // exits for-await â†’ falls through to inputClosed=true drain below
         } else if (message.request.subtype === 'initialize') {
           // SDK MCP server names from the initialize message
           // Populated by both browser and ProcessTransport sessions
@@ -3066,7 +2874,6 @@ function runHeadlessStreaming(
               }
             }
           }
-
           await handleInitializeRequest(
             message.request,
             message.request_id,
@@ -3080,7 +2887,6 @@ function runHeadlessStreaming(
             agents,
             getAppState,
           )
-
           // Enable prompt suggestions in AppState when SDK consumer opts in.
           // shouldEnablePromptSuggestion() returns false for non-interactive
           // sessions, but the SDK consumer explicitly requested suggestions.
@@ -3090,16 +2896,13 @@ function runHeadlessStreaming(
               return { ...prev, promptSuggestionEnabled: true }
             })
           }
-
           if (
             message.request.agentProgressSummaries &&
             getFeatureValue_CACHED_MAY_BE_STALE('tengu_slate_prism', true)
           ) {
             setSdkAgentProgressSummariesEnabled(true)
           }
-
           initialized = true
-
           // If the auto-resume logic pre-enqueued a command, drain it now
           // that initialize has set up systemPrompt, agents, hooks, etc.
           if (hasCommandsInQueue()) {
@@ -3131,7 +2934,6 @@ function runHeadlessStreaming(
           setMainLoopModelOverride(model)
           notifySessionMetadataChanged({ model })
           injectModelSwitchBreadcrumbs(requestedModel, model)
-
           sendControlResponseSuccess(message)
         } else if (message.request.subtype === 'set_max_thinking_tokens') {
           if (message.request.max_thinking_tokens === null) {
@@ -3212,20 +3014,20 @@ function runHeadlessStreaming(
           try {
             // expandPath: all other readFileState writers normalize (~, relative,
             // session cwd vs process cwd). FileEditTool looks up by expandPath'd
-            // key — a verbatim client path would miss.
+            // key â€” a verbatim client path would miss.
             const normalizedPath = expandPath(message.request.path)
             // Check disk mtime before reading content. If the file changed
             // since the client's observation, readFile would return C_current
-            // but we'd store it with the client's M_observed — getChangedFiles
+            // but we'd store it with the client's M_observed â€” getChangedFiles
             // then sees disk > cache.timestamp, re-reads, diffs C_current vs
             // C_current = empty, emits no attachment, and the model is never
-            // told about the C_observed → C_current change. Skipping the seed
-            // makes Edit fail "file not read yet" → forces a fresh Read.
+            // told about the C_observed â†’ C_current change. Skipping the seed
+            // makes Edit fail "file not read yet" â†’ forces a fresh Read.
             // Math.floor matches FileReadTool and getFileModificationTime.
             const diskMtime = Math.floor((await stat(normalizedPath)).mtimeMs)
             if (diskMtime <= message.request.mtime) {
               const raw = await readFile(normalizedPath, 'utf-8')
-              // Strip BOM + normalize CRLF→LF to match readFileInRange and
+              // Strip BOM + normalize CRLFâ†’LF to match readFileInRange and
               // readFileSyncWithMetadata. FileEditTool's content-compare
               // fallback (for Windows mtime bumps without content change)
               // compares against LF-normalized disk reads.
@@ -3240,7 +3042,7 @@ function runHeadlessStreaming(
               })
             }
           } catch {
-            // ENOENT etc — skip seeding but still succeed
+            // ENOENT etc â€” skip seeding but still succeed
           }
           sendControlResponseSuccess(message)
         } else if (message.request.subtype === 'mcp_set_servers') {
@@ -3248,7 +3050,6 @@ function runHeadlessStreaming(
             message.request.servers,
           )
           sendControlResponseSuccess(message, response)
-
           // Connect SDK servers AFTER response to avoid deadlock
           if (sdkServersChanged) {
             void updateSdkMcp()
@@ -3266,15 +3067,12 @@ function runHeadlessStreaming(
                 settingsChangeDetector.notifyChange('userSettings')
               }
             }
-
             const r = await refreshActivePlugins(setAppState)
-
             const sdkAgents = currentAgents.filter(
               a => a.source === 'flagSettings',
             )
             currentAgents = [...r.agentDefinitions.allAgents, ...sdkAgents]
-
-            // Reload succeeded — gather response data best-effort so a
+            // Reload succeeded â€” gather response data best-effort so a
             // read failure doesn't mask the successful state change.
             // allSettled so one failure doesn't discard the others.
             let plugins: SDKControlReloadPluginsResponse['plugins'] = []
@@ -3300,7 +3098,6 @@ function runHeadlessStreaming(
             } else {
               logError(pluginsR.reason)
             }
-
             sendControlResponseSuccess(message, {
               commands: currentCommands
                 .filter(cmd => cmd.userInvocable !== false)
@@ -3409,7 +3206,6 @@ function runHeadlessStreaming(
             currentAppState.mcp.clients.find(c => c.name === serverName)
               ?.config ??
             null
-
           if (!config) {
             sendControlResponseError(message, `Server not found: ${serverName}`)
           } else if (!enabled) {
@@ -3490,7 +3286,7 @@ function runHeadlessStreaming(
           handleChannelEnable(
             message.request_id,
             message.request.serverName,
-            // Pool spread matches mcp_status — all three client sources.
+            // Pool spread matches mcp_status â€” all three client sources.
             [
               ...currentAppState.mcp.clients,
               ...sdkClients,
@@ -3520,13 +3316,11 @@ function runHeadlessStreaming(
               activeOAuthFlows.get(serverName)?.abort()
               const controller = new AbortController()
               activeOAuthFlows.set(serverName, controller)
-
               // Capture the auth URL from the callback
               let resolveAuthUrl: (url: string) => void
               const authUrlPromise = new Promise<string>(resolve => {
                 resolveAuthUrl = resolve
               })
-
               // Start the OAuth flow in the background
               const oauthPromise = performMCPOAuthFlow(
                 serverName,
@@ -3540,13 +3334,11 @@ function runHeadlessStreaming(
                   },
                 },
               )
-
               // Wait for the auth URL (or the flow to complete without needing redirect)
               const authUrl = await Promise.race([
                 authUrlPromise,
                 oauthPromise.then(() => null as string | null),
               ])
-
               if (authUrl) {
                 sendControlResponseSuccess(message, {
                   authUrl,
@@ -3557,15 +3349,13 @@ function runHeadlessStreaming(
                   requiresUserAction: false,
                 })
               }
-
               // Store auth-only promise for mcp_oauth_callback_url handler.
-              // Don't swallow errors — the callback handler needs to detect
+              // Don't swallow errors â€” the callback handler needs to detect
               // auth failures and report them to the caller.
               oauthAuthPromises.set(serverName, oauthPromise)
-
-              // Handle background completion — reconnect after auth.
+              // Handle background completion â€” reconnect after auth.
               // When manual callback is used, skip the reconnect here;
-              // the extension's handleAuthDone → mcp_reconnect handles it
+              // the extension's handleAuthDone â†’ mcp_reconnect handles it
               // (which also updates dynamicMcpState for tool registration).
               const fullFlowPromise = oauthPromise
                 .then(async () => {
@@ -3573,7 +3363,7 @@ function runHeadlessStreaming(
                   if (isMcpServerDisabled(serverName)) {
                     return
                   }
-                  // Skip reconnect if the manual callback path was used —
+                  // Skip reconnect if the manual callback path was used â€”
                   // handleAuthDone will do it via mcp_reconnect (which
                   // updates dynamicMcpState for tool registration).
                   if (oauthManualCallbackUsed.has(serverName)) {
@@ -3677,7 +3467,7 @@ function runHeadlessStreaming(
               oauthManualCallbackUsed.add(serverName)
               submit(callbackUrl)
               // Wait for auth (token exchange) to complete before responding.
-              // Reconnect is handled by the extension via handleAuthDone →
+              // Reconnect is handled by the extension via handleAuthDone â†’
               // mcp_reconnect (which updates dynamicMcpState for tools).
               const authPromise = oauthAuthPromises.get(serverName)
               if (authPromise) {
@@ -3705,22 +3495,19 @@ function runHeadlessStreaming(
         } else if (message.request.subtype === 'claude_authenticate') {
           // Anthropic OAuth over the control channel. The SDK client owns
           // the user's browser (we're headless in -p mode); we hand back
-          // both URLs and wait. Automatic URL → localhost listener catches
-          // the redirect if the browser is on this host; manual URL → the
+          // both URLs and wait. Automatic URL â†’ localhost listener catches
+          // the redirect if the browser is on this host; manual URL â†’ the
           // success page shows "code#state" for claude_oauth_callback.
           const { loginWithClaudeAi } = message.request
-
           // Clean up any prior flow. cleanup() closes the localhost listener
           // and nulls the manual resolver. The prior `flow` promise is left
           // pending (AuthCodeListener.close() does not reject) but its object
           // graph becomes unreachable once the server handle is released and
-          // is GC'd — no fd or port is held.
+          // is GC'd â€” no fd or port is held.
           claudeOAuth?.service.cleanup()
-
           logEvent('tengu_oauth_flow_start', {
             loginWithClaudeAi: loginWithClaudeAi ?? true,
           })
-
           const service = new OAuthService()
           let urlResolver!: (urls: {
             manualUrl: string
@@ -3732,7 +3519,6 @@ function runHeadlessStreaming(
           }>(resolve => {
             urlResolver = resolve
           })
-
           const flow = service
             .startOAuthFlow(
               async (manualUrl, automaticUrl) => {
@@ -3746,9 +3532,9 @@ function runHeadlessStreaming(
               },
             )
             .then(async tokens => {
-              // installOAuthTokens: performLogout (clear stale state) →
-              // store profile → saveOAuthTokensIfNeeded → clearOAuthTokenCache
-              // → clearAuthRelatedCaches. After this resolves, the memoized
+              // installOAuthTokens: performLogout (clear stale state) â†’
+              // store profile â†’ saveOAuthTokensIfNeeded â†’ clearOAuthTokenCache
+              // â†’ clearAuthRelatedCaches. After this resolves, the memoized
               // getClaudeAIOAuthTokens in this process is invalidated; the
               // next API call re-reads keychain/file and works. No respawn.
               await installOAuthTokens(tokens)
@@ -3762,9 +3548,7 @@ function runHeadlessStreaming(
                 claudeOAuth = null
               }
             })
-
           claudeOAuth = { service, flow }
-
           // Attach the rejection handler before awaiting so a synchronous
           // startOAuthFlow failure doesn't surface as an unhandled rejection.
           // The claude_oauth_callback handler re-awaits flow for the manual
@@ -3774,7 +3558,6 @@ function runHeadlessStreaming(
               level: 'info',
             }),
           )
-
           try {
             // Race against flow: if startOAuthFlow rejects before calling
             // the authURLHandler (e.g. AuthCodeListener.start() fails with
@@ -3806,7 +3589,7 @@ function runHeadlessStreaming(
               'No active claude_authenticate flow',
             )
           } else {
-            // Inject the manual code synchronously — must happen in stdin
+            // Inject the manual code synchronously â€” must happen in stdin
             // message order so a subsequent claude_authenticate doesn't
             // replace the service before this code lands.
             if (message.request.subtype === 'claude_oauth_callback') {
@@ -3815,7 +3598,7 @@ function runHeadlessStreaming(
                 state: message.request.state,
               })
             }
-            // Detach the await — the stdin reader is serial and blocking
+            // Detach the await â€” the stdin reader is serial and blocking
             // here deadlocks claude_oauth_wait_for_completion: flow may
             // only resolve via a future claude_oauth_callback on stdin,
             // which can't be read while we're parked. Capture the binding;
@@ -3888,10 +3671,9 @@ function runHeadlessStreaming(
             sendControlResponseSuccess(message, {})
           }
         } else if (message.request.subtype === 'apply_flag_settings') {
-          // Snapshot the current model before applying — we need to detect
+          // Snapshot the current model before applying â€” we need to detect
           // model switches so we can inject breadcrumbs and notify listeners.
           const prevModel = getMainLoopModel()
-
           // Merge the provided settings into the in-memory flag settings
           const existing = getFlagSettingsInline() ?? {}
           const incoming = message.request.settings
@@ -3911,14 +3693,13 @@ function runHeadlessStreaming(
           // Route through notifyChange so fanOut() resets the settings cache
           // before listeners run. The subscriber at :392 calls
           // applySettingsChange for us. Pre-#20625 this was a direct
-          // applySettingsChange() call that relied on its own internal reset —
+          // applySettingsChange() call that relied on its own internal reset â€”
           // now that the reset is centralized in fanOut, a direct call here
           // would read stale cached settings and silently drop the update.
           // Bonus: going through notifyChange also tells the other subscribers
           // (loadPluginHooks, sandbox-adapter) about the change, which the
           // previous direct call skipped.
           settingsChangeDetector.notifyChange('flagSettings')
-
           // If the incoming settings include a model change, update the
           // override so getMainLoopModel() reflects it. The override has
           // higher priority than the settings cascade in
@@ -3932,7 +3713,6 @@ function runHeadlessStreaming(
               setMainLoopModelOverride(undefined)
             }
           }
-
           // If the model changed, inject breadcrumbs so the model sees the
           // mid-conversation switch, and notify metadata listeners (CCR).
           const newModel = getMainLoopModel()
@@ -3942,12 +3722,11 @@ function runHeadlessStreaming(
             notifySessionMetadataChanged({ model: newModel })
             injectModelSwitchBreadcrumbs(modelArg, newModel)
           }
-
           sendControlResponseSuccess(message)
         } else if (message.request.subtype === 'get_settings') {
           const currentAppState = getAppState()
           const model = getMainLoopModel()
-          // modelSupportsEffort gate matches claude.ts — applied.effort must
+          // modelSupportsEffort gate matches claude.ts â€” applied.effort must
           // mirror what actually goes to the API, not just what's configured.
           const effort = modelSupportsEffort(model)
             ? resolveAppliedEffort(model, currentAppState.effortValue)
@@ -3956,7 +3735,7 @@ function runHeadlessStreaming(
             ...getSettingsWithSources(),
             applied: {
               model,
-              // Numeric effort (internal-only) → null; SDK schema is string-level only.
+              // Numeric effort (internal-only) â†’ null; SDK schema is string-level only.
               effort: typeof effort === 'string' ? effort : null,
             },
           })
@@ -3997,7 +3776,7 @@ function runHeadlessStreaming(
               }
               sendControlResponseSuccess(message, { title })
             } catch (e) {
-              // Unreachable in practice — generateSessionTitle wraps its
+              // Unreachable in practice â€” generateSessionTitle wraps its
               // own body and returns a default title, saveAiGeneratedTitle is wrapped
               // above. Propagate (not swallow) so unexpected failures are
               // visible to the SDK caller (hostComms.ts catches and logs).
@@ -4005,20 +3784,20 @@ function runHeadlessStreaming(
             }
           })()
         } else if (message.request.subtype === 'side_question') {
-          // Same fire-and-forget pattern as generate_session_title above —
+          // Same fire-and-forget pattern as generate_session_title above â€”
           // the forked agent's API roundtrip must not block the stdin loop.
           //
           // The snapshot captured by stopHooks (for querySource === 'sdk')
           // holds the exact systemPrompt/userContext/systemContext/messages
           // sent on the last main-thread turn. Reusing them gives a byte-
-          // identical prefix → prompt cache hit.
+          // identical prefix â†’ prompt cache hit.
           //
-          // Fallback (resume before first turn completes — no snapshot yet):
+          // Fallback (resume before first turn completes â€” no snapshot yet):
           // rebuild from scratch. buildSideQuestionFallbackParams mirrors
           // QueryEngine.ts:ask()'s system prompt assembly (including
           // --system-prompt / --append-system-prompt) so the rebuilt prefix
           // matches in the common case. May still miss the cache for
-          // coordinator mode or memory-mechanics extras — acceptable, the
+          // coordinator mode or memory-mechanics extras â€” acceptable, the
           // alternative is the side question failing entirely.
           const { question } = message.request
           void (async () => {
@@ -4031,7 +3810,7 @@ function runHeadlessStreaming(
                     // already-aborted controller; createChildAbortController in
                     // createSubagentContext would propagate it and the fork
                     // would die before sending a request. The controller is
-                    // not part of the cache key — swapping in a fresh one is
+                    // not part of the cache key â€” swapping in a fresh one is
                     // safe. Same guard as generate_session_title above.
                     toolUseContext: {
                       ...saved.toolUseContext,
@@ -4152,7 +3931,7 @@ function runHeadlessStreaming(
                       bridgeFailureDetail = detail
                     }
                     logForDebugging(
-                      `[bridge:sdk] State change: ${state}${detail ? ` — ${detail}` : ''}`,
+                      `[bridge:sdk] State change: ${state}${detail ? ` â€” ${detail}` : ''}`,
                     )
                     output.enqueue({
                       type: 'system' as StdoutMessage['type'],
@@ -4211,7 +3990,7 @@ function runHeadlessStreaming(
             sendControlResponseSuccess(message)
           }
         } else {
-          // Unknown control request subtype — send an error response so
+          // Unknown control request subtype â€” send an error response so
           // the caller doesn't hang waiting for a reply that never comes.
           sendControlResponseError(
             message,
@@ -4247,10 +4026,8 @@ function runHeadlessStreaming(
       if (message.type !== 'user') {
         continue
       }
-
       // First prompt message implicitly initializes if not already done.
       initialized = true
-
       // Check for duplicate user message - skip if already processed
       if (message.uuid) {
         const sessionId = getSessionId() as UUID
@@ -4258,7 +4035,6 @@ function runHeadlessStreaming(
           sessionId,
           message.uuid,
         )
-
         // Check both historical duplicates (from file) and runtime duplicates (this session)
         if (existsInSession || receivedMessageUuids.has(message.uuid)) {
           logForDebugging(`Skipping duplicate user message: ${message.uuid}`)
@@ -4279,18 +4055,16 @@ function runHeadlessStreaming(
           }
           // Historical dup = transcript already has this turn's output, so it
           // ran but its lifecycle was never closed (interrupted before ack).
-          // Runtime dups don't need this — the original enqueue path closes them.
+          // Runtime dups don't need this â€” the original enqueue path closes them.
           if (existsInSession) {
             notifyCommandLifecycle(message.uuid, 'completed')
           }
           // Don't enqueue duplicate messages for execution
           continue
         }
-
         // Track this UUID to prevent runtime duplicates
         trackReceivedMessageUuid(message.uuid)
       }
-
       enqueue({
         mode: 'prompt' as const,
         // file_attachments rides the protobuf catchall from the web composer.
@@ -4330,10 +4104,8 @@ function runHeadlessStreaming(
       output.done()
     }
   })()
-
   return output
 }
-
 /**
  * Creates a CanUseToolFn that incorporates a custom permission prompt tool.
  * This function converts the permissionPromptTool into a CanUseToolFn that can be used in ask.tsx
@@ -4362,7 +4134,6 @@ export function createCanUseToolWithPermissionPrompt(
         assistantMessage,
         toolUseId,
       )
-
     // If the tool is allowed or denied, return the result
     if (
       mainPermissionResult.behavior === 'allow' ||
@@ -4370,7 +4141,6 @@ export function createCanUseToolWithPermissionPrompt(
     ) {
       return mainPermissionResult
     }
-
     // Race the permission prompt tool against the abort signal.
     //
     // Why we need this: The permission prompt tool may block indefinitely waiting
@@ -4383,7 +4153,6 @@ export function createCanUseToolWithPermissionPrompt(
     // abort fires after Promise.race resolves but before we reach this check.
     const { signal: combinedSignal, cleanup: cleanupAbortListener } =
       createCombinedAbortSignal(toolUseContext.abortController.signal)
-
     // Check if already aborted before starting the race
     if (combinedSignal.aborted) {
       cleanupAbortListener()
@@ -4397,13 +4166,11 @@ export function createCanUseToolWithPermissionPrompt(
         },
       }
     }
-
     const abortPromise = new Promise<'aborted'>(resolve => {
       combinedSignal.addEventListener('abort', () => resolve('aborted'), {
         once: true,
       })
     })
-
     const toolCallPromise = permissionPromptTool.call(
       {
         tool_name: tool.name,
@@ -4414,10 +4181,8 @@ export function createCanUseToolWithPermissionPrompt(
       canUseTool,
       assistantMessage,
     )
-
     const raceResult = await Promise.race([toolCallPromise, abortPromise])
     cleanupAbortListener()
-
     if (raceResult === 'aborted' || combinedSignal.aborted) {
       return {
         behavior: 'deny',
@@ -4429,10 +4194,8 @@ export function createCanUseToolWithPermissionPrompt(
         },
       }
     }
-
     // TypeScript narrowing: after the abort check, raceResult must be ToolResult
     const result = raceResult as Awaited<typeof toolCallPromise>
-
     const permissionToolResultBlockParam =
       permissionPromptTool.mapToolResultToToolResultBlockParam(result.data, '1')
     if (
@@ -4457,8 +4220,7 @@ export function createCanUseToolWithPermissionPrompt(
   }
   return canUseTool
 }
-
-// Exported for testing — regression: this used to crash at construction when
+// Exported for testing â€” regression: this used to crash at construction when
 // getMcpTools() was empty (before per-server connects populated appState).
 export function getCanUseToolFn(
   permissionPromptToolName: string | undefined,
@@ -4533,7 +4295,6 @@ export function getCanUseToolFn(
     )
   }
 }
-
 async function handleInitializeRequest(
   request: SDKControlInitializeRequest,
   requestId: string,
@@ -4566,7 +4327,6 @@ async function handleInitializeRequest(
     })
     return
   }
-
   // Apply systemPrompt/appendSystemPrompt from stdin to avoid ARG_MAX limits
   if (request.systemPrompt !== undefined) {
     options.systemPrompt = request.systemPrompt
@@ -4577,13 +4337,11 @@ async function handleInitializeRequest(
   if (request.promptSuggestions !== undefined) {
     options.promptSuggestions = request.promptSuggestions
   }
-
   // Merge agents from stdin to avoid ARG_MAX limits
   if (request.agents) {
     const stdinAgents = parseAgentsFromJson(request.agents, 'flagSettings')
     agents.push(...stdinAgents)
   }
-
   // Re-evaluate main thread agent after SDK agents are merged
   // This allows --agent to reference agents defined via SDK
   if (options.agent) {
@@ -4594,7 +4352,6 @@ async function handleInitializeRequest(
     if (mainThreadAgent && !alreadyResolved) {
       // Update the main thread agent type in bootstrap state
       setMainThreadAgentType(mainThreadAgent.agentType)
-
       // Apply the agent's system prompt if user hasn't specified a custom one
       // SDK agents are always custom agents (not built-in), so getSystemPrompt() takes no args
       if (!options.systemPrompt && !isBuiltInAgent(mainThreadAgent)) {
@@ -4603,7 +4360,6 @@ async function handleInitializeRequest(
           options.systemPrompt = agentSystemPrompt
         }
       }
-
       // Apply the agent's model if user didn't specify one and agent has a model
       if (
         !options.userSpecifiedModel &&
@@ -4613,7 +4369,6 @@ async function handleInitializeRequest(
         const agentModel = parseUserSpecifiedModel(mainThreadAgent.model)
         setMainLoopModelOverride(agentModel)
       }
-
       // SDK-defined agents arrive via init, so main.tsx's lookup missed them.
       if (mainThreadAgent.initialPrompt) {
         structuredIO.prependUserMessage(mainThreadAgent.initialPrompt)
@@ -4622,15 +4377,13 @@ async function handleInitializeRequest(
       // Filesystem-defined agent (alreadyResolved by main.tsx). main.tsx
       // handles initialPrompt for the string inputPrompt case, but when
       // inputPrompt is an AsyncIterable (SDK stream-json), it can't
-      // concatenate — fall back to prependUserMessage here.
+      // concatenate â€” fall back to prependUserMessage here.
       structuredIO.prependUserMessage(mainThreadAgent.initialPrompt)
     }
   }
-
   const settings = getSettings_DEPRECATED()
   const outputStyle = settings?.outputStyle || DEFAULT_OUTPUT_STYLE_NAME
   const availableOutputStyles = await getAllOutputStyles(getCwd())
-
   // Get account information
   const accountInfo = getAccountInformation()
   if (request.hooks) {
@@ -4681,7 +4434,6 @@ async function handleInitializeRequest(
     },
     pid: process.pid,
   }
-
   if (isFastModeEnabled() && isFastModeAvailable()) {
     const appState = getAppState()
     initResponse.fast_mode_state = getFastModeState(
@@ -4689,7 +4441,6 @@ async function handleInitializeRequest(
       appState.fastMode,
     )
   }
-
   output.enqueue({
     type: 'control_response',
     response: {
@@ -4698,7 +4449,6 @@ async function handleInitializeRequest(
       response: initResponse,
     },
   })
-
   // After the initialize message, check the auth status-
   // This will get notified of changes, but we also want to send the
   // initial state.
@@ -4717,7 +4467,6 @@ async function handleInitializeRequest(
     }
   }
 }
-
 async function handleRewindFiles(
   userMessageId: UUID,
   appState: AppState,
@@ -4733,7 +4482,6 @@ async function handleRewindFiles(
       error: 'No file checkpoint found for this message.',
     }
   }
-
   if (dryRun) {
     const diffStats = await fileHistoryGetDiffStats(
       appState.fileHistory,
@@ -4746,7 +4494,6 @@ async function handleRewindFiles(
       deletions: diffStats?.deletions,
     }
   }
-
   try {
     await fileHistoryRewind(
       updater =>
@@ -4762,10 +4509,8 @@ async function handleRewindFiles(
       error: `Failed to rewind: ${errorMessage(error)}`,
     }
   }
-
   return { canRewind: true }
 }
-
 async function handleSetPermissionMode(
   request: { mode: InternalPermissionMode },
   requestId: string,
@@ -4774,7 +4519,6 @@ async function handleSetPermissionMode(
 ): Promise<ToolPermissionContext> {
   let nextToolPermissionContext = toolPermissionContext
   let blockedError: string | undefined
-
   const result = await requestPermissionModeChange({
     mode: request.mode,
     toolPermissionContext,
@@ -4789,7 +4533,6 @@ async function handleSetPermissionMode(
       blockedError = error
     },
   })
-
   if (result.status !== 'applied') {
     output.enqueue({
       type: 'control_response',
@@ -4801,7 +4544,6 @@ async function handleSetPermissionMode(
     })
     return toolPermissionContext
   }
-
   // Allow the mode switch
   output.enqueue({
     type: 'control_response',
@@ -4813,10 +4555,8 @@ async function handleSetPermissionMode(
       },
     },
   })
-
   return nextToolPermissionContext
 }
-
 async function sanitizeResumedExternalMetadata(
   metadata: SessionExternalMetadata,
   toolPermissionContext: ToolPermissionContext,
@@ -4824,12 +4564,10 @@ async function sanitizeResumedExternalMetadata(
   if (typeof metadata.permission_mode !== 'string') {
     return metadata
   }
-
   const resumedMode = permissionModeFromString(metadata.permission_mode)
   if (resumedMode !== 'bypassPermissions' && resumedMode !== 'fullAccess') {
     return metadata
   }
-
   const modeDecision = await getPermissionModeChangeRequestDecision({
     mode: resumedMode,
     toolPermissionContext,
@@ -4837,7 +4575,6 @@ async function sanitizeResumedExternalMetadata(
   if (modeDecision.status !== 'blocked') {
     return metadata
   }
-
   logForDebugging(
     `Discarding resumed dangerous permission mode ${resumedMode}: ${modeDecision.error}`,
     { level: 'warn' },
@@ -4848,23 +4585,22 @@ async function sanitizeResumedExternalMetadata(
     permission_mode: 'default',
   }
 }
-
 /**
  * IDE-triggered channel enable. Derives the ChannelEntry from the connection's
- * pluginSource (IDE can't spoof kind/marketplace — we only take the server
+ * pluginSource (IDE can't spoof kind/marketplace â€” we only take the server
  * name), appends it to session allowedChannels, and runs the full gate. On
  * gate failure, rolls back the append. On success, registers a notification
- * handler that enqueues channel messages at priority:'next' — drainCommandQueue
+ * handler that enqueues channel messages at priority:'next' â€” drainCommandQueue
  * picks them up between turns.
  *
  * Intentionally does NOT register the claude/channel/permission handler that
  * useManageMCPConnections sets up for interactive mode. That handler resolves
- * a pending dialog inside handleInteractivePermission — but print.ts never
+ * a pending dialog inside handleInteractivePermission â€” but print.ts never
  * calls handleInteractivePermission. When SDK permission lands on 'ask', it
  * goes to the consumer's canUseTool callback over stdio; there is no CLI-side
  * dialog for a remote "yes tbxkq" to resolve. If an IDE wants channel-relayed
  * tool approval, that's IDE-side plumbing against its own pending-map. (Also
- * gated separately by tengu_harbor_permissions — not yet shipping on
+ * gated separately by tengu_harbor_permissions â€” not yet shipping on
  * interactive either.)
  */
 function handleChannelEnable(
@@ -4878,11 +4614,9 @@ function handleChannelEnable(
       type: 'control_response',
       response: { subtype: 'error', request_id: requestId, error },
     })
-
   if (!(feature('KAIROS') || feature('KAIROS_CHANNELS'))) {
     return respondError('channels feature not available in this build')
   }
-
   // Only a 'connected' client has .capabilities and .client to register the
   // handler on. The pool spread at the call site matches mcp_status.
   const connection = connectionPool.find(
@@ -4891,18 +4625,16 @@ function handleChannelEnable(
   if (!connection || connection.type !== 'connected') {
     return respondError(`server ${serverName} is not connected`)
   }
-
   const pluginSource = connection.config.pluginSource
   const parsed = pluginSource ? parsePluginIdentifier(pluginSource) : undefined
   if (!parsed?.marketplace) {
-    // No pluginSource or @-less source — can never pass the {plugin,
+    // No pluginSource or @-less source â€” can never pass the {plugin,
     // marketplace}-keyed allowlist. Short-circuit with the same reason the
     // gate would produce.
     return respondError(
       `server ${serverName} is not plugin-sourced; channel_enable requires a marketplace plugin`,
     )
   }
-
   const entry: ChannelEntry = {
     kind: 'plugin',
     name: parsed.name,
@@ -4917,25 +4649,22 @@ function handleChannelEnable(
       e.marketplace === entry.marketplace,
   )
   if (!already) setAllowedChannels([...prior, entry])
-
   const gate = gateChannelServer(
     serverName,
     connection.capabilities,
     pluginSource,
   )
   if (gate.action === 'skip') {
-    // Rollback — only remove the entry we appended.
+    // Rollback â€” only remove the entry we appended.
     if (!already) setAllowedChannels(prior)
     return respondError(gate.reason)
   }
-
   const pluginId =
     `${entry.name}@${entry.marketplace}` as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
   logMCPDebug(serverName, 'Channel notifications registered')
   logEvent('tengu_mcp_channel_enable', { plugin: pluginId })
-
   // Identical enqueue shape to the interactive register block in
-  // useManageMCPConnections. drainCommandQueue processes it between turns —
+  // useManageMCPConnections. drainCommandQueue processes it between turns â€”
   // channel messages queue at priority 'next' and are seen by the model on
   // the turn after they arrive.
   connection.client.setNotificationHandler(
@@ -4964,7 +4693,6 @@ function handleChannelEnable(
       })
     },
   )
-
   output.enqueue({
     type: 'control_response',
     response: {
@@ -4974,7 +4702,6 @@ function handleChannelEnable(
     },
   })
 }
-
 /**
  * Re-register the channel notification handler after mcp_reconnect /
  * mcp_toggle creates a new client. handleChannelEnable bound the handler to
@@ -4996,20 +4723,17 @@ function reregisterChannelHandlerAfterReconnect(
 ): void {
   if (!(feature('KAIROS') || feature('KAIROS_CHANNELS'))) return
   if (connection.type !== 'connected') return
-
   const gate = gateChannelServer(
     connection.name,
     connection.capabilities,
     connection.config.pluginSource,
   )
   if (gate.action !== 'register') return
-
   const entry = findChannelEntry(connection.name, getAllowedChannels(), connection.config.pluginSource)
   const pluginId =
     entry?.kind === 'plugin'
       ? (`${entry.name}@${entry.marketplace}` as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS)
       : undefined
-
   logMCPDebug(
     connection.name,
     'Channel notifications re-registered after reconnect',
@@ -5041,7 +4765,6 @@ function reregisterChannelHandlerAfterReconnect(
     },
   )
 }
-
 /**
  * Emits an error message in the correct format based on outputFormat.
  * When using stream-json, writes JSON to stdout; otherwise writes plain text to stderr.
@@ -5072,7 +4795,6 @@ function emitLoadError(
     process.stderr.write(message + '\n')
   }
 }
-
 /**
  * Removes an interrupted user message and its synthetic assistant sentinel
  * from the message array. Used during gateway-triggered restarts to clean up
@@ -5091,13 +4813,11 @@ export function removeInterruptedMessage(
     messages.splice(idx, 2)
   }
 }
-
 type LoadInitialMessagesResult = {
   messages: Message[]
   turnInterruptionState?: TurnInterruptionState
   agentSetting?: string
 }
-
 async function loadInitialMessages(
   setAppState: (f: (prev: AppState) => AppState) => void,
   options: {
@@ -5118,7 +4838,6 @@ async function loadInitialMessages(
   if (options.continue) {
     try {
       logEvent('tengu_continue_print', {})
-
       const result = await loadConversationForResume(
         undefined /* sessionId */,
         undefined /* file path */,
@@ -5140,7 +4859,6 @@ async function loadInitialMessages(
             const freshAgentDefs = await getAgentDefinitionsWithOverrides(
               getCwd(),
             )
-
             setAppState(prev => ({
               ...prev,
               agentDefinitions: {
@@ -5151,7 +4869,6 @@ async function loadInitialMessages(
             }))
           }
         }
-
         // Reuse the resumed session's ID
         if (!options.forkSession) {
           if (result.sessionId) {
@@ -5176,14 +4893,12 @@ async function loadInitialMessages(
           result.messages.push(createForkSessionInfoMessage(result.sessionId))
         }
         restoreSessionStateFromLog(result, setAppState)
-
         // Restore session metadata so it's re-appended on exit via reAppendSessionMetadata
         restoreSessionMetadata(
           options.forkSession
             ? { ...result, worktreeSession: undefined }
             : result,
         )
-
         // Write mode entry for the resumed session
         if (feature('COORDINATOR_MODE') && coordinatorModeModule) {
           saveMode(
@@ -5192,7 +4907,6 @@ async function loadInitialMessages(
               : 'normal',
           )
         }
-
         return {
           messages: result.messages,
           turnInterruptionState: result.turnInterruptionState,
@@ -5205,7 +4919,6 @@ async function loadInitialMessages(
       return { messages: [] }
     }
   }
-
   // Handle teleport in print mode
   if (options.teleport) {
     try {
@@ -5214,13 +4927,10 @@ async function loadInitialMessages(
           "Remote sessions are disabled by your organization's policy.",
         )
       }
-
       logEvent('tengu_teleport_print', {})
-
       if (typeof options.teleport !== 'string') {
         throw new Error('No session ID provided for teleport')
       }
-
       const {
         checkOutTeleportedSessionBranch,
         processMessagesForTeleportResume,
@@ -5244,24 +4954,21 @@ async function loadInitialMessages(
       return { messages: [] }
     }
   }
-
   // Handle resume in print mode (accepts session ID, URL, or PR selector)
   // URLs are [internal-only]
   if (options.resume || options.fromPr) {
     try {
       let result: Awaited<ReturnType<typeof loadConversationForResume>> = null
       let parsedSessionId: ReturnType<typeof parseSessionIdentifier> = null
-
       if (options.resume) {
         logEvent('tengu_resume_print', {})
-
         // In print mode - we require a valid session ID, JSONL file or URL
         parsedSessionId = parseSessionIdentifier(
           typeof options.resume === 'string' ? options.resume : '',
         )
         if (!parsedSessionId) {
           let errorMessage =
-            'Error: --resume requires a valid session ID when used with --print. Usage: openclaude -p --resume <session-id>'
+            'Error: --resume requires a valid session ID when used with --print. Usage:rootclaude -p --resume <session-id>'
           if (typeof options.resume === 'string') {
             errorMessage += `. Session IDs must be in UUID format (e.g., 550e8400-e29b-41d4-a716-446655440000). Provided value "${options.resume}" is not a valid UUID`
           }
@@ -5269,7 +4976,6 @@ async function loadInitialMessages(
           gracefulShutdownSync(1)
           return { messages: [] }
         }
-
         // Hydrate local transcript from remote before loading
         if (isEnvTruthy(process.env.CLAUDE_CODE_USE_CCR_V2)) {
           // Await restore alongside hydration so SSE catchup lands on
@@ -5299,7 +5005,6 @@ async function loadInitialMessages(
             parsedSessionId.ingressUrl,
           )
         }
-
         // Load the conversation with the specified session ID
         result = await loadConversationForResume(
           parsedSessionId.sessionId,
@@ -5321,7 +5026,6 @@ async function loadInitialMessages(
           return { messages: [] }
         }
       }
-
       // hydrateFromCCRv2InternalEvents writes an empty transcript file for
       // fresh sessions (writeFile(sessionFile, '') with zero events), so
       // loadConversationForResume returns {messages: []} not null. Treat
@@ -5348,7 +5052,6 @@ async function loadInitialMessages(
           return { messages: [] }
         }
       }
-
       // Handle resumeSessionAt feature
       if (options.resumeSessionAt) {
         const index = result.messages.findIndex(
@@ -5362,10 +5065,8 @@ async function loadInitialMessages(
           gracefulShutdownSync(1)
           return { messages: [] }
         }
-
         result.messages = index >= 0 ? result.messages.slice(0, index + 1) : []
       }
-
       // Match coordinator mode to the resumed session's mode
       if (feature('COORDINATOR_MODE') && coordinatorModeModule) {
         const warning = coordinatorModeModule.matchSessionMode(result.mode)
@@ -5379,7 +5080,6 @@ async function loadInitialMessages(
           const freshAgentDefs = await getAgentDefinitionsWithOverrides(
             getCwd(),
           )
-
           setAppState(prev => ({
             ...prev,
             agentDefinitions: {
@@ -5390,7 +5090,6 @@ async function loadInitialMessages(
           }))
         }
       }
-
       // Reuse the resumed session's ID
       if (!options.forkSession && result.sessionId) {
         switchSession(
@@ -5417,21 +5116,18 @@ async function loadInitialMessages(
         )
       }
       restoreSessionStateFromLog(result, setAppState)
-
       // Restore session metadata so it's re-appended on exit via reAppendSessionMetadata
       restoreSessionMetadata(
         options.forkSession
           ? { ...result, worktreeSession: undefined }
           : result,
       )
-
       // Write mode entry for the resumed session
       if (feature('COORDINATOR_MODE') && coordinatorModeModule) {
         saveMode(
           coordinatorModeModule.isCoordinatorMode() ? 'coordinator' : 'normal',
         )
       }
-
       return {
         messages: result.messages,
         turnInterruptionState: result.turnInterruptionState,
@@ -5448,16 +5144,14 @@ async function loadInitialMessages(
       return { messages: [] }
     }
   }
-
   // Join the SessionStart hooks promise kicked in main.tsx (or run fresh if
-  // it wasn't kicked — e.g. --continue with no prior session falls through
+  // it wasn't kicked â€” e.g. --continue with no prior session falls through
   // here with sessionStartHooksPromise undefined because main.tsx guards on continue)
   return {
     messages: await (options.sessionStartHooksPromise ??
       processSessionStartHooks('startup')),
   }
 }
-
 function getStructuredIO(
   inputPrompt: string | AsyncIterable<string>,
   options: {
@@ -5487,13 +5181,11 @@ function getStructuredIO(
   } else {
     inputStream = inputPrompt
   }
-
   // Use RemoteIO if sdkUrl is provided, otherwise use regular StructuredIO
   return options.sdkUrl
     ? new RemoteIO(options.sdkUrl, inputStream, options.replayUserMessages)
     : new StructuredIO(inputStream, options.replayUserMessages)
 }
-
 /**
  * Handles unexpected permission responses by looking up the unresolved tool
  * call in the transcript and enqueuing it for execution.
@@ -5521,11 +5213,9 @@ export async function handleOrphanedPermissionResponse({
     if (!toolUseID) {
       return false
     }
-
     logForDebugging(
       `handleOrphanedPermissionResponse: received orphaned control_response for toolUseID=${toolUseID} request_id=${message.response.request_id}`,
     )
-
     // Prevent re-processing the same orphaned tool_use. Without this guard,
     // duplicate control_response deliveries (e.g. from WebSocket reconnect)
     // cause the same tool to be executed multiple times, producing duplicate
@@ -5537,7 +5227,6 @@ export async function handleOrphanedPermissionResponse({
       )
       return false
     }
-
     const assistantMessage = await findUnresolvedToolUse(toolUseID)
     if (!assistantMessage) {
       logForDebugging(
@@ -5545,7 +5234,6 @@ export async function handleOrphanedPermissionResponse({
       )
       return false
     }
-
     handledToolUseIds.add(toolUseID)
     logForDebugging(
       `handleOrphanedPermissionResponse: enqueuing orphaned permission for toolUseID=${toolUseID} messageID=${assistantMessage.message.id}`,
@@ -5558,19 +5246,16 @@ export async function handleOrphanedPermissionResponse({
         assistantMessage,
       },
     })
-
     onEnqueued?.()
     return true
   }
   return false
 }
-
 export type DynamicMcpState = {
   clients: MCPServerConnection[]
   tools: Tools
   configs: Record<string, ScopedMcpServerConfig>
 }
-
 /**
  * Converts a process transport config to a scoped config.
  * The types are structurally compatible, so we just add the scope.
@@ -5583,7 +5268,6 @@ function toScopedConfig(
   // Adding scope makes it a valid ScopedMcpServerConfig
   return { ...config, scope: 'dynamic' } as ScopedMcpServerConfig
 }
-
 /**
  * State for SDK MCP servers that run in the SDK process.
  */
@@ -5592,7 +5276,6 @@ export type SdkMcpState = {
   clients: MCPServerConnection[]
   tools: Tools
 }
-
 /**
  * Result of handleMcpSetServers - contains new state and response data.
  */
@@ -5602,12 +5285,11 @@ export type McpSetServersResult = {
   newDynamicState: DynamicMcpState
   sdkServersChanged: boolean
 }
-
 /**
  * Handles mcp_set_servers requests by processing both SDK and process-based servers.
  * SDK servers run in the SDK process; process-based servers are spawned by the CLI.
  *
- * Applies enterprise allowedMcpServers/deniedMcpServers policy — same filter as
+ * Applies enterprise allowedMcpServers/deniedMcpServers policy â€” same filter as
  * --mcp-config (see filterMcpServersByPolicy call in main.tsx). Without this,
  * SDK V2 Query.setMcpServers() was a second policy bypass vector. Blocked servers
  * are reported in response.errors so the SDK consumer knows why they weren't added.
@@ -5619,9 +5301,9 @@ export async function handleMcpSetServers(
   setAppState: (f: (prev: AppState) => AppState) => void,
 ): Promise<McpSetServersResult> {
   // Enforce enterprise MCP policy on process-based servers (stdio/http/sse).
-  // Mirrors the --mcp-config filter in main.tsx — both user-controlled injection
+  // Mirrors the --mcp-config filter in main.tsx â€” both user-controlled injection
   // paths must have the same gate. type:'sdk' servers are exempt (SDK-managed,
-  // CLI never spawns/connects for them — see filterMcpServersByPolicy jsdoc).
+  // CLI never spawns/connects for them â€” see filterMcpServersByPolicy jsdoc).
   // Blocked servers go into response.errors so the SDK caller sees why.
   const { allowed: allowedServers, blocked } = filterMcpServersByPolicy(servers)
   const policyErrors: Record<string, string> = {}
@@ -5629,11 +5311,9 @@ export async function handleMcpSetServers(
     policyErrors[name] =
       'Blocked by enterprise policy (allowedMcpServers/deniedMcpServers)'
   }
-
   // Separate SDK servers from process-based servers
   const sdkServers: Record<string, McpSdkServerConfig> = {}
   const processServers: Record<string, McpServerConfigForProcessTransport> = {}
-
   for (const [name, config] of Object.entries(allowedServers)) {
     if (config.type === 'sdk') {
       sdkServers[name] = config
@@ -5641,17 +5321,14 @@ export async function handleMcpSetServers(
       processServers[name] = config
     }
   }
-
   // Handle SDK servers
   const currentSdkNames = new Set(Object.keys(sdkState.configs))
   const newSdkNames = new Set(Object.keys(sdkServers))
   const sdkAdded: string[] = []
   const sdkRemoved: string[] = []
-
   const newSdkConfigs = { ...sdkState.configs }
   let newSdkClients = [...sdkState.clients]
   let newSdkTools = [...sdkState.tools]
-
   // Remove SDK servers no longer in desired state
   for (const name of currentSdkNames) {
     if (!newSdkNames.has(name)) {
@@ -5666,7 +5343,6 @@ export async function handleMcpSetServers(
       sdkRemoved.push(name)
     }
   }
-
   // Add new SDK servers as pending - they'll be upgraded to connected
   // when updateSdkMcp() runs on the next query
   for (const [name, config] of Object.entries(sdkServers)) {
@@ -5681,14 +5357,12 @@ export async function handleMcpSetServers(
       sdkAdded.push(name)
     }
   }
-
   // Handle process-based servers
   const processResult = await reconcileMcpServers(
     processServers,
     dynamicState,
     setAppState,
   )
-
   return {
     response: {
       added: [...sdkAdded, ...processResult.response.added],
@@ -5704,7 +5378,6 @@ export async function handleMcpSetServers(
     sdkServersChanged: sdkAdded.length > 0 || sdkRemoved.length > 0,
   }
 }
-
 /**
  * Reconciles the current set of dynamic MCP servers with a new desired state.
  * Handles additions, removals, and config changes.
@@ -5719,10 +5392,8 @@ export async function reconcileMcpServers(
 }> {
   const currentNames = new Set(Object.keys(currentState.configs))
   const desiredNames = new Set(Object.keys(desiredConfigs))
-
   const toRemove = [...currentNames].filter(n => !desiredNames.has(n))
   const toAdd = [...desiredNames].filter(n => !currentNames.has(n))
-
   // Check for config changes (same name, different config)
   const toCheck = [...currentNames].filter(n => desiredNames.has(n))
   const toReplace = toCheck.filter(name => {
@@ -5732,14 +5403,11 @@ export async function reconcileMcpServers(
     const desiredConfig = toScopedConfig(desiredConfigRaw)
     return !areMcpConfigsEqual(currentConfig, desiredConfig)
   })
-
   const removed: string[] = []
   const added: string[] = []
   const errors: Record<string, string> = {}
-
   let newClients = [...currentState.clients]
   let newTools = [...currentState.tools]
-
   // Remove old servers (including ones being replaced)
   for (const name of [...toRemove, ...toReplace]) {
     const client = newClients.find(c => c.name === name)
@@ -5755,44 +5423,36 @@ export async function reconcileMcpServers(
       // Clear the memoization cache
       await clearServerCache(name, config)
     }
-
     // Remove tools from this server
     const prefix = `mcp__${name}__`
     newTools = newTools.filter(t => !t.name.startsWith(prefix))
-
     // Remove from clients list
     newClients = newClients.filter(c => c.name !== name)
-
     // Track removal (only for actually removed, not replaced)
     if (toRemove.includes(name)) {
       removed.push(name)
     }
   }
-
   // Add new servers (including replacements)
   for (const name of [...toAdd, ...toReplace]) {
     const config = desiredConfigs[name]
     if (!config) continue
     const scopedConfig = toScopedConfig(config)
-
     // SDK servers are managed by the SDK process, not the CLI.
     // Just track them without trying to connect.
     if (config.type === 'sdk') {
       added.push(name)
       continue
     }
-
     try {
       const client = await connectToServer(name, scopedConfig)
       newClients.push(client)
-
       if (client.type === 'connected') {
         const serverTools = await fetchToolsForClient(client)
         newTools.push(...serverTools)
       } else if (client.type === 'failed') {
         errors[name] = client.error || 'Connection failed'
       }
-
       added.push(name)
     } catch (e) {
       const err = toError(e)
@@ -5800,7 +5460,6 @@ export async function reconcileMcpServers(
       logError(err)
     }
   }
-
   // Build new configs
   const newConfigs: Record<string, ScopedMcpServerConfig> = {}
   for (const name of desiredNames) {
@@ -5809,13 +5468,11 @@ export async function reconcileMcpServers(
       newConfigs[name] = toScopedConfig(config)
     }
   }
-
   const newState: DynamicMcpState = {
     clients: newClients,
     tools: newTools,
     configs: newConfigs,
   }
-
   // Update AppState with the new tools
   setAppState(prev => {
     // Get all dynamic server names (current + new)
@@ -5823,7 +5480,6 @@ export async function reconcileMcpServers(
       ...Object.keys(currentState.configs),
       ...Object.keys(newConfigs),
     ])
-
     // Remove old dynamic tools
     const nonDynamicTools = prev.mcp.tools.filter(t => {
       for (const serverName of allDynamicServerNames) {
@@ -5833,12 +5489,10 @@ export async function reconcileMcpServers(
       }
       return true
     })
-
     // Remove old dynamic clients
     const nonDynamicClients = prev.mcp.clients.filter(c => {
       return !allDynamicServerNames.has(c.name)
     })
-
     return {
       ...prev,
       mcp: {
@@ -5848,7 +5502,6 @@ export async function reconcileMcpServers(
       },
     }
   })
-
   return {
     response: { added, removed, errors },
     newState,

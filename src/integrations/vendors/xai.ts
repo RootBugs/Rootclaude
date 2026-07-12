@@ -1,4 +1,4 @@
-import { defineVendor } from '../define.js'
+﻿import { defineVendor } from '../define.js'
 
 export default defineVendor({
   id: 'xai',
@@ -34,7 +34,7 @@ export default defineVendor({
       XAI_CREDENTIAL_SOURCE: ['oauth'],
     },
     missingCredentialMessage:
-      'XAI_API_KEY is required, or sign in with `openclaude auth xai login` (browser OAuth) or `openclaude auth xai device` (remote hosts).',
+      'XAI_API_KEY is required, or sign in with `rootclaude auth xai login` (browser OAuth) or `rootclaude auth xai device` (remote hosts).',
   },
   catalog: {
     source: 'static',

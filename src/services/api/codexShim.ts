@@ -1,4 +1,4 @@
-import { APIError } from '@anthropic-ai/sdk'
+﻿import { APIError } from '@anthropic-ai/sdk'
 import { buildAnthropicUsageFromRawUsage } from './cacheMetrics.js'
 import { compressToolHistory } from './compressToolHistory.js'
 import { fetchWithProxyRetry } from './fetchWithProxyRetry.js'
@@ -118,7 +118,7 @@ function createReaderCanceller(
 }
 
 function makeUsage(usage?: Record<string, unknown>): AnthropicUsage {
-  // Single source of truth for raw → Anthropic shape. Lives in
+  // Single source of truth for raw â†’ Anthropic shape. Lives in
   // cacheMetrics.ts alongside the raw-shape extractor so any new
   // provider quirk requires a one-file change and the integration test
   // can call the exact same function instead of re-implementing it.
@@ -166,7 +166,7 @@ export function convertSystemPrompt(system: unknown): string {
       .map((block: { type?: string; text?: string }) =>
         block.type === 'text' ? (block.text ?? '') : '',
       )
-      // Drop the Anthropic billing/attribution block — Codex's Responses API
+      // Drop the Anthropic billing/attribution block â€” Codex's Responses API
       // doesn't parse it and the per-build fingerprint just churns the
       // upstream prompt cache.
       .filter(text => !text.startsWith('x-anthropic-billing-header'))
@@ -188,7 +188,7 @@ function convertToolResultToText(content: unknown): string {
 
     // ToolSearch results are tool_reference blocks with no text payload. On
     // the Anthropic wire the API expands them server-side; here we render
-    // them as text — the full schema arrives in the next request's tools
+    // them as text â€” the full schema arrives in the next request's tools
     // array (see the discovered-tools filter in claude.ts).
     if (block?.type === 'tool_reference' && typeof block.tool_name === 'string') {
       chunks.push(`Tool "${block.tool_name}" is now loaded and available to call.`)
@@ -474,7 +474,7 @@ function enforceStrictSchema(schema: unknown): Record<string, unknown> {
       record.properties = enforcedProps
       record.required = Object.keys(enforcedProps)
     } else {
-      // No properties — empty object schema with empty required array
+      // No properties â€” empty object schema with empty required array
       record.properties = {}
       record.required = []
     }
@@ -503,7 +503,7 @@ export function convertToolsToResponsesTools(
   tools: Array<{ name?: string; description?: string; input_schema?: Record<string, unknown> }>,
 ): ResponsesTool[] {
   // Note: ToolSearch (the deferral discovery tool) must reach the wire as a
-  // regular function — claude.ts already removes it when tool search is off.
+  // regular function â€” claude.ts already removes it when tool search is off.
   return tools
     .filter(tool => tool.name)
     .map(tool => {
@@ -676,7 +676,7 @@ export async function performCodexRequest(options: {
   if (options.credentials.accountId) {
     headers['chatgpt-account-id'] = options.credentials.accountId
   }
-  headers.originator ??= 'openclaude'
+  headers.originator ??= 'RootClaude'
 
   const response = await fetchWithProxyRetry(
     `${options.request.baseUrl}/responses`,
@@ -717,7 +717,7 @@ async function* readSseEvents(response: Response, signal?: AbortSignal): AsyncGe
 
   /**
    * Read from the stream with an idle timeout. Respects the caller's
-   * AbortSignal — clears the idle timer on abort so the AbortError
+   * AbortSignal â€” clears the idle timer on abort so the AbortError
    * surfaces cleanly instead of a spurious idle timeout.
    */
   async function readWithTimeout(): Promise<Bun.ReadableStreamDefaultReadResult<Uint8Array<ArrayBuffer>>> {
@@ -1138,7 +1138,7 @@ export async function* codexStreamToAnthropic(
         stop_sequence: null,
       },
       // Delegate to the shared normalizer so the streaming message_delta
-      // path uses the same raw→Anthropic conversion as makeUsage() above
+      // path uses the same rawâ†’Anthropic conversion as makeUsage() above
       // and the non-streaming response converter below. Previously this
       // block had its own inline subtraction that missed Kimi / DeepSeek
       // / Gemini raw shapes that the shared helper handles.

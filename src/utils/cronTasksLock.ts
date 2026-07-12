@@ -1,4 +1,4 @@
-// Scheduler lease lock for .openclaude/scheduled_tasks.json.
+﻿// Scheduler lease lock for .RootClaude/scheduled_tasks.json.
 //
 // When multiple Claude sessions run in the same project directory, only one
 // should drive the cron scheduler. The first session to acquire this lock
@@ -20,7 +20,7 @@ import { safeParseJSON } from './json.js'
 import { lazySchema } from './lazySchema.js'
 import { jsonStringify } from './slowOperations.js'
 
-const LOCK_FILE_REL = join('.openclaude', 'scheduled_tasks.lock')
+const LOCK_FILE_REL = join('.RootClaude', 'scheduled_tasks.lock')
 
 const schedulerLockSchema = lazySchema(() =>
   z.object({
@@ -74,7 +74,7 @@ async function tryCreateExclusive(
     const code = getErrnoCode(e)
     if (code === 'EEXIST') return false
     if (code === 'ENOENT') {
-      // .openclaude/ doesn't exist yet — create it and retry once. In steady
+      // .RootClaude/ doesn't exist yet â€” create it and retry once. In steady
       // state the dir already exists (scheduled_tasks.json lives there),
       // so this path is hit at most once.
       await mkdir(dirname(path), { recursive: true })
@@ -102,9 +102,9 @@ function registerLockCleanup(opts?: SchedulerLockOptions): void {
  * Returns true on success, false if another live session holds it.
  *
  * Uses O_EXCL ('wx') for atomic test-and-set. If the file exists:
- *   - Already ours → true (idempotent re-acquire)
- *   - Another live PID → false
- *   - Stale (PID dead / corrupt) → unlink and retry exclusive create once
+ *   - Already ours â†’ true (idempotent re-acquire)
+ *   - Another live PID â†’ false
+ *   - Stale (PID dead / corrupt) â†’ unlink and retry exclusive create once
  *
  * If two sessions race to recover a stale lock, only one create succeeds.
  */
@@ -134,7 +134,7 @@ export async function tryAcquireSchedulerLock(
   const existing = await readLock(dir)
 
   // Already ours (idempotent). After --resume the session ID is restored
-  // but the process has a new PID — update the lock file so other sessions
+  // but the process has a new PID â€” update the lock file so other sessions
   // see a live PID and don't steal it.
   if (existing?.sessionId === sessionId) {
     if (existing.pid !== process.pid) {
@@ -144,8 +144,8 @@ export async function tryAcquireSchedulerLock(
     return true
   }
 
-  // Corrupt or unparseable — treat as stale.
-  // Another live session — blocked.
+  // Corrupt or unparseable â€” treat as stale.
+  // Another live session â€” blocked.
   if (existing && isProcessRunning(existing.pid)) {
     if (lastBlockedBy !== existing.sessionId) {
       lastBlockedBy = existing.sessionId
@@ -156,7 +156,7 @@ export async function tryAcquireSchedulerLock(
     return false
   }
 
-  // Stale — unlink and retry the exclusive create once.
+  // Stale â€” unlink and retry the exclusive create once.
   if (existing) {
     logForDebugging(
       `[ScheduledTasks] recovering stale scheduler lock from PID ${existing.pid}`,

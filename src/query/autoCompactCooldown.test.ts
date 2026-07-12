@@ -39,9 +39,9 @@ const SAVED_ENV = {
     process.env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE,
   DISABLE_AUTO_COMPACT: process.env.DISABLE_AUTO_COMPACT,
   DISABLE_COMPACT: process.env.DISABLE_COMPACT,
-  OPENCLAUDE_MAX_ACTIVE_MESSAGES: process.env.OPENCLAUDE_MAX_ACTIVE_MESSAGES,
-  OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP:
-    process.env.OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP,
+  RootClaude_MAX_ACTIVE_MESSAGES: process.env.RootClaude_MAX_ACTIVE_MESSAGES,
+  RootClaude_MAX_ACTIVE_MESSAGES_HARD_CAP:
+    process.env.RootClaude_MAX_ACTIVE_MESSAGES_HARD_CAP,
 }
 
 let savedGlobalConfig:
@@ -56,7 +56,7 @@ let tempDir: string | undefined
 
 beforeEach(async () => {
   await acquireSharedMutationLock('query/autoCompactCooldown.test.ts')
-  tempDir = mkdtempSync(join(tmpdir(), 'openclaude-autocompact-test-'))
+  tempDir = mkdtempSync(join(tmpdir(), 'RootClaude-autocompact-test-'))
   process.env.CLAUDE_CONFIG_DIR = tempDir
   const globalConfig = getGlobalConfig()
   savedGlobalConfig = {
@@ -73,8 +73,8 @@ beforeEach(async () => {
   process.env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = '1'
   delete process.env.DISABLE_AUTO_COMPACT
   delete process.env.DISABLE_COMPACT
-  delete process.env.OPENCLAUDE_MAX_ACTIVE_MESSAGES
-  delete process.env.OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP
+  delete process.env.RootClaude_MAX_ACTIVE_MESSAGES
+  delete process.env.RootClaude_MAX_ACTIVE_MESSAGES_HARD_CAP
 })
 
 afterEach(() => {
@@ -429,7 +429,7 @@ test('long-session smoke keeps repeated over-cap turns bounded before provider c
 })
 
 test('invalid active-message hard cap override keeps default safety cap', async () => {
-  process.env.OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP = '100O'
+  process.env.RootClaude_MAX_ACTIVE_MESSAGES_HARD_CAP = '100O'
 
   const { terminal, callModel, seenTracking } =
     await runMessageCountHardCapQuery(manySmallMessages(1001))
@@ -440,7 +440,7 @@ test('invalid active-message hard cap override keeps default safety cap', async 
 })
 
 test('explicit zero active-message hard cap override disables safety cap', async () => {
-  process.env.OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP = '0'
+  process.env.RootClaude_MAX_ACTIVE_MESSAGES_HARD_CAP = '0'
 
   const { terminal, callModel, seenTracking } =
     await runMessageCountHardCapQuery(manySmallMessages(1001))

@@ -1,4 +1,4 @@
-import { coerce } from 'semver'
+﻿import { coerce } from 'semver'
 import type { Writable } from 'stream'
 import { env } from '../utils/env.js'
 import { gte } from '../utils/semver.js'
@@ -121,7 +121,7 @@ export function isSynchronizedOutputSupported(): boolean {
 //
 // TERM_PROGRAM is not forwarded over SSH by default, so env-based detection
 // fails when claude runs remotely inside a VS Code integrated terminal.
-// XTVERSION (CSI > 0 q → DCS > | name ST) goes through the pty — the query
+// XTVERSION (CSI > 0 q â†’ DCS > | name ST) goes through the pty â€” the query
 // reaches the *client* terminal and the reply comes back through stdin.
 // App.tsx fires the query when raw mode enables; setXtversionName() is called
 // from the response handler. Readers should treat undefined as "not yet known"
@@ -145,8 +145,8 @@ export function isGhosttyTerminal(): boolean {
 /** True if running in an xterm.js-based terminal (VS Code, Cursor, Windsurf
  *  integrated terminals). Combines TERM_PROGRAM env check (fast, sync, but
  *  not forwarded over SSH) with the XTVERSION probe result (async, survives
- *  SSH — query/reply goes through the pty). Early calls may miss the probe
- *  reply — call lazily (e.g. in an event handler) if SSH detection matters. */
+ *  SSH â€” query/reply goes through the pty). Early calls may miss the probe
+ *  reply â€” call lazily (e.g. in an event handler) if SSH detection matters. */
 export function isXtermJs(): boolean {
   if (process.env.TERM_PROGRAM === 'vscode') return true
   return xtversionName?.startsWith('xterm.js') ?? false
@@ -169,7 +169,7 @@ export function shouldUseMainScreenRewrite(): boolean {
 // Terminals known to correctly implement the Kitty keyboard protocol
 // (CSI >1u) and/or xterm modifyOtherKeys (CSI >4;2m) for ctrl+shift+<letter>
 // disambiguation. We previously enabled unconditionally (#23350), assuming
-// terminals silently ignore unknown CSI — but some terminals honor the enable
+// terminals silently ignore unknown CSI â€” but some terminals honor the enable
 // and emit codepoints our input parser doesn't handle (notably over SSH and
 // in xterm.js-based terminals like VS Code). tmux is allowlisted because it
 // accepts modifyOtherKeys and doesn't forward the kitty sequence to the outer
@@ -189,7 +189,7 @@ export function supportsExtendedKeys(): boolean {
   // Open Claude defaults this off because some real terminals render the UI
   // but stop delivering normal typing once kitty/modifyOtherKeys negotiation
   // is enabled. Power users can opt back in explicitly.
-  if (process.env.OPENCLAUDE_ENABLE_EXTENDED_KEYS !== '1') {
+  if (process.env.RootClaude_ENABLE_EXTENDED_KEYS !== '1') {
     return false
   }
   return EXTENDED_KEYS_TERMINALS.includes(env.terminal ?? '')
@@ -205,7 +205,7 @@ export function hasCursorUpViewportYankBug(): boolean {
   return process.platform === 'win32' || !!process.env.WT_SESSION
 }
 
-// Computed once at module load — terminal capabilities don't change mid-session.
+// Computed once at module load â€” terminal capabilities don't change mid-session.
 // Exported so callers can pass a sync-skip hint gated to specific modes.
 export const SYNC_OUTPUT_SUPPORTED = isSynchronizedOutputSupported()
 

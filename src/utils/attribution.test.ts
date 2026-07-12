@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+﻿import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import {
   getClientType,
   getMainLoopModelOverride,
@@ -134,8 +134,8 @@ const originalEnv = {
   VENICE_API_KEY: process.env.VENICE_API_KEY,
   MIMO_API_KEY: process.env.MIMO_API_KEY,
   BNKR_API_KEY: process.env.BNKR_API_KEY,
-  OPENCLAUDE_DISABLE_CO_AUTHORED_BY:
-    process.env.OPENCLAUDE_DISABLE_CO_AUTHORED_BY,
+  RootClaude_DISABLE_CO_AUTHORED_BY:
+    process.env.RootClaude_DISABLE_CO_AUTHORED_BY,
   CLAUDE_CODE_REMOTE_SESSION_ID: process.env.CLAUDE_CODE_REMOTE_SESSION_ID,
   SESSION_INGRESS_URL: process.env.SESSION_INGRESS_URL,
   USER_TYPE: process.env.USER_TYPE,
@@ -144,7 +144,7 @@ const originalClientType = getClientType()
 const originalMainLoopModelOverride = getMainLoopModelOverride()
 
 const defaultPrAttribution =
-  '🤖 Generated with [OpenClaude](https://github.com/Gitlawb/openclaude)'
+  '🤖 Generated with [RootClaude](https://github.com/Gitlawb/RootClaude)'
 
 function useSettings(settings: SettingsJson): void {
   testSettings = settings
@@ -196,7 +196,7 @@ beforeEach(async () => {
   process.env.CLAUDE_CODE_USE_OPENAI = '1'
   process.env.OPENAI_MODEL = 'gpt-5.5'
   setMainLoopModelOverride('gpt-5.5')
-  delete process.env.OPENCLAUDE_DISABLE_CO_AUTHORED_BY
+  delete process.env.RootClaude_DISABLE_CO_AUTHORED_BY
   delete process.env.CLAUDE_CODE_REMOTE_SESSION_ID
   delete process.env.SESSION_INGRESS_URL
   delete process.env.USER_TYPE
@@ -266,7 +266,7 @@ describe('getDefaultCommitCoAuthorName', () => {
         apiProvider: 'openai',
         isInternalRepo: false,
       }),
-    ).toBe('OpenClaude (gpt-5.5)')
+    ).toBe('RootClaude (gpt-5.5)')
   })
 
   it('does not apply internal Claude formatting to non-Claude providers', () => {
@@ -276,7 +276,7 @@ describe('getDefaultCommitCoAuthorName', () => {
         apiProvider: 'openai',
         isInternalRepo: true,
       }),
-    ).toBe('OpenClaude (gpt-5.5)')
+    ).toBe('RootClaude (gpt-5.5)')
   })
 
   it('keeps the codename-safe fallback for unknown first-party models', () => {
@@ -313,12 +313,12 @@ describe('getDefaultCommitCoAuthorName', () => {
     ).toBe('Claude Opus 4.6')
   })
 
-  it('uses the OpenClaude email for commit attribution across providers', () => {
+  it('uses the RootClaude email for commit attribution across providers', () => {
     expect(getDefaultCommitCoAuthorEmail('openai')).toBe(
-      'openclaude@gitlawb.com',
+      'RootClaude@gitlawb.com',
     )
     expect(getDefaultCommitCoAuthorEmail('firstParty')).toBe(
-      'openclaude@gitlawb.com',
+      'RootClaude@gitlawb.com',
     )
   })
 })
@@ -367,7 +367,7 @@ describe('getAttributionTexts', () => {
 
     const attribution = getAttributionTexts()
     expect(attribution.commit).toStartWith('Co-Authored-By: ')
-    expect(attribution.commit).toEndWith(' <openclaude@gitlawb.com>')
+    expect(attribution.commit).toEndWith(' <RootClaude@gitlawb.com>')
     expect(attribution.pr).toBe(defaultPrAttribution)
   })
 
@@ -428,8 +428,8 @@ describe('getAttributionTexts', () => {
     expect(getAttributionTexts()).toEqual({ commit: '', pr: '' })
   })
 
-  it('uses OPENCLAUDE_DISABLE_CO_AUTHORED_BY to disable the old default co-author trailer', () => {
-    process.env.OPENCLAUDE_DISABLE_CO_AUTHORED_BY = '1'
+  it('uses RootClaude_DISABLE_CO_AUTHORED_BY to disable the old default co-author trailer', () => {
+    process.env.RootClaude_DISABLE_CO_AUTHORED_BY = '1'
     useSettings({ includeCoAuthoredBy: true })
 
     expect(getAttributionTexts()).toEqual({
@@ -438,8 +438,8 @@ describe('getAttributionTexts', () => {
     })
   })
 
-  it('does not let OPENCLAUDE_DISABLE_CO_AUTHORED_BY override explicit commit attribution', () => {
-    process.env.OPENCLAUDE_DISABLE_CO_AUTHORED_BY = '1'
+  it('does not let RootClaude_DISABLE_CO_AUTHORED_BY override explicit commit attribution', () => {
+    process.env.RootClaude_DISABLE_CO_AUTHORED_BY = '1'
     useSettings({
       attribution: { commit: 'Reviewed-by: Human <h@example.com>' },
     })

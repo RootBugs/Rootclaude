@@ -30,7 +30,7 @@ describe('convertToSandboxRuntimeConfig', () => {
     previousOriginalCwd = getOriginalCwd()
     previousCwd = getCwdState()
 
-    tempRoot = await mkdtemp(join(tmpdir(), 'openclaude-sandbox-adapter-'))
+    tempRoot = await mkdtemp(join(tmpdir(), 'RootClaude-sandbox-adapter-'))
     const originalCwd = join(tempRoot, 'original-project')
     activeCwd = join(tempRoot, 'active-project')
 
@@ -56,14 +56,14 @@ describe('convertToSandboxRuntimeConfig', () => {
     }
   })
 
-  test('denies canonical OpenClaude settings files in changed cwd', () => {
+  test('denies canonical RootClaude settings files in changed cwd', () => {
     const config = convertToSandboxRuntimeConfig({} as SettingsJson)
 
     expect(config.filesystem.denyWrite).toContain(
-      resolve(activeCwd, '.openclaude', 'settings.json'),
+      resolve(activeCwd, '.RootClaude', 'settings.json'),
     )
     expect(config.filesystem.denyWrite).toContain(
-      resolve(activeCwd, '.openclaude', 'settings.local.json'),
+      resolve(activeCwd, '.RootClaude', 'settings.local.json'),
     )
   })
 

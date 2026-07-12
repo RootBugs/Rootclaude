@@ -1,4 +1,4 @@
-// biome-ignore-all lint/suspicious/noConsole: file uses console intentionally
+﻿// biome-ignore-all lint/suspicious/noConsole: file uses console intentionally
 /**
  * Chrome Native Host - Pure TypeScript Implementation
  *
@@ -28,7 +28,7 @@ const MAX_MESSAGE_SIZE = 1024 * 1024 // 1MB - Max message size that can be sent 
 
 const LOG_FILE =
   process.env.USER_TYPE === 'ant'
-    ? join(homedir(), '.openclaude', 'debug', 'chrome-native-host.txt')
+    ? join(homedir(), '.RootClaude', 'debug', 'chrome-native-host.txt')
     : undefined
 
 function log(message: string, ...args: unknown[]): void {

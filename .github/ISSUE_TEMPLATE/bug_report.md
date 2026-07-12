@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a reproducible problem in OpenClaude
+about: Report a reproducible problem in RootClaude
 title: ""
 labels: ""
 assignees: ""
@@ -26,8 +26,8 @@ What happened instead?
 
 ## Environment
 
-Run `openclaude doctor report --markdown` and paste the redacted report here.
-For JSON attachment, run `openclaude doctor report --json --out openclaude-report.json`.
+Run `RootClaude doctor report --markdown` and paste the redacted report here.
+For JSON attachment, run `RootClaude doctor report --json --out RootClaude-report.json`.
 
 ## Logs / Screenshots
 

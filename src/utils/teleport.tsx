@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 import chalk from 'chalk';
 import { randomUUID } from 'crypto';
 import React from 'react';
@@ -46,7 +46,6 @@ export type TeleportResult = {
 };
 export type TeleportProgressStep = 'validating' | 'fetching_logs' | 'fetching_branch' | 'checking_out' | 'done';
 export type TeleportProgressCallback = (step: TeleportProgressStep) => void;
-
 /**
  * Creates a system message to inform about teleport session resume
  * @returns SystemMessage indicating session was resumed from another machine
@@ -58,7 +57,6 @@ function createTeleportResumeSystemMessage(branchError: Error | null): SystemMes
   const formattedError = branchError instanceof TeleportOperationError ? branchError.formattedMessage : branchError.message;
   return createSystemMessage(`Session resumed without branch: ${formattedError}`, 'warning');
 }
-
 /**
  * Creates a user message to inform the model about teleport session resume
  * @returns User message indicating session was resumed from another machine
@@ -76,16 +74,12 @@ type TeleportToRemoteResponse = {
 const SESSION_TITLE_AND_BRANCH_PROMPT = `You are coming up with a succinct title and git branch name for a coding session based on the provided description. The title should be clear, concise, and accurately reflect the content of the coding task.
 You should keep it short and simple, ideally no more than 6 words. Avoid using jargon or overly technical terms unless absolutely necessary. The title should be easy to understand for anyone reading it.
 Use sentence case for the title (capitalize only the first word and proper nouns), not Title Case.
-
 The branch name should be clear, concise, and accurately reflect the content of the coding task.
 You should keep it short and simple, ideally no more than 4 words. The branch should always start with "claude/" and should be all lower case, with words separated by dashes.
-
 Return a JSON object with "title" and "branch" fields.
-
 Example 1: {"title": "Fix login button not working on mobile", "branch": "claude/fix-mobile-login-button"}
 Example 2: {"title": "Update README with installation instructions", "branch": "claude/update-readme"}
 Example 3: {"title": "Improve performance of data processing script", "branch": "claude/improve-data-processing"}
-
 Here is the session description:
 <description>{description}</description>
 Please generate a title and branch name for this session.`;
@@ -93,7 +87,6 @@ type TitleAndBranch = {
   title: string;
   branchName: string;
 };
-
 /**
  * Generates a title and branch name for a coding session using Claude Haiku
  * @param description The description/prompt for the session
@@ -132,7 +125,6 @@ async function generateTitleAndBranch(description: string, signal: AbortSignal):
         mcpTools: []
       }
     });
-
     // Extract text from the response
     const firstBlock = response.message.content[0];
     if (firstBlock?.type !== 'text') {
@@ -164,7 +156,6 @@ async function generateTitleAndBranch(description: string, signal: AbortSignal):
     };
   }
 }
-
 /**
  * Validates that the git working directory is clean (ignoring untracked files)
  * Untracked files are ignored because they won't be lost during branch switching
@@ -179,7 +170,6 @@ export async function validateGitState(): Promise<void> {
     throw error;
   }
 }
-
 /**
  * Fetches a specific branch from remote origin
  * @param branch The branch to fetch. If not specified, fetches all branches.
@@ -207,7 +197,6 @@ async function fetchFromOrigin(branch?: string): Promise<void> {
     }
   }
 }
-
 /**
  * Ensures that the current branch has an upstream set
  * If not, sets it to origin/<branchName> if that remote branch exists
@@ -222,7 +211,6 @@ async function ensureUpstreamIsSet(branchName: string): Promise<void> {
     logForDebugging(`Branch '${branchName}' already has upstream set`);
     return;
   }
-
   // Check if origin/<branchName> exists
   const {
     code: remoteCheckCode
@@ -244,7 +232,6 @@ async function ensureUpstreamIsSet(branchName: string): Promise<void> {
     logForDebugging(`Remote branch 'origin/${branchName}' does not exist, skipping upstream setup`);
   }
 }
-
 /**
  * Checks out a specific branch
  */
@@ -254,16 +241,13 @@ async function checkoutBranch(branchName: string): Promise<void> {
     code: checkoutCode,
     stderr: checkoutStderr
   } = await execFileNoThrow(gitExe(), ['checkout', branchName]);
-
   // If that fails, try to checkout from origin
   if (checkoutCode !== 0) {
     logForDebugging(`Local checkout failed, trying to checkout from origin: ${checkoutStderr}`);
-
     // Try to checkout the remote branch and create a local tracking branch
     const result = await execFileNoThrow(gitExe(), ['checkout', '-b', branchName, '--track', `origin/${branchName}`]);
     checkoutCode = result.code;
     checkoutStderr = result.stderr;
-
     // If that also fails, try without -b in case the branch exists but isn't checked out
     if (checkoutCode !== 0) {
       logForDebugging(`Remote checkout with -b failed, trying without -b: ${checkoutStderr}`);
@@ -276,11 +260,9 @@ async function checkoutBranch(branchName: string): Promise<void> {
     logEvent('tengu_teleport_error_branch_checkout_failed', {});
     throw new TeleportOperationError(`Failed to checkout branch '${branchName}': ${checkoutStderr}`, chalk.red(`Failed to checkout branch '${branchName}'\n`));
   }
-
   // After successful checkout, ensure upstream is set
   await ensureUpstreamIsSet(branchName);
 }
-
 /**
  * Gets the current branch name
  */
@@ -290,7 +272,6 @@ async function getCurrentBranch(): Promise<string> {
   } = await execFileNoThrow(gitExe(), ['branch', '--show-current']);
   return currentBranch.trim();
 }
-
 /**
  * Processes messages for teleport resume, removing incomplete tool_use blocks
  * and adding teleport notice messages
@@ -301,12 +282,10 @@ async function getCurrentBranch(): Promise<string> {
 export function processMessagesForTeleportResume(messages: Message[], error: Error | null): Message[] {
   // Shared logic with resume for handling interruped session transcripts
   const deserializedMessages = deserializeMessages(messages);
-
   // Add user message about teleport resume (visible to model)
   const messagesWithTeleportNotice = [...deserializedMessages, createTeleportResumeUserMessage(), createTeleportResumeSystemMessage(error)];
   return messagesWithTeleportNotice;
 }
-
 /**
  * Checks out the specified branch for a teleported session
  * @param branch Optional branch to checkout
@@ -342,7 +321,6 @@ export async function checkOutTeleportedSessionBranch(branch?: string): Promise<
     };
   }
 }
-
 /**
  * Result of repository validation for teleport
  */
@@ -350,13 +328,12 @@ export type RepoValidationResult = {
   status: 'match' | 'mismatch' | 'not_in_repo' | 'no_repo_required' | 'error';
   sessionRepo?: string;
   currentRepo?: string | null;
-  /** Host of the session repo (e.g. "github.com" or "ghe.corp.com") — for display only */
+  /** Host of the session repo (e.g. "github.com" or "ghe.corp.com") â€” for display only */
   sessionHost?: string;
-  /** Host of the current repo (e.g. "github.com" or "ghe.corp.com") — for display only */
+  /** Host of the current repo (e.g. "github.com" or "ghe.corp.com") â€” for display only */
   currentHost?: string;
   errorMessage?: string;
 };
-
 /**
  * Validates that the current repository matches the session's repository.
  * Returns a result object instead of throwing, allowing the caller to handle mismatches.
@@ -392,9 +369,8 @@ export async function validateSessionRepository(sessionData: SessionResource): P
       currentRepo: null
     };
   }
-
   // Compare both owner/repo and host to avoid cross-instance mismatches.
-  // Strip ports before comparing hosts — SSH remotes omit the port while
+  // Strip ports before comparing hosts â€” SSH remotes omit the port while
   // HTTPS remotes may include a non-standard port (e.g. ghe.corp.com:8443),
   // which would cause a false mismatch.
   const stripPort = (host: string): string => host.replace(/:\d+$/, '');
@@ -407,8 +383,7 @@ export async function validateSessionRepository(sessionData: SessionResource): P
       currentRepo
     };
   }
-
-  // Repo mismatch — keep sessionRepo/currentRepo as plain "owner/repo" so
+  // Repo mismatch â€” keep sessionRepo/currentRepo as plain "owner/repo" so
   // downstream consumers (e.g. getKnownPathsForRepo) can use them as lookup keys.
   // Include host information in separate fields for display purposes.
   return {
@@ -419,7 +394,6 @@ export async function validateSessionRepository(sessionData: SessionResource): P
     currentHost: currentParsed?.host
   };
 }
-
 /**
  * Handles teleporting from a code session ID.
  * Fetches session logs and validates repo.
@@ -440,7 +414,6 @@ export async function teleportResumeCodeSession(sessionId: string, onProgress?: 
       });
       throw new Error('Claude Code web sessions require authentication with a Claude.ai account. API key authentication is not sufficient. Please run /login to authenticate, or check your authentication status with /status.');
     }
-
     // Get organization UUID
     const orgUUID = await getOrganizationUUID();
     if (!orgUUID) {
@@ -449,7 +422,6 @@ export async function teleportResumeCodeSession(sessionId: string, onProgress?: 
       });
       throw new Error('Unable to get organization UUID for constructing session URL');
     }
-
     // Fetch and validate repository matches before resuming
     onProgress?.('validating');
     const sessionData = await fetchSession(sessionId);
@@ -466,7 +438,7 @@ export async function teleportResumeCodeSession(sessionId: string, onProgress?: 
           });
           // Include host for GHE users so they know which instance the repo is on
           const notInRepoDisplay = repoValidation.sessionHost && repoValidation.sessionHost.toLowerCase() !== 'github.com' ? `${repoValidation.sessionHost}/${repoValidation.sessionRepo}` : repoValidation.sessionRepo;
-          throw new TeleportOperationError(`You must run openclaude --teleport ${sessionId} from a checkout of ${notInRepoDisplay}.`, chalk.red(`You must run openclaude --teleport ${sessionId} from a checkout of ${chalk.bold(notInRepoDisplay)}.\n`));
+          throw new TeleportOperationError(`You must Run rootclaude --teleport ${sessionId} from a checkout of ${notInRepoDisplay}.`, chalk.red(`You must run rootclaude --teleport ${sessionId} from a checkout of ${chalk.bold(notInRepoDisplay)}.\n`));
         }
       case 'mismatch':
         {
@@ -478,7 +450,7 @@ export async function teleportResumeCodeSession(sessionId: string, onProgress?: 
           const hostsDiffer = repoValidation.sessionHost && repoValidation.currentHost && repoValidation.sessionHost.replace(/:\d+$/, '').toLowerCase() !== repoValidation.currentHost.replace(/:\d+$/, '').toLowerCase();
           const sessionDisplay = hostsDiffer ? `${repoValidation.sessionHost}/${repoValidation.sessionRepo}` : repoValidation.sessionRepo;
           const currentDisplay = hostsDiffer ? `${repoValidation.currentHost}/${repoValidation.currentRepo}` : repoValidation.currentRepo;
-          throw new TeleportOperationError(`You must run openclaude --teleport ${sessionId} from a checkout of ${sessionDisplay}.\nThis repo is ${currentDisplay}.`, chalk.red(`You must run openclaude --teleport ${sessionId} from a checkout of ${chalk.bold(sessionDisplay)}.\nThis repo is ${chalk.bold(currentDisplay)}.\n`));
+          throw new TeleportOperationError(`You must Run rootclaude --teleport ${sessionId} from a checkout of ${sessionDisplay}.\nThis repo is ${currentDisplay}.`, chalk.red(`You must run rootclaude --teleport ${sessionId} from a checkout of ${chalk.bold(sessionDisplay)}.\nThis repo is ${chalk.bold(currentDisplay)}.\n`));
         }
       case 'error':
         throw new TeleportOperationError(repoValidation.errorMessage || 'Failed to validate session repository', chalk.red(`Error: ${repoValidation.errorMessage || 'Failed to validate session repository'}\n`));
@@ -501,7 +473,6 @@ export async function teleportResumeCodeSession(sessionId: string, onProgress?: 
     throw new TeleportOperationError(err.message, chalk.red(`Error: ${err.message}\n`));
   }
 }
-
 /**
  * Helper function to handle teleport prerequisites (authentication and git state)
  * Shows TeleportError dialog rendered into the existing root if needed
@@ -514,7 +485,6 @@ async function handleTeleportPrerequisites(root: Root, errorsToIgnore?: Set<Tele
       error_types: Array.from(errors).join(',') as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
       errors_ignored: Array.from(errorsToIgnore || []).join(',') as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
     });
-
     // Show TeleportError dialog for user interaction
     await new Promise<void>(resolve => {
       root.render(<AppStateProvider>
@@ -531,7 +501,6 @@ async function handleTeleportPrerequisites(root: Root, errorsToIgnore?: Set<Tele
     });
   }
 }
-
 /**
  * Creates a remote Claude.ai session with error handling and UI feedback.
  * Shows prerequisite error dialog in the existing root if needed.
@@ -551,7 +520,6 @@ export async function teleportToRemoteWithErrorHandling(root: Root, description:
     onBundleFail: msg => process.stderr.write(`\n${msg}\n`)
   });
 }
-
 /**
  * Fetches session data from the session ingress API (/v1/session_ingress/)
  * Uses session logs instead of SDK events to get the correct message structure
@@ -569,10 +537,10 @@ export async function teleportFromSessionsAPI(sessionId: string, orgUUID: string
     logForDebugging(`[teleport] Starting fetch for session: ${sessionId}`);
     onProgress?.('fetching_logs');
     const logsStartTime = Date.now();
-    // Try CCR v2 first (GetTeleportEvents — server dispatches Spanner/
+    // Try CCR v2 first (GetTeleportEvents â€” server dispatches Spanner/
     // threadstore). Fall back to session-ingress if it returns null
     // (endpoint not yet deployed, or transient error). Once session-ingress
-    // is gone, the fallback becomes a no-op — getSessionLogsViaOAuth will
+    // is gone, the fallback becomes a no-op â€” getSessionLogsViaOAuth will
     // return null too and we fail with "Failed to fetch session logs".
     let logs = await getTeleportEvents(sessionId, accessToken, orgUUID);
     if (logs === null) {
@@ -583,12 +551,10 @@ export async function teleportFromSessionsAPI(sessionId: string, orgUUID: string
     if (logs === null) {
       throw new Error('Failed to fetch session logs');
     }
-
     // Filter to get only transcript messages, excluding sidechain messages
     const filterStartTime = Date.now();
     const messages = logs.filter(entry => isTranscriptMessage(entry) && !entry.isSidechain) as Message[];
     logForDebugging(`[teleport] Filtered ${logs.length} entries to ${messages.length} messages in ${Date.now() - filterStartTime}ms`);
-
     // Extract branch info from session data
     onProgress?.('fetching_branch');
     const branch = sessionData ? getBranchFromSession(sessionData) : undefined;
@@ -602,7 +568,6 @@ export async function teleportFromSessionsAPI(sessionId: string, orgUUID: string
     };
   } catch (error) {
     const err = toError(error);
-
     // Handle 404 specifically
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       logEvent('tengu_teleport_error_session_not_found_404', {
@@ -614,7 +579,6 @@ export async function teleportFromSessionsAPI(sessionId: string, orgUUID: string
     throw new Error(`Failed to fetch session from Sessions API: ${err.message}`);
   }
 }
-
 /**
  * Response type for polling remote session events (uses SDK events format)
  */
@@ -624,7 +588,6 @@ export type PollRemoteSessionResponse = {
   branch?: string;
   sessionStatus?: 'idle' | 'running' | 'requires_action' | 'archived';
 };
-
 /**
  * Polls remote session events. Pass the previous response's `lastEventId`
  * as `afterId` to fetch only the delta. Set `skipMetadata` to avoid the
@@ -653,8 +616,7 @@ export async function pollRemoteSessionEvents(sessionId: string, afterId: string
     first_id: string | null;
     last_id: string | null;
   };
-
-  // Cap is a safety valve against stuck cursors; steady-state is 0–1 pages.
+  // Cap is a safety valve against stuck cursors; steady-state is 0â€“1 pages.
   const MAX_EVENT_PAGES = 50;
   const sdkMessages: SDKMessage[] = [];
   let cursor = afterId;
@@ -693,7 +655,6 @@ export async function pollRemoteSessionEvents(sessionId: string, afterId: string
       lastEventId: cursor
     };
   }
-
   // Fetch session metadata (branch, status)
   let branch: string | undefined;
   let sessionStatus: PollRemoteSessionResponse['sessionStatus'];
@@ -713,7 +674,6 @@ export async function pollRemoteSessionEvents(sessionId: string, afterId: string
     sessionStatus
   };
 }
-
 /**
  * Creates a remote Claude.ai session using the Sessions API.
  *
@@ -723,7 +683,7 @@ export async function pollRemoteSessionEvents(sessionId: string, afterId: string
  *   origin remote; far fewer pass the full precondition chain.
  * - Bundle (CCR_FORCE_BUNDLE=1): CLI creates `git bundle --all`, uploads via Files
  *   API, passes file_id as seed_bundle_file_id on the session context. CCR
- *   downloads it and clones from the bundle. No GitHub dependency — works for
+ *   downloads it and clones from the bundle. No GitHub dependency â€” works for
  *   local-only repos. Reach: 54% of CLI sessions (anything with .git/).
  *   Backend: anthropic#303856.
  */
@@ -743,7 +703,7 @@ export async function teleportToRemote(options: {
   useDefaultEnvironment?: boolean;
   /**
    * Explicit environment_id (e.g. the code_review synthetic env). Bypasses
-   * fetchEnvironments; the usual repo-detection → git source still runs so
+   * fetchEnvironments; the usual repo-detection â†’ git source still runs so
    * the container gets the repo checked out (orchestrator reads --repo-dir
    * from pwd, it doesn't clone).
    */
@@ -761,7 +721,7 @@ export async function teleportToRemote(options: {
    * When set with environmentId, creates and uploads a git bundle of the
    * local working tree (createAndUploadGitBundle handles the stash-create
    * for uncommitted changes) and passes it as seed_bundle_file_id. Backend
-   * clones from the bundle instead of GitHub — container gets the caller's
+   * clones from the bundle instead of GitHub â€” container gets the caller's
    * exact local state. Needs .git/ only, not a GitHub remote.
    */
   useBundle?: boolean;
@@ -773,7 +733,7 @@ export async function teleportToRemote(options: {
   onBundleFail?: (message: string) => void;
   /**
    * When true, disables the git-bundle fallback entirely. Use for flows like
-   * autofix where CCR must push to GitHub — a bundle can't do that.
+   * autofix where CCR must push to GitHub â€” a bundle can't do that.
    */
   skipBundle?: boolean;
   /**
@@ -805,16 +765,14 @@ export async function teleportToRemote(options: {
       logError(new Error('No access token found for remote session creation'));
       return null;
     }
-
     // Get organization UUID
     const orgUUID = await getOrganizationUUID();
     if (!orgUUID) {
       logError(new Error('Unable to get organization UUID for remote session creation'));
       return null;
     }
-
     // Explicit environmentId short-circuits Haiku title-gen + env selection.
-    // Still runs repo detection so the container gets a working directory —
+    // Still runs repo detection so the container gets a working directory â€”
     // the code_review orchestrator reads --repo-dir $(pwd), it doesn't clone
     // (bughunter.go:520 sets a git source too; env-manager does the checkout
     // before the SessionStart hook fires).
@@ -829,10 +787,9 @@ export async function teleportToRemote(options: {
         CLAUDE_CODE_OAUTH_TOKEN: accessToken,
         ...(options.environmentVariables ?? {})
       };
-
       // Bundle mode: upload local working tree (uncommitted changes via
       // refs/seed/stash), container clones from the bundle. No GitHub.
-      // Otherwise: github.com source — caller checked eligibility.
+      // Otherwise: github.com source â€” caller checked eligibility.
       let gitSource: GitSource | null = null;
       let seedBundleFileId: string | null = null;
       if (options.useBundle) {
@@ -899,22 +856,19 @@ export async function teleportToRemote(options: {
     let gitSource: GitSource | null = null;
     let gitOutcome: GitRepositoryOutcome | null = null;
     let seedBundleFileId: string | null = null;
-
-    // Source selection ladder: GitHub clone (if CCR can actually pull it) →
-    // bundle fallback (if .git exists) → empty sandbox.
+    // Source selection ladder: GitHub clone (if CCR can actually pull it) â†’
+    // bundle fallback (if .git exists) â†’ empty sandbox.
     //
     // The preflight is the same code path the container's git-proxy clone
-    // will hit (get_github_client_with_user_auth → no_sync_user_token_found).
+    // will hit (get_github_client_with_user_auth â†’ no_sync_user_token_found).
     // 50% of users who reach the "install GitHub App" step never finish it;
     // without the preflight, every one of them gets a container that 401s
     // on clone. With it, they silently fall back to bundle.
     //
-    // CCR_FORCE_BUNDLE=1 skips the preflight entirely — useful for testing
+    // CCR_FORCE_BUNDLE=1 skips the preflight entirely â€” useful for testing
     // or when you know your GitHub auth is busted. Read here (not in the
     // caller) so it works for remote-agent too, not just --remote.
-
     const repoInfo = await detectCurrentRepositoryWithHost();
-
     // Generate title and branch name for the session. Skip the Haiku call
     // when both title and outcome branch are explicitly provided.
     let sessionTitle: string;
@@ -927,17 +881,15 @@ export async function teleportToRemote(options: {
       sessionTitle = options.title || generated.title;
       sessionBranch = options.reuseOutcomeBranch || generated.branchName;
     }
-
     // Preflight: does CCR have a token that can clone this repo?
-    // Only checked for github.com — GHES needs ghe_configuration_id which
+    // Only checked for github.com â€” GHES needs ghe_configuration_id which
     // we don't have, and GHES users are power users who probably finished
     // setup. For them (and for non-GitHub hosts that parseGitRemote
     // somehow accepted), fall through optimistically; if the backend
     // rejects the host, bundle next time.
     let ghViable = false;
     let sourceReason: 'github_preflight_ok' | 'ghes_optimistic' | 'github_preflight_failed' | 'no_github_remote' | 'forced_bundle' | 'no_git_at_all' = 'no_git_at_all';
-
-    // gitRoot gates both bundle creation and the gate check itself — no
+    // gitRoot gates both bundle creation and the gate check itself â€” no
     // point awaiting GrowthBook when there's nothing to bundle.
     const gitRoot = findGitRoot(getCwd());
     const forceBundle = !options.skipBundle && isEnvTruthy(process.env.CCR_FORCE_BUNDLE);
@@ -955,8 +907,7 @@ export async function teleportToRemote(options: {
     } else if (gitRoot) {
       sourceReason = 'no_github_remote';
     }
-
-    // Preflight failed but bundle is off — fall through optimistically like
+    // Preflight failed but bundle is off â€” fall through optimistically like
     // pre-preflight behavior. Backend reports the real auth error.
     if (!ghViable && !bundleSeedGateOn && repoInfo) {
       ghViable = true;
@@ -981,7 +932,7 @@ export async function teleportToRemote(options: {
       };
       // type: 'github' is used for all GitHub-compatible hosts (github.com and GHE).
       // The CLI can't distinguish GHE from non-GitHub hosts (GitLab, Bitbucket)
-      // client-side — the backend validates the URL against configured GHE instances
+      // client-side â€” the backend validates the URL against configured GHE instances
       // and ignores git_info for unrecognized hosts.
       gitOutcome = {
         type: 'git_repository',
@@ -992,10 +943,9 @@ export async function teleportToRemote(options: {
         }
       };
     }
-
     // Bundle fallback. Only try bundle if GitHub wasn't viable, the gate is
     // on, and there's a .git/ to bundle from. Reaching here with
-    // ghViable=false and repoInfo non-null means the preflight failed —
+    // ghViable=false and repoInfo non-null means the preflight failed â€”
     // .git definitely exists (detectCurrentRepositoryWithHost read the
     // remote from it).
     if (!gitSource && bundleSeedGateOn) {
@@ -1014,7 +964,7 @@ export async function teleportToRemote(options: {
         let msg: string;
         switch (bundle.failReason) {
           case 'empty_repo':
-            msg = 'Repository has no commits — run `git add . && git commit -m "initial"` then retry';
+            msg = 'Repository has no commits â€” run `git add . && git commit -m "initial"` then retry';
             break;
           case 'too_large':
             msg = `Repo is too large to teleport${setup}`;
@@ -1048,9 +998,8 @@ export async function teleportToRemote(options: {
       path: (gitSource ? 'github' : seedBundleFileId ? 'bundle' : 'empty') as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
     });
     if (!gitSource && !seedBundleFileId) {
-      logForDebugging('[teleportToRemote] No repository detected — session will have an empty sandbox');
+      logForDebugging('[teleportToRemote] No repository detected â€” session will have an empty sandbox');
     }
-
     // Fetch available environments
     let environments = await fetchEnvironments();
     if (!environments || environments.length === 0) {
@@ -1058,7 +1007,6 @@ export async function teleportToRemote(options: {
       return null;
     }
     logForDebugging(`Available environments: ${environments.map(e => `${e.environment_id} (${e.name}, ${e.kind})`).join(', ')}`);
-
     // Select environment based on settings, then anthropic_cloud preference, then first available.
     // Prefer anthropic_cloud environments over byoc: anthropic_cloud environments (e.g. "Default")
     // are the standard compute environments with full repo access, whereas byoc environments
@@ -1075,7 +1023,7 @@ export async function teleportToRemote(options: {
       const retried = await fetchEnvironments();
       cloudEnv = retried?.find(env => env.kind === 'anthropic_cloud');
       if (!cloudEnv) {
-        logError(new Error(`No anthropic_cloud environment available after retry (got: ${(retried ?? environments).map(e => `${e.name} (${e.kind})`).join(', ')}). Silent byoc fallthrough would launch into a dead env — fail fast instead.`));
+        logError(new Error(`No anthropic_cloud environment available after retry (got: ${(retried ?? environments).map(e => `${e.name} (${e.kind})`).join(', ')}). Silent byoc fallthrough would launch into a dead env â€” fail fast instead.`));
         return null;
       }
       if (retried) environments = retried;
@@ -1091,7 +1039,6 @@ export async function teleportToRemote(options: {
     }
     const environmentId = selectedEnvironment.environment_id;
     logForDebugging(`Selected environment: ${environmentId} (${selectedEnvironment.name}, ${selectedEnvironment.kind})`);
-
     // Prepare API request for Sessions API
     const url = `${getOauthConfig().BASE_API_URL}/v1/sessions`;
     const headers = {
@@ -1113,12 +1060,11 @@ export async function teleportToRemote(options: {
         github_pr: options.githubPr
       })
     };
-
-    // CreateCCRSessionPayload has no permission_mode field — a top-level
+    // CreateCCRSessionPayload has no permission_mode field â€” a top-level
     // body entry is silently dropped by the proto parser server-side.
     // Instead prepend a set_permission_mode control_request event. Initial
     // events are written to threadstore before the container connects, so
-    // the CLI applies the mode before the first user turn — no readiness race.
+    // the CLI applies the mode before the first user turn â€” no readiness race.
     const events: Array<{
       type: 'event';
       data: Record<string, unknown>;
@@ -1159,7 +1105,6 @@ export async function teleportToRemote(options: {
       environment_id: environmentId
     };
     logForDebugging(`Creating session with payload: ${jsonStringify(requestBody, null, 2)}`);
-
     // Make API call
     const response = await axios.post(url, requestBody, {
       headers,
@@ -1170,7 +1115,6 @@ export async function teleportToRemote(options: {
       logError(new Error(`API request failed with status ${response.status}: ${response.statusText}\n\nResponse data: ${jsonStringify(response.data, null, 2)}`));
       return null;
     }
-
     // Parse response as SessionResource
     const sessionData = response.data as SessionResource;
     if (!sessionData || typeof sessionData.id !== 'string') {
@@ -1188,7 +1132,6 @@ export async function teleportToRemote(options: {
     return null;
   }
 }
-
 /**
  * Best-effort session archive. POST /v1/sessions/{id}/archive has no
  * running-status check (unlike DELETE which 409s on RUNNING), so it works

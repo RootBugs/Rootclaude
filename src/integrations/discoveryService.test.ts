@@ -73,7 +73,7 @@ function clearProviderEnv(): void {
 beforeEach(async () => {
   await acquireSharedMutationLock('discoveryService.test.ts')
   mock.restore()
-  tempDir = mkdtempSync(join(tmpdir(), 'openclaude-discovery-service-test-'))
+  tempDir = mkdtempSync(join(tmpdir(), 'RootClaude-discovery-service-test-'))
   process.env.CLAUDE_CONFIG_DIR = tempDir
   delete process.env.OPENROUTER_API_KEY
   delete process.env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC
@@ -280,7 +280,7 @@ describe('discoverModelsForRoute', () => {
         kind: 'openai-compatible',
         openaiShim: {
           headers: {
-            'X-Static-Client': 'openclaude',
+            'X-Static-Client': 'RootClaude',
           },
         },
       },
@@ -462,10 +462,10 @@ describe('discoverModelsForRoute', () => {
     expect(result?.source).toBe('network')
     expect(capturedHeaders).toEqual({
       'X-AIMLAPI-Partner-ID': 'part_62yQoGYDq4Yqnrj2R1iGrDNJ',
-      'X-AIMLAPI-Integration-Repo': 'Gitlawb/openclaude',
+      'X-AIMLAPI-Integration-Repo': 'Gitlawb/RootClaude',
       'X-AIMLAPI-Integration-Version': publicBuildVersion,
-      'HTTP-Referer': 'OpenClaude',
-      'X-Title': 'OpenClaude',
+      'HTTP-Referer': 'RootClaude',
+      'X-Title': 'RootClaude',
     })
     expect(result?.models.map((model: { apiName: string }) => model.apiName)).toEqual([
       'gpt-4o',

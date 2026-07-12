@@ -48,7 +48,7 @@ afterEach(() => {
 })
 
 function createTempAuthJson(payload: Record<string, unknown>): string {
-  const dir = mkdtempSync(join(tmpdir(), 'openclaude-codex-'))
+  const dir = mkdtempSync(join(tmpdir(), 'RootClaude-codex-'))
   tempDirs.push(dir)
   const authPath = join(dir, 'auth.json')
   writeFileSync(authPath, JSON.stringify(payload), 'utf8')
@@ -893,8 +893,8 @@ describe('Codex request translation', () => {
             type: 'web_search_call',
             sources: [
               {
-                title: 'OpenClaude repo',
-                url: 'https://github.com/example/openclaude',
+                title: 'RootClaude repo',
+                url: 'https://github.com/example/RootClaude',
               },
             ],
           },
@@ -904,11 +904,11 @@ describe('Codex request translation', () => {
             content: [
               {
                 type: 'text',
-                text: 'OpenClaude is available on GitHub.',
+                text: 'RootClaude is available on GitHub.',
                 sources: [
                   {
                     title: 'Docs',
-                    url: 'https://docs.example.com/openclaude',
+                    url: 'https://docs.example.com/RootClaude',
                   },
                 ],
               },
@@ -916,22 +916,22 @@ describe('Codex request translation', () => {
           },
         ],
       },
-      'OpenClaude GitHub 2026',
+      'RootClaude GitHub 2026',
       0.42,
     )
 
     expect(output.results).toEqual([
-      'OpenClaude is available on GitHub.',
+      'RootClaude is available on GitHub.',
       {
         tool_use_id: 'codex-web-search',
         content: [
           {
-            title: 'OpenClaude repo',
-            url: 'https://github.com/example/openclaude',
+            title: 'RootClaude repo',
+            url: 'https://github.com/example/RootClaude',
           },
           {
             title: 'Docs',
-            url: 'https://docs.example.com/openclaude',
+            url: 'https://docs.example.com/RootClaude',
           },
         ],
       },
@@ -941,7 +941,7 @@ describe('Codex request translation', () => {
   test('falls back to a non-empty Codex web search result message', () => {
     const output = webSearchToolTest.makeOutputFromCodexWebSearchResponse(
       { output: [] },
-      'OpenClaude GitHub 2026',
+      'RootClaude GitHub 2026',
       0.11,
     )
 
@@ -959,7 +959,7 @@ describe('Codex request translation', () => {
           },
         ],
       },
-      'OpenClaude GitHub 2026',
+      'RootClaude GitHub 2026',
       0.05,
     )
 
@@ -979,7 +979,7 @@ describe('Codex request translation', () => {
           },
         ],
       },
-      'OpenClaude GitHub 2026',
+      'RootClaude GitHub 2026',
       0.05,
     )
 
@@ -996,7 +996,7 @@ describe('Codex request translation', () => {
           },
         ],
       },
-      'OpenClaude GitHub 2026',
+      'RootClaude GitHub 2026',
       0.05,
     )
 
@@ -1020,14 +1020,14 @@ describe('Codex request translation', () => {
                 type: 'output_text',
                 text: 'Partial results below.',
                 sources: [
-                  { title: 'Docs', url: 'https://docs.example.com/openclaude' },
+                  { title: 'Docs', url: 'https://docs.example.com/RootClaude' },
                 ],
               },
             ],
           },
         ],
       },
-      'OpenClaude GitHub 2026',
+      'RootClaude GitHub 2026',
       0.05,
     )
 
@@ -1037,7 +1037,7 @@ describe('Codex request translation', () => {
       {
         tool_use_id: 'codex-web-search',
         content: [
-          { title: 'Docs', url: 'https://docs.example.com/openclaude' },
+          { title: 'Docs', url: 'https://docs.example.com/RootClaude' },
         ],
       },
     ])
@@ -1295,7 +1295,7 @@ describe('Codex request translation', () => {
   }
 
   test('Codex stream: tool args delivered only via function_call_arguments.done (#1259)', async () => {
-    const args = '{"path":"./openclaude-codex-repro","pattern":"**/*.md"}'
+    const args = '{"path":"./RootClaude-codex-repro","pattern":"**/*.md"}'
     const responseText = [
       'event: response.output_item.added',
       `data: {"type":"response.output_item.added","item":{"id":"fc_1","call_id":"call_1","type":"function_call","name":"Glob","arguments":""},"output_index":0,"sequence_number":0}`,

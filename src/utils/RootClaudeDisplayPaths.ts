@@ -1,4 +1,4 @@
-import { homedir } from 'os'
+﻿import { homedir } from 'os'
 import { join } from 'path'
 import {
   getClaudeConfigHomeDir,
@@ -9,7 +9,7 @@ import { getDisplayPath } from './file.js'
 
 function getUserConfigHomeForDisplay(): string {
   const configDirEnv = resolveConfigDirEnv({
-    openClaudeConfigDir: process.env.OPENCLAUDE_CONFIG_DIR,
+    RootClaudeConfigDir: process.env.rootclaude_CONFIG_DIR,
   })
 
   if (configDirEnv) {

@@ -1,4 +1,4 @@
-import { feature } from 'bun:bundle'
+﻿import { feature } from 'bun:bundle'
 import { statSync } from 'fs'
 import { lstat, readdir, readFile, realpath, stat } from 'fs/promises'
 import memoize from 'lodash-es/memoize.js'
@@ -26,7 +26,7 @@ import {
 import { getManagedFilePath } from './settings/managedPath.js'
 import { isRestrictedToPluginOnly } from './settings/pluginOnlyPolicy.js'
 
-// OpenClaude configuration directory names
+// RootClaude configuration directory names
 export const CLAUDE_CONFIG_DIRECTORIES = [
   'commands',
   'agents',
@@ -38,19 +38,19 @@ export const CLAUDE_CONFIG_DIRECTORIES = [
 
 export type ClaudeConfigDirectory = (typeof CLAUDE_CONFIG_DIRECTORIES)[number]
 
-export const PROJECT_CONFIG_DIR_NAMES = ['.openclaude'] as const
+export const PROJECT_CONFIG_DIR_NAMES = ['.RootClaude'] as const
 
 // Concurrency cap for parallel readFile + parseFrontmatter when loading
 // commands/agents/skills/etc. With unbounded Promise.all, a directory holding
 // thousands of markdown files (e.g., an Obsidian vault symlinked into
-// ~/.openclaude/agents — see issue #769) opens that many fds and blocks the
+// ~/.RootClaude/agents Ã¢â‚¬â€ see issue #769) opens that many fds and blocks the
 // event loop on parse work, freezing the REPL at startup. Batching keeps fd
 // pressure and CPU bursts bounded.
 const MARKDOWN_LOAD_BATCH_SIZE = 32
 
 // Max file size to ingest. Legitimate commands/agents/skills are small (a few
 // KB). Files larger than this are almost always vault notes or unrelated docs
-// that got dragged in via symlink — reading them all into memory causes the
+// that got dragged in via symlink Ã¢â‚¬â€ reading them all into memory causes the
 // same freeze (#769). Override with CLAUDE_CODE_MAX_MARKDOWN_FILE_SIZE_BYTES.
 const DEFAULT_MAX_MARKDOWN_FILE_SIZE_BYTES = 256 * 1024
 
@@ -70,7 +70,7 @@ export type OversizedMarkdownSkip = {
 }
 
 // Track files skipped because they exceeded the size cap so the override is
-// discoverable without `/debug` — a silent skip would just look like "my
+// discoverable without `/debug` Ã¢â‚¬â€ a silent skip would just look like "my
 // custom agent disappeared". First skip in a process also emits one stderr
 // warning naming the override env var. Keyed by filePath so subsequent loads
 // of the same file don't re-warn.
@@ -92,7 +92,7 @@ function recordOversizedSkip(skip: OversizedMarkdownSkip): void {
   if (!oversizedSkipStderrWarned) {
     oversizedSkipStderrWarned = true
     process.stderr.write(
-      `openclaude: skipping oversized markdown config file ${skip.filePath} ` +
+      `RootClaude: skipping oversized markdown config file ${skip.filePath} ` +
         `(${skip.sizeBytes} bytes > ${skip.maxBytes} max). Set ` +
         `CLAUDE_CODE_MAX_MARKDOWN_FILE_SIZE_BYTES to raise the cap.\n`,
     )
@@ -238,15 +238,15 @@ async function getFileIdentity(filePath: string): Promise<string | null> {
  *
  * Normally the walk stops at the nearest `.git` above `cwd`. But if the Bash
  * tool has cd'd into a nested git repo inside the session's project (submodule,
- * vendored dep with its own `.git`), that nested root isn't the right boundary —
- * stopping there makes the parent project's `.openclaude/` unreachable (#31905).
+ * vendored dep with its own `.git`), that nested root isn't the right boundary Ã¢â‚¬â€
+ * stopping there makes the parent project's `.RootClaude/` unreachable (#31905).
  *
  * The boundary is widened to the session's git root only when BOTH:
  *   - the nearest `.git` from cwd belongs to a *different* canonical repo
- *     (submodule/vendored clone — not a worktree, which resolves back to main)
+ *     (submodule/vendored clone Ã¢â‚¬â€ not a worktree, which resolves back to main)
  *   - that nearest `.git` sits *inside* the session's project tree
  *
- * Worktrees (under `.openclaude/worktrees/`) stay on the old behavior: their `.git`
+ * Worktrees (under `.RootClaude/worktrees/`) stay on the old behavior: their `.git`
  * file is the stop, and loadMarkdownFilesForSubdir's fallback adds the main-repo
  * copy only when the worktree lacks one.
  */
@@ -274,7 +274,7 @@ function resolveStopBoundary(cwd: string): string | null {
     nCwdGitRoot !== nSessionRoot &&
     nCwdGitRoot.startsWith(nSessionRoot + sep)
   ) {
-    // Nested repo inside the project — skip past it, stop at the project's root.
+    // Nested repo inside the project Ã¢â‚¬â€ skip past it, stop at the project's root.
     return sessionGitRoot
   }
   // Sibling repo or elsewhere. Stop at nearest .git (old behavior).
@@ -283,15 +283,15 @@ function resolveStopBoundary(cwd: string): string | null {
 
 /**
  * Traverses from the current directory up to the git root (or home directory if not in a git repo),
- * collecting all .openclaude directories along the way.
+ * collecting all .RootClaude directories along the way.
  *
  * Stopping at git root prevents commands/skills from parent directories outside the repository
- * from leaking into projects. For example, if ~/projects/.openclaude/commands/ exists, it won't
+ * from leaking into projects. For example, if ~/projects/.RootClaude/commands/ exists, it won't
  * appear in ~/projects/my-repo/ if my-repo is a git repository.
  *
  * @param subdir Subdirectory (eg. "commands", "agents")
  * @param cwd Current working directory to start from
- * @returns Array of directory paths containing .openclaude/subdir, from most specific (cwd) to least specific
+ * @returns Array of directory paths containing .RootClaude/subdir, from most specific (cwd) to least specific
  */
 export function getProjectDirsUpToHome(
   subdir: ClaudeConfigDirectory,
@@ -317,7 +317,7 @@ export function getProjectDirsUpToHome(
       // Filter to existing dirs. This is a perf filter (avoids spawning
       // ripgrep on non-existent dirs downstream) and the worktree fallback
       // in loadMarkdownFilesForSubdir relies on it. statSync + explicit error
-      // handling instead of existsSync — re-throws unexpected errors rather
+      // handling instead of existsSync Ã¢â‚¬â€ re-throws unexpected errors rather
       // than silently swallowing them. Downstream loadMarkdownFiles handles
       // the TOCTOU window (dir disappearing before read) gracefully.
       try {
@@ -365,17 +365,17 @@ export const loadMarkdownFilesForSubdir = memoize(
   ): Promise<MarkdownFile[]> {
     const searchStartTime = Date.now()
     const userDir = join(getClaudeConfigHomeDir(), subdir)
-    const managedDir = join(getManagedFilePath(), '.openclaude', subdir)
+    const managedDir = join(getManagedFilePath(), '.RootClaude', subdir)
     const projectDirs = getProjectDirsUpToHome(subdir, cwd)
 
-    // For git worktrees where the worktree does NOT have .openclaude/<subdir> checked
+    // For git worktrees where the worktree does NOT have .RootClaude/<subdir> checked
     // out (e.g. sparse-checkout), fall back to the main repository's copy.
     // getProjectDirsUpToHome stops at the worktree root (where the .git file is),
     // so it never sees the main repo on its own.
     //
-    // Only add the main repo's copy when the worktree root's .openclaude/<subdir>
+    // Only add the main repo's copy when the worktree root's .RootClaude/<subdir>
     // is absent. A standard `git worktree add` checks out the full tree, so the
-    // worktree already has identical .openclaude/<subdir> content — loading the main
+    // worktree already has identical .RootClaude/<subdir> content Ã¢â‚¬â€ loading the main
     // repo's copy too would duplicate every command/agent/skill
     // (anthropics/claude-code#29599, #28182, #26992).
     //
@@ -444,7 +444,7 @@ export const loadMarkdownFilesForSubdir = memoize(
     const allFiles = [...managedFiles, ...userFiles, ...projectFiles]
 
     // Deduplicate files that resolve to the same physical file (same inode).
-    // This prevents the same file from appearing multiple times when ~/.openclaude is
+    // This prevents the same file from appearing multiple times when ~/.RootClaude is
     // symlinked to a directory within the project hierarchy, causing the same
     // physical file to be discovered through different paths.
     const fileIdentities = await Promise.all(
@@ -606,7 +606,7 @@ async function findMarkdownFilesNative(
 
 /**
  * Generic function to load markdown files from specified directories
- * @param dir Directory (eg. "~/.openclaude/commands")
+ * @param dir Directory (eg. "~/.RootClaude/commands")
  * @returns Array of parsed markdown files with metadata
  */
 async function loadMarkdownFiles(dir: string): Promise<

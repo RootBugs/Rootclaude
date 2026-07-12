@@ -1,4 +1,4 @@
-export const DEFAULT_MAX_ACTIVE_MESSAGES_HARD_CAP = 1000
+﻿export const DEFAULT_MAX_ACTIVE_MESSAGES_HARD_CAP = 1000
 
 type MaxActiveMessagesEnv = Record<string, string | undefined>
 
@@ -18,7 +18,7 @@ export function getMaxActiveMessagesHardCap(
   env: MaxActiveMessagesEnv = process.env,
 ): number {
   const hardCapOverride =
-    env.OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP
+    env.RootClaude_MAX_ACTIVE_MESSAGES_HARD_CAP
   if (hardCapOverride === undefined) {
     return DEFAULT_MAX_ACTIVE_MESSAGES_HARD_CAP
   }

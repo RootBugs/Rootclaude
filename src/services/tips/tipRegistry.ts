@@ -1,4 +1,4 @@
-import chalk from 'chalk'
+﻿import chalk from 'chalk'
 import { logForDebugging } from 'src/utils/debug.js'
 import { fileHistoryEnabled } from 'src/utils/fileHistory.js'
 import {
@@ -22,7 +22,7 @@ import {
 import { env } from '../../utils/env.js'
 import { cacheKeys } from '../../utils/fileStateCache.js'
 import { getWorktreeCount } from '../../utils/git.js'
-import { getUserSkillExampleDisplayPath } from '../../utils/openclaudeDisplayPaths.js'
+import { getUserSkillExampleDisplayPath } from '../../utils/RootClaudeDisplayPaths.js'
 import {
   detectRunningIDEsCached,
   getSortedIdeLockfiles,
@@ -57,11 +57,9 @@ import {
 import { sponsoredTips } from './sponsoredTips.js'
 import { getSessionsSinceLastShown } from './tipHistory.js'
 import type { Tip, TipContext } from './types.js'
-
 export function getCustomCommandsTipContent(): string {
-  return `Create skills at .openclaude/skills/<name>/SKILL.md in your project or ${getUserSkillExampleDisplayPath()} for skills that work in any project`
+  return `Create skills at .RootClaude/skills/<name>/SKILL.md in your project or ${getUserSkillExampleDisplayPath()} for skills that work in any project`
 }
-
 let _isOfficialMarketplaceInstalledCache: boolean | undefined
 async function isOfficialMarketplaceInstalled(): Promise<boolean> {
   if (_isOfficialMarketplaceInstalledCache !== undefined) {
@@ -71,7 +69,6 @@ async function isOfficialMarketplaceInstalled(): Promise<boolean> {
   _isOfficialMarketplaceInstalledCache = OFFICIAL_MARKETPLACE_NAME in config
   return _isOfficialMarketplaceInstalledCache
 }
-
 async function isMarketplacePluginRelevant(
   pluginName: string,
   context: TipContext | undefined,
@@ -97,12 +94,11 @@ async function isMarketplacePluginRelevant(
   }
   return false
 }
-
 const externalTips: Tip[] = [
   {
     id: 'new-user-warmup',
     content: async () =>
-      `Start with small features or bug fixes, tell OpenClaude to propose a plan, and verify its suggested edits`,
+      `Start with small features or bug fixes, tell RootClaude to propose a plan, and verify its suggested edits`,
     cooldownSessions: 3,
     async isRelevant() {
       const config = getGlobalConfig()
@@ -148,7 +144,7 @@ const externalTips: Tip[] = [
   {
     id: 'git-worktrees',
     content: async () =>
-      'Use git worktrees to run multiple OpenClaude sessions in parallel.',
+      'Use git worktrees to run multiple RootClaude sessions in parallel.',
     cooldownSessions: 10,
     isRelevant: async () => {
       try {
@@ -163,7 +159,7 @@ const externalTips: Tip[] = [
   {
     id: 'color-when-multi-clauding',
     content: async () =>
-      'Running multiple OpenClaude sessions? Use /color and /rename to tell them apart at a glance.',
+      'Running multiple RootClaude sessions? Use /color and /rename to tell them apart at a glance.',
     cooldownSessions: 10,
     isRelevant: async () => {
       if (getCurrentSessionAgentColor()) return false
@@ -221,7 +217,7 @@ const externalTips: Tip[] = [
   },
   {
     id: 'memory-command',
-    content: async () => 'Use /memory to view and manage OpenClaude memory',
+    content: async () => 'Use /memory to view and manage RootClaude memory',
     cooldownSessions: 15,
     async isRelevant() {
       const config = getGlobalConfig()
@@ -260,7 +256,7 @@ const externalTips: Tip[] = [
   {
     id: 'prompt-queue',
     content: async () =>
-      'Hit Enter to queue up additional messages while OpenClaude is working.',
+      'Hit Enter to queue up additional messages while RootClaude is working.',
     cooldownSessions: 5,
     async isRelevant() {
       const config = getGlobalConfig()
@@ -270,14 +266,14 @@ const externalTips: Tip[] = [
   {
     id: 'enter-to-steer-in-relatime',
     content: async () =>
-      'Send messages to OpenClaude while it works to steer OpenClaude in real-time',
+      'Send messages to RootClaude while it works to steer RootClaude in real-time',
     cooldownSessions: 20,
     isRelevant: async () => true,
   },
   {
     id: 'todo-list',
     content: async () =>
-      'Ask OpenClaude to create a todo list when working on complex tasks to track progress and remain on track',
+      'Ask RootClaude to create a todo list when working on complex tasks to track progress and remain on track',
     cooldownSessions: 20,
     isRelevant: async () => true,
   },
@@ -294,7 +290,6 @@ const externalTips: Tip[] = [
       if (getPlatform() !== 'macos') {
         return false
       }
-
       // Check if the relevant command is available
       switch (env.terminal) {
         case 'vscode':
@@ -310,19 +305,17 @@ const externalTips: Tip[] = [
   },
   {
     id: 'ide-upsell-external-terminal',
-    content: async () => 'Connect OpenClaude to your IDE · /ide',
+    content: async () => 'Connect RootClaude to your IDE Ãƒâ€šÃ‚Â· /ide',
     cooldownSessions: 4,
     async isRelevant() {
       if (isSupportedTerminal()) {
         return false
       }
-
       // Use lockfiles as a (quicker) signal for running IDEs
       const lockfiles = await getSortedIdeLockfiles()
       if (lockfiles.length !== 0) {
         return false
       }
-
       const runningIDEs = await detectRunningIDEsCached()
       return runningIDEs.length > 0
     },
@@ -330,13 +323,13 @@ const externalTips: Tip[] = [
   {
     id: 'install-github-app',
     content: async () =>
-      'Run /install-github-app to enable GitHub issue and PR tagging from OpenClaude',
+      'Run /install-github-app to enable GitHub issue and PR tagging from RootClaude',
     cooldownSessions: 10,
     isRelevant: async () => !getGlobalConfig().githubActionSetupCount,
   },
   {
     id: 'install-slack-app',
-    content: async () => 'Run /install-slack-app to use OpenClaude in Slack',
+    content: async () => 'Run /install-slack-app to use RootClaude in Slack',
     cooldownSessions: 10,
     isRelevant: async () => !getGlobalConfig().slackAppInstallCount,
   },
@@ -360,7 +353,7 @@ const externalTips: Tip[] = [
   {
     id: 'paste-images-mac',
     content: async () =>
-      'Paste images into OpenClaude using control+v (not cmd+v!)',
+      'Paste images into RootClaude using control+v (not cmd+v!)',
     cooldownSessions: 10,
     isRelevant: async () => getPlatform() === 'macos',
   },
@@ -381,7 +374,7 @@ const externalTips: Tip[] = [
   {
     id: 'continue',
     content: async () =>
-      'Run openclaude --continue or openclaude --resume to resume a conversation',
+      'Run rootclaude --continue or rootclaude --resume to resume a conversation',
     cooldownSessions: 10,
     isRelevant: async () => true,
   },
@@ -439,7 +432,7 @@ const externalTips: Tip[] = [
   {
     id: 'desktop-app',
     content: async () =>
-      'Run OpenClaude locally or remotely with /desktop',
+      'Run RootClaude locally or remotely with /desktop',
     cooldownSessions: 15,
     isRelevant: async () => getPlatform() !== 'linux',
   },
@@ -461,7 +454,7 @@ const externalTips: Tip[] = [
   {
     id: 'web-app',
     content: async () =>
-      'Run tasks in the cloud while you keep coding locally · /web',
+      'Run tasks in the cloud while you keep coding locally Ãƒâ€šÃ‚Â· /web',
     cooldownSessions: 15,
     isRelevant: async () => true,
   },
@@ -515,7 +508,7 @@ const externalTips: Tip[] = [
         'off' | 'copy_a' | 'copy_b'
       >('tengu_tide_elm', 'off')
       return variant === 'copy_b'
-        ? `Use ${cmd} for better one-shot answers. OpenClaude thinks it through first.`
+        ? `Use ${cmd} for better one-shot answers. RootClaude thinks it through first.`
         : `Working on something tricky? ${cmd} gives better first answers`
     },
     cooldownSessions: 3,
@@ -544,8 +537,8 @@ const externalTips: Tip[] = [
         'off' | 'copy_a' | 'copy_b'
       >('tengu_tern_alloy', 'off')
       return variant === 'copy_b'
-        ? `For big tasks, tell OpenClaude to ${blue('use subagents')}. They work in parallel and keep your main thread clean.`
-        : `Say ${blue('"fan out subagents"')} and OpenClaude sends a team. Each one digs deep so nothing gets missed.`
+        ? `For big tasks, tell RootClaude to ${blue('use subagents')}. They work in parallel and keep your main thread clean.`
+        : `Say ${blue('"fan out subagents"')} and RootClaude sends a team. Each one digs deep so nothing gets missed.`
     },
     cooldownSessions: 3,
     isRelevant: async () => {
@@ -587,8 +580,8 @@ const externalTips: Tip[] = [
       const claude = color('claude', ctx.theme)
       const reward = getCachedReferrerReward()
       return reward
-        ? `Share OpenClaude and earn ${claude(formatCreditAmount(reward))} of extra usage · ${claude('/passes')}`
-        : `You have free guest passes to share · ${claude('/passes')}`
+        ? `Share RootClaude and earn ${claude(formatCreditAmount(reward))} of extra usage Ãƒâ€šÃ‚Â· ${claude('/passes')}`
+        : `You have free guest passes to share Ãƒâ€šÃ‚Â· ${claude('/passes')}`
     },
     cooldownSessions: 3,
     isRelevant: async () => {
@@ -607,8 +600,8 @@ const externalTips: Tip[] = [
       const info = getCachedOverageCreditGrant()
       const amount = info ? formatGrantAmount(info) : null
       if (!amount) return ''
-      // Copy from "OC & Bulk Overages copy" doc (#5 — CLI Rotating tip)
-      return `${claude(`${amount} in extra usage, on us`)} · third-party apps · ${claude('/extra-usage')}`
+      // Copy from "OC & Bulk Overages copy" doc (#5 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â CLI Rotating tip)
+      return `${claude(`${amount} in extra usage, on us`)} Ãƒâ€šÃ‚Â· third-party apps Ãƒâ€šÃ‚Â· ${claude('/extra-usage')}`
     },
     cooldownSessions: 3,
     isRelevant: async () => shouldShowOverageCreditUpsell(),
@@ -624,12 +617,10 @@ const externalTips: Tip[] = [
   },
 ]
 const internalOnlyTips: Tip[] = []
-
 function getCustomTips(): Tip[] {
   const settings = getInitialSettings()
   const override = settings.spinnerTipsOverride
   if (!override?.tips?.length) return []
-
   return override.tips.map((content, i) => ({
     id: `custom-tip-${i}`,
     content: async () => content,
@@ -637,18 +628,15 @@ function getCustomTips(): Tip[] {
     isRelevant: async () => true,
   }))
 }
-
 export async function getRelevantTips(context?: TipContext): Promise<Tip[]> {
   const settings = getInitialSettings()
   const override = settings.spinnerTipsOverride
   const customTips = getCustomTips()
-
   // If excludeDefault is true and there are custom tips, skip built-in tips entirely.
-  // Sponsored tips are also excluded — user has opted into their own list.
+  // Sponsored tips are also excluded ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â user has opted into their own list.
   if (override?.excludeDefault && customTips.length > 0) {
     return customTips
   }
-
   // Otherwise, filter built-in tips as before and combine with custom + sponsored.
   // The scheduler enforces the sponsored frequency cap; this just returns
   // everything currently eligible.
@@ -657,6 +645,5 @@ export async function getRelevantTips(context?: TipContext): Promise<Tip[]> {
   const filtered = tips
     .filter((_, index) => isRelevant[index])
     .filter(_ => getSessionsSinceLastShown(_.id) >= _.cooldownSessions)
-
   return [...filtered, ...customTips]
 }

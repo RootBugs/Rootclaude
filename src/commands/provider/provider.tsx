@@ -1,4 +1,4 @@
-import * as React from 'react'
+﻿import * as React from 'react'
 
 import type { LocalJSXCommandCall, LocalJSXCommandOnDone } from '../../types/command.js'
 import { COMMON_HELP_ARGS, COMMON_INFO_ARGS } from '../../constants/xml.js'
@@ -511,13 +511,13 @@ export function buildProfileSaveMessage(
 
   lines.push(`Profile: ${filePath}`)
   if (options?.activatedInSession) {
-    lines.push('OpenClaude switched to it for this session.')
+    lines.push('RootClaude switched to it for this session.')
   } else if (options?.activationWarning) {
     lines.push(
       `Saved for next startup. Warning: could not activate it in this session (${options.activationWarning}).`,
     )
   } else {
-    lines.push('Restart OpenClaude to use it.')
+    lines.push('Restart RootClaude to use it.')
   }
 
   return lines.join('\n')
@@ -675,7 +675,7 @@ function ProviderChooser({
   const geminiMetadata = getProviderPresetUiMetadata('gemini')
   const mistralMetadata = getProviderPresetUiMetadata('mistral')
   const helperText = canUseCodexOAuth
-    ? 'Save a provider profile without editing environment variables first. Codex profiles backed by env, auth.json, or OpenClaude secure storage can switch this session immediately when validation succeeds.'
+    ? 'Save a provider profile without editing environment variables first. Codex profiles backed by env, auth.json, or RootClaude secure storage can switch this session immediately when validation succeeds.'
     : 'Save a provider profile without editing environment variables first. Codex profiles backed by env or auth.json can switch this session immediately.'
   const options: OptionWithDescription<ProviderChoice>[] = [
     {
@@ -726,7 +726,7 @@ function ProviderChooser({
     options.push({
       label: 'Clear saved profile',
       value: 'clear',
-      description: 'Remove .openclaude-profile.json and return to normal startup',
+      description: 'Remove .RootClaude-profile.json and return to normal startup',
     })
   }
 
@@ -895,7 +895,7 @@ function AutoRecommendationStep({
   }, [goal])
 
   if (status.state === 'loading') {
-    return <LoadingState message="Checking local providers…" />
+    return <LoadingState message="Checking local providersâ€¦" />
   }
 
   if (status.state === 'error') {
@@ -958,7 +958,7 @@ function AutoRecommendationStep({
         </Text>
         <Text dimColor>
           Recommended model: {status.model}
-          {status.summary ? ` · ${status.summary}` : ''}
+          {status.summary ? ` Â· ${status.summary}` : ''}
         </Text>
         <Select
           options={[
@@ -1052,7 +1052,7 @@ function OllamaModelStep({
   }, [])
 
   if (status.state === 'loading') {
-    return <LoadingState message="Checking local Ollama models…" />
+    return <LoadingState message="Checking local Ollama modelsâ€¦" />
   }
 
   if (status.state === 'unavailable') {
@@ -1119,7 +1119,7 @@ function CodexOAuthStep({
     const env = buildCodexOAuthProfileEnv(tokens)
     if (!env) {
       throw new Error(
-        'Codex OAuth succeeded, but OpenClaude could not build a Codex profile from the stored credentials.',
+        'Codex OAuth succeeded, but RootClaude could not build a Codex profile from the stored credentials.',
       )
     }
 
@@ -1159,7 +1159,7 @@ function CodexOAuthStep({
     <Dialog title="Codex OAuth" onCancel={onBack}>
       <Box flexDirection="column" gap={1}>
         <Text>
-          Finish signing in with ChatGPT in your browser. OpenClaude will store
+          Finish signing in with ChatGPT in your browser. RootClaude will store
           the resulting Codex credentials securely for future sessions.
         </Text>
         {status.browserOpened === false ? (
@@ -1168,7 +1168,7 @@ function CodexOAuthStep({
           </Text>
         ) : status.browserOpened === true ? (
           <Text dimColor>
-            Browser opened. Complete the sign-in there, then OpenClaude will
+            Browser opened. Complete the sign-in there, then RootClaude will
             finish setup automatically.
           </Text>
         ) : (
@@ -1293,7 +1293,7 @@ function resolveCodexCredentials(processEnv: NodeJS.ProcessEnv):
       credentials.source === 'env'
         ? 'the current shell environment'
         : credentials.source === 'secure-storage'
-          ? 'OpenClaude secure storage'
+          ? 'RootClaude secure storage'
         : credentials.authPath ?? DEFAULT_CODEX_BASE_URL,
   }
 }
@@ -1331,7 +1331,7 @@ export function ProviderWizard({
               setStep({ name: 'codex-oauth' })
             } else if (value === 'clear') {
               const filePath = deleteProfileFile()
-              onDone(`Removed saved provider profile at ${filePath}. Restart OpenClaude to go back to normal startup.`, {
+              onDone(`Removed saved provider profile at ${filePath}. Restart RootClaude to go back to normal startup.`, {
                 display: 'system',
               })
             } else {

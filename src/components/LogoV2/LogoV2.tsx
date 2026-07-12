@@ -1,4 +1,4 @@
-import { c as _c } from "react-compiler-runtime";
+﻿import { c as _c } from "react-compiler-runtime";
 // biome-ignore-all assist/source/organizeImports: internal-only import markers must not be reordered
 import * as React from 'react';
 import { Box, Text, color } from '../../ink.js';
@@ -260,8 +260,8 @@ export function LogoV2() {
   }
   const layoutMode = getLayoutMode(columns);
   const userTheme = resolveThemeSetting(getGlobalConfig().theme);
-  const borderTitle = ` ${color("text", userTheme)("OpenClaude")} ${color("inactive", userTheme)(`v${version}`)} `;
-  const compactBorderTitle = color("text", userTheme)(" OpenClaude ");
+  const borderTitle = ` ${color("text", userTheme)("RootClaude")} ${color("inactive", userTheme)(`v${version}`)} `;
+  const compactBorderTitle = color("text", userTheme)(" RootClaude ");
   if (layoutMode === "compact") {
     let welcomeMessage = formatWelcomeMessage(username);
     if (stringWidth(welcomeMessage) > columns - 4) {
@@ -338,13 +338,13 @@ export function LogoV2() {
       t18 = $[42];
       t19 = $[43];
     }
-    return <><OffscreenFreeze><Box flexDirection="column" borderStyle="round" borderColor="inactive" borderText={t11} paddingX={1} paddingY={1} alignItems="center" width={columns}><Text bold={true}>{welcomeMessage}</Text>{t12}{t13}<Text dimColor={true}>{billingType}</Text><Text dimColor={true}>{agentName ? `@${agentName} · ${truncatedCwd}` : truncatedCwd}</Text></Box></OffscreenFreeze>{t14}{t15}{t16}{t17}{t18}{t19}</>;
+    return <><OffscreenFreeze><Box flexDirection="column" borderStyle="round" borderColor="inactive" borderText={t11} paddingX={1} paddingY={1} alignItems="center" width={columns}><Text bold={true}>{welcomeMessage}</Text>{t12}{t13}<Text dimColor={true}>{billingType}</Text><Text dimColor={true}>{agentName ? `@${agentName} Â· ${truncatedCwd}` : truncatedCwd}</Text></Box></OffscreenFreeze>{t14}{t15}{t16}{t17}{t18}{t19}</>;
   }
   const welcomeMessage_0 = formatWelcomeMessage(username);
-  const modelLine = showAccountIdentity && !process.env.IS_DEMO && config.oauthAccount?.organizationName ? `${modelDisplayName} · ${billingType} · ${config.oauthAccount.organizationName}` : `${modelDisplayName} · ${billingType}`;
+  const modelLine = showAccountIdentity && !process.env.IS_DEMO && config.oauthAccount?.organizationName ? `${modelDisplayName} Â· ${billingType} Â· ${config.oauthAccount.organizationName}` : `${modelDisplayName} Â· ${billingType}`;
   const cwdAvailableWidth_0 = agentName ? LEFT_PANEL_MAX_WIDTH - 1 - stringWidth(agentName) - 3 : LEFT_PANEL_MAX_WIDTH;
   const truncatedCwd_0 = truncatePath(cwd, Math.max(cwdAvailableWidth_0, 10));
-  const cwdLine = agentName ? `@${agentName} · ${truncatedCwd_0}` : truncatedCwd_0;
+  const cwdLine = agentName ? `@${agentName} Â· ${truncatedCwd_0}` : truncatedCwd_0;
   const optimalLeftWidth = calculateOptimalLeftWidth(welcomeMessage_0, cwdLine, modelLine);
   const {
     leftWidth,
@@ -374,7 +374,7 @@ export function LogoV2() {
   const t17 = 1;
   let t18;
   if ($[46] !== welcomeMessage_0) {
-    t18 = <Box marginTop={1} flexDirection="column" alignItems="center"><Text><Text color="brandShimmer">{WORDMARK_OPEN[0]}</Text><Text color="brand"> {WORDMARK_CLAUDE[0]}</Text></Text><Text><Text color="brandShimmer">{WORDMARK_OPEN[1]}</Text><Text color="brand"> {WORDMARK_CLAUDE[1]}</Text></Text><Text dimColor={true}>{BRAND_TAGLINE}</Text><Text color="inactive">•</Text><Text bold={true}>{welcomeMessage_0}</Text></Box>;
+    t18 = <Box marginTop={1} flexDirection="column" alignItems="center"><Text><Text color="brandShimmer">{WORDMARK_OPEN[0]}</Text><Text color="brand"> {WORDMARK_CLAUDE[0]}</Text></Text><Text><Text color="brandShimmer">{WORDMARK_OPEN[1]}</Text><Text color="brand"> {WORDMARK_CLAUDE[1]}</Text></Text><Text dimColor={true}>{BRAND_TAGLINE}</Text><Text color="inactive">â€¢</Text><Text bold={true}>{welcomeMessage_0}</Text></Box>;
     $[46] = welcomeMessage_0;
     $[47] = t18;
   } else {
@@ -405,7 +405,7 @@ export function LogoV2() {
   }
   let t22;
   if ($[53] !== t20 || $[54] !== t21) {
-    t22 = <Box flexDirection="column" alignItems="center"><Text dimColor={true}>────────────</Text>{t20}{t21}</Box>;
+    t22 = <Box flexDirection="column" alignItems="center"><Text dimColor={true}>â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€</Text>{t20}{t21}</Box>;
     $[53] = t20;
     $[54] = t21;
     $[55] = t22;

@@ -1,4 +1,4 @@
-import { color } from '../../components/design-system/color.js'
+﻿import { color } from '../../components/design-system/color.js'
 import { getGlobalConfig } from '../../utils/config.js'
 import { confirmTip, fetchNextTip } from '../ads.js'
 import { renderSponsorLink } from './tipLink.js'
@@ -17,7 +17,7 @@ const GITLAWB: TipSponsor = {
 }
 
 // Show an earning ad on every Nth tip slot (per turn). Tunable so an earning
-// user can dial it up (1 = every turn) or down. Frequent by default — they opted in.
+// user can dial it up (1 = every turn) or down. Frequent by default Ã¢â‚¬â€ they opted in.
 const DEFAULT_TIP_EVERY = 2
 const MAX_CONFIRM_DELAY_MS = 30_000
 
@@ -28,7 +28,7 @@ export function adsEarningEnabled(): boolean {
 }
 
 function tipEvery(): number {
-  const raw = Number(process.env.OPENCLAUDE_ADS_TIP_EVERY ?? DEFAULT_TIP_EVERY)
+  const raw = Number(process.env.RootClaude_ADS_TIP_EVERY ?? DEFAULT_TIP_EVERY)
   return Number.isFinite(raw) && raw >= 1 ? Math.trunc(raw) : DEFAULT_TIP_EVERY
 }
 
@@ -61,7 +61,7 @@ function renderEarningTip(
   const green = color('success', ctx.theme)
   const label = earning ? 'Sponsored +credits' : 'Sponsored'
   // Attribute to the real advertiser and point at the ad's click URL (the
-  // partner's tracker — that's what records the click and pays us). Fall back to
+  // partner's tracker Ã¢â‚¬â€ that's what records the click and pays us). Fall back to
   // Gitlawb only for the static no-ad line.
   const sponsor = ad?.name?.trim() || GITLAWB.name
   // Never point a third-party advertiser's name at the Gitlawb URL: for a real
@@ -73,14 +73,14 @@ function renderEarningTip(
   // printing the (often very long) tracker URL inline. Clicks still hit the
   // tracker, so attribution/payout are unchanged.
   const { display, trailing } = renderSponsorLink(sponsor, linkUrl)
-  const badge = green(`${label} · ${display}`)
-  return `${badge} — ${green(body)}${trailing}`
+  const badge = green(`${label} Ã‚Â· ${display}`)
+  return `${badge} Ã¢â‚¬â€ ${green(body)}${trailing}`
 }
 
 /**
  * The Gitlawb earning tip. content() fetches a real impression from the ads
  * service and schedules a confirm after the dwell so the viewer is credited for
- * seeing it. Any fetch/confirm failure degrades silently to a static line — ads
+ * seeing it. Any fetch/confirm failure degrades silently to a static line Ã¢â‚¬â€ ads
  * must never break or block the host CLI. (Confirm fires ~dwell after the tip is
  * picked; the fully attention-tied model is the server-side Tier-2 design.)
  */
@@ -91,7 +91,7 @@ export function buildEarningTip(): Tip {
     cooldownSessions: 0,
     isRelevant: async () => adsEarningEnabled(),
     content: async (ctx: TipContext) => {
-      const fallback = 'Earn opengateway credits while you code — gitlawb.com'
+      const fallback = 'Earn opengateway credits while you code Ã¢â‚¬â€ gitlawb.com'
       const code = getGlobalConfig().ads?.earnCode
       if (!code) return renderEarningTip(fallback, ctx, false)
 
@@ -99,9 +99,9 @@ export function buildEarningTip(): Tip {
       // sponsored tips disclosed this sharing; ads.ts sanitizes it first.
       // fetchNextTip is contractually non-throwing (it catches everything and
       // returns null), so no try/catch is needed at this call site.
-      const tip = await fetchNextTip(code, 'openclaude', ctx.latestUserMessage)
+      const tip = await fetchNextTip(code, 'RootClaude', ctx.latestUserMessage)
       // A malformed/empty ad payload must not render a blank line and then
-      // credit a never-seen ad — degrade to the static fallback instead.
+      // credit a never-seen ad Ã¢â‚¬â€ degrade to the static fallback instead.
       if (!tip || !tip.text.trim()) return renderEarningTip(fallback, ctx, false)
 
       const delay = Math.max(0, Math.min(tip.dwellMs, MAX_CONFIRM_DELAY_MS))

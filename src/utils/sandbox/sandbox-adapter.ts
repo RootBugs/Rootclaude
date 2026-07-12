@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Adapter layer that wraps @anthropic-ai/sandbox-runtime with Claude CLI-specific integrations.
  * This file provides the bridge between the external sandbox-runtime package and Claude CLI's
  * settings system, tool integration, and additional features.
@@ -86,10 +86,10 @@ function permissionRuleExtractPrefix(permissionRule: string): string | null {
  * Resolve Claude Code-specific path patterns for sandbox-runtime.
  *
  * Claude Code uses special path prefixes in permission rules:
- * - `//path` → absolute from filesystem root (becomes `/path`)
- * - `/path` → relative to settings file directory (becomes `$SETTINGS_DIR/path`)
- * - `~/path` → passed through (sandbox-runtime handles this)
- * - `./path` or `path` → passed through (sandbox-runtime handles this)
+ * - `//path` â†’ absolute from filesystem root (becomes `/path`)
+ * - `/path` â†’ relative to settings file directory (becomes `$SETTINGS_DIR/path`)
+ * - `~/path` â†’ passed through (sandbox-runtime handles this)
+ * - `./path` or `path` â†’ passed through (sandbox-runtime handles this)
  *
  * This function only handles CC-specific conventions (`//` and `/`).
  * Standard path patterns like `~/` and relative paths are passed through
@@ -104,7 +104,7 @@ export function resolvePathPatternForSandbox(
 ): string {
   // Handle // prefix - absolute from root (CC-specific convention)
   if (pattern.startsWith('//')) {
-    return pattern.slice(1) // "//.aws/**" → "/.aws/**"
+    return pattern.slice(1) // "//.aws/**" â†’ "/.aws/**"
   }
 
   // Handle / prefix - relative to settings file directory (CC-specific convention)
@@ -124,10 +124,10 @@ export function resolvePathPatternForSandbox(
  * Resolve paths from sandbox.filesystem.* settings (allowWrite, denyWrite, etc).
  *
  * Unlike permission rules (Edit/Read), these settings use standard path semantics:
- * - `/path` → absolute path (as written, NOT settings-relative)
- * - `~/path` → expanded to home directory
- * - `./path` or `path` → relative to settings file directory
- * - `//path` → absolute (legacy permission-rule syntax, accepted for compat)
+ * - `/path` â†’ absolute path (as written, NOT settings-relative)
+ * - `~/path` â†’ expanded to home directory
+ * - `./path` or `path` â†’ relative to settings file directory
+ * - `//path` â†’ absolute (legacy permission-rule syntax, accepted for compat)
  *
  * Fix for #30067: resolvePathPatternForSandbox treats `/Users/foo/.cargo` as
  * settings-relative (permission-rule convention). Users reasonably expect
@@ -141,7 +141,7 @@ export function resolveSandboxFilesystemPath(
   pattern: string,
   source: SettingSource,
 ): string {
-  // Legacy permission-rule escape: //path → /path. Kept for compat with
+  // Legacy permission-rule escape: //path â†’ /path. Kept for compat with
   // users who worked around #30067 by writing //Users/foo/.cargo in config.
   if (pattern.startsWith('//')) return pattern.slice(1)
   return expandPath(pattern, getSettingsRootPathForSource(source))
@@ -149,8 +149,8 @@ export function resolveSandboxFilesystemPath(
 
 function getCurrentCwdSettingsDenyWritePaths(cwd: string): string[] {
   return [
-    resolve(cwd, '.openclaude', 'settings.json'),
-    resolve(cwd, '.openclaude', 'settings.local.json'),
+    resolve(cwd, '.RootClaude', 'settings.json'),
+    resolve(cwd, '.RootClaude', 'settings.local.json'),
     resolve(cwd, getRelativeSettingsFilePathForSource('projectSettings')),
     resolve(cwd, getRelativeSettingsFilePathForSource('localSettings')),
   ]
@@ -264,14 +264,14 @@ export function convertToSandboxRuntimeConfig(
     denyWrite.push(...getLegacyClaudeConfigDenyWritePaths(cwd))
   }
 
-  // Block writes to .openclaude/skills in both original and current working directories.
-  // The sandbox-runtime's getDangerousDirectories() protects .openclaude/commands and
-  // .openclaude/agents but not .openclaude/skills. Skills have the same privilege level
+  // Block writes to .RootClaude/skills in both original and current working directories.
+  // The sandbox-runtime's getDangerousDirectories() protects .RootClaude/commands and
+  // .RootClaude/agents but not .RootClaude/skills. Skills have the same privilege level
   // (auto-discovered, auto-loaded, full Claude capabilities) so they need the
   // same OS-level sandbox protection.
-  denyWrite.push(resolve(originalCwd, '.openclaude', 'skills'))
+  denyWrite.push(resolve(originalCwd, '.RootClaude', 'skills'))
   if (cwd !== originalCwd) {
-    denyWrite.push(resolve(cwd, '.openclaude', 'skills'))
+    denyWrite.push(resolve(cwd, '.RootClaude', 'skills'))
   }
 
   // SECURITY: Git's is_git_directory() treats cwd as a bare repo if it has
@@ -282,7 +282,7 @@ export function convertToSandboxRuntimeConfig(
   // /dev/null at non-existent ones, which (a) leaves a 0-byte HEAD stub on
   // the host and (b) breaks `git log HEAD` inside bwrap ("ambiguous argument").
   // So: if a file exists, denyWrite (ro-bind in place, no stub). If not, scrub
-  // it post-command in scrubBareGitRepoFiles() — planted files are gone before
+  // it post-command in scrubBareGitRepoFiles() â€” planted files are gone before
   // unsandboxed git runs; inside the command, git is itself sandboxed.
   bareGitRepoScrubPaths.length = 0
   const bareGitRepoFiles = ['HEAD', 'objects', 'refs', 'hooks', 'config']
@@ -309,7 +309,7 @@ export function convertToSandboxRuntimeConfig(
 
   // Include directories added via --add-dir CLI flag or /add-dir command.
   // These must be in allowWrite so that Bash commands (which run inside the
-  // sandbox) can access them — not just file tools, which check permissions
+  // sandbox) can access them â€” not just file tools, which check permissions
   // at the app level via pathInAllowedWorkingPath().
   // Two sources: persisted in settings, and session-only in bootstrap state.
   const additionalDirs = new Set([
@@ -428,7 +428,7 @@ function scrubBareGitRepoFiles(): void {
       rmSync(p, { recursive: true })
       logForDebugging(`[Sandbox] scrubbed planted bare-repo file: ${p}`)
     } catch {
-      // ENOENT is the expected common case — nothing was planted
+      // ENOENT is the expected common case â€” nothing was planted
     }
   }
 }
@@ -447,10 +447,10 @@ async function detectWorktreeMainRepoPath(cwd: string): Promise<string | null> {
     if (!gitdirMatch?.[1]) {
       return null
     }
-    // gitdir may be relative (rare, but git accepts it) — resolve against cwd
+    // gitdir may be relative (rare, but git accepts it) â€” resolve against cwd
     const gitdir = resolve(cwd, gitdirMatch[1].trim())
     // gitdir format: /path/to/main/repo/.git/worktrees/worktree-name
-    // Match the /.git/worktrees/ segment specifically — indexOf('.git') alone
+    // Match the /.git/worktrees/ segment specifically â€” indexOf('.git') alone
     // would false-match paths like /home/user/.github-projects/...
     const marker = `${sep}.git${sep}worktrees${sep}`
     const markerIndex = gitdir.lastIndexOf(marker)
@@ -478,7 +478,7 @@ const checkDependencies = memoize((): SandboxDependencyCheck => {
 
 /**
  * Read sandbox.enabled only from trusted settings sources.
- * projectSettings is intentionally excluded — a malicious repo could
+ * projectSettings is intentionally excluded â€” a malicious repo could
  * otherwise disable the sandbox via .claude/settings.json.
  */
 function getSandboxEnabledSetting(): boolean {
@@ -582,7 +582,7 @@ function isSandboxingEnabled(): boolean {
  *
  * Fix for #34044: previously isSandboxingEnabled() silently returned false
  * when dependencies were missing, giving users zero feedback that their
- * explicit security setting was being ignored. This is a security footgun —
+ * explicit security setting was being ignored. This is a security footgun â€”
  * users configure allowedDomains expecting enforcement, get none.
  *
  * Call this once at startup (REPL/print) and surface the reason if present.
@@ -614,7 +614,7 @@ function getSandboxUnavailableReason(): string | undefined {
       platform === 'macos'
         ? 'run /sandbox or /doctor for details'
         : 'install missing tools (e.g. apt install bubblewrap socat) or run /sandbox for details'
-    return `sandbox.enabled is set but dependencies are missing: ${deps.errors.join(', ')} · ${hint}`
+    return `sandbox.enabled is set but dependencies are missing: ${deps.errors.join(', ')} Â· ${hint}`
   }
 
   return undefined

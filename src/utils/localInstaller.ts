@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Utilities for handling local installation
  */
 
@@ -29,18 +29,18 @@ export function getCandidateLocalInstallDirs(options?: {
 
 function getCandidateLocalBinaryPaths(localInstallDir: string): string[] {
   return [
-    join(localInstallDir, 'node_modules', '.bin', 'openclaude'),
+    join(localInstallDir, 'node_modules', '.bin', 'RootClaude'),
     join(localInstallDir, 'node_modules', '.bin', 'claude'),
   ]
 }
 
 export function isManagedLocalInstallationPath(execPath: string): boolean {
   const normalizedExecPath = execPath.replace(/\\+/g, '/')
-  return normalizedExecPath.includes('/.openclaude/local/node_modules/')
+  return normalizedExecPath.includes('/.RootClaude/local/node_modules/')
 }
 
 export function getLocalClaudePath(): string {
-  return join(getLocalInstallDir(), 'openclaude')
+  return join(getLocalInstallDir(), 'RootClaude')
 }
 
 /**
@@ -83,7 +83,7 @@ export async function ensureLocalPackageEnvironment(): Promise<boolean> {
     await writeIfMissing(
       join(localInstallDir, 'package.json'),
       jsonStringify(
-        { name: 'openclaude-local', version: '0.0.1', private: true },
+        { name: 'RootClaude-local', version: '0.0.1', private: true },
         null,
         2,
       ),
@@ -93,7 +93,7 @@ export async function ensureLocalPackageEnvironment(): Promise<boolean> {
     const wrapperPath = getLocalClaudePath()
     const created = await writeIfMissing(
       wrapperPath,
-      `#!/bin/sh\nexec "${localInstallDir}/node_modules/.bin/openclaude" "$@"`,
+      `#!/bin/sh\nexec "${localInstallDir}/node_modules/.bin/RootClaude" "$@"`,
       0o755,
     )
     if (created) {
@@ -158,7 +158,7 @@ export async function installOrUpdateClaudePackage(
 
 /**
  * Check if local installation exists.
- * Pure existence probe — callers use this to choose update path / UI hints.
+ * Pure existence probe Ã¢â‚¬â€ callers use this to choose update path / UI hints.
  */
 export async function localInstallationExists(): Promise<boolean> {
   for (const localInstallDir of getCandidateLocalInstallDirs()) {

@@ -1,10 +1,10 @@
-import type { SettingsJson } from '../../../utils/settings/types.js'
+﻿import type { SettingsJson } from '../../../utils/settings/types.js'
 
 /**
  * Normalized smart-routing configuration read from settings.
  *
  * This is the shape callers (the role resolver, the CLI surface) consume. It
- * carries the raw role keys and thresholds — it does NOT resolve role keys to
+ * carries the raw role keys and thresholds â€” it does NOT resolve role keys to
  * concrete model strings (that is `resolveConfig.ts`'s job).
  *
  * `enabled` reflects the strong-default rule: a config that opts in but omits
@@ -33,19 +33,19 @@ function sanitizeThreshold(value: number | undefined): number | undefined {
 
 /** Startup defaults from env. Used only when `settings.smartRouting` is absent. */
 function readEnvSmartRouting(env: NodeJS.ProcessEnv): SettingsJson['smartRouting'] | undefined {
-  if (env.OPENCLAUDE_SMART_ROUTING == null) return undefined
-  const enabled = env.OPENCLAUDE_SMART_ROUTING === '1' || env.OPENCLAUDE_SMART_ROUTING === 'true'
+  if (env.RootClaude_SMART_ROUTING == null) return undefined
+  const enabled = env.RootClaude_SMART_ROUTING === '1' || env.RootClaude_SMART_ROUTING === 'true'
   return {
     enabled,
-    simpleModel: env.OPENCLAUDE_SMART_ROUTING_SIMPLE?.trim() || undefined,
-    strongModel: env.OPENCLAUDE_SMART_ROUTING_STRONG?.trim() || undefined,
+    simpleModel: env.RootClaude_SMART_ROUTING_SIMPLE?.trim() || undefined,
+    strongModel: env.RootClaude_SMART_ROUTING_STRONG?.trim() || undefined,
   }
 }
 
 /**
  * Read and normalize smart-routing config. Precedence: `settings.smartRouting`
  * (if present at all, even disabled) wins over env, so org-managed settings
- * override an env default. Env (`OPENCLAUDE_SMART_ROUTING*`) is the startup
+ * override an env default. Env (`RootClaude_SMART_ROUTING*`) is the startup
  * default when settings say nothing.
  *
  * Returns a disabled config when the block is absent, disabled, or

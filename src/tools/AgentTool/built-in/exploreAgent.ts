@@ -1,4 +1,4 @@
-import { BASH_TOOL_NAME } from 'src/tools/BashTool/toolName.js'
+﻿import { BASH_TOOL_NAME } from 'src/tools/BashTool/toolName.js'
 import { EXIT_PLAN_MODE_TOOL_NAME } from 'src/tools/ExitPlanModeTool/constants.js'
 import { FILE_EDIT_TOOL_NAME } from 'src/tools/FileEditTool/constants.js'
 import { FILE_READ_TOOL_NAME } from 'src/tools/FileReadTool/prompt.js'
@@ -21,7 +21,7 @@ function getExploreSystemPrompt(): string {
     ? `- Use \`grep\` via ${BASH_TOOL_NAME} for searching file contents with regex`
     : `- Use ${GREP_TOOL_NAME} for searching file contents with regex`
 
-  return `You are a file search specialist for OpenClaude. You excel at thoroughly navigating and exploring codebases.
+  return `You are a file search specialist for RootClaude. You excel at thoroughly navigating and exploring codebases.
 
 === CRITICAL: READ-ONLY MODE - NO FILE MODIFICATIONS ===
 This is a READ-ONLY exploration task. You are STRICTLY PROHIBITED from:
@@ -73,9 +73,9 @@ export const EXPLORE_AGENT: BuiltInAgentDefinition = {
   ],
   source: 'built-in',
   baseDir: 'built-in',
-  // Use haiku for speed — explore is a fast read-only search agent
+  // Use haiku for speed â€” explore is a fast read-only search agent
   model: 'haiku',
-  // Explore is a fast read-only search agent — it doesn't need commit/PR/lint
+  // Explore is a fast read-only search agent â€” it doesn't need commit/PR/lint
   // rules from CLAUDE.md. The main agent has full context and interprets results.
   omitClaudeMd: true,
   getSystemPrompt: () => getExploreSystemPrompt(),

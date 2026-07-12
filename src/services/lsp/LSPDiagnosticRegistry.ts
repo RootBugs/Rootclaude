@@ -1,4 +1,4 @@
-import { LRUCache } from 'lru-cache'
+﻿import { LRUCache } from 'lru-cache'
 import * as path from 'path'
 import { logForDebugging } from '../../utils/debug.js'
 import { toError } from '../../utils/errors.js'
@@ -321,7 +321,7 @@ function buildStormSummaryFile(
           start: { line: 0, character: 0 },
           end: { line: 0, character: 0 },
         },
-        source: 'openclaude-lsp',
+        source: 'RootClaude-lsp',
         code: 'diagnostic-storm',
       },
     ],

@@ -20,7 +20,7 @@ async function withTempConfigDir<T>(fn: () => Promise<T>): Promise<T> {
   await acquireSharedMutationLock('integrations/runtimeMetadata.test.ts')
   let tempDir: string | null = null
   try {
-    tempDir = mkdtempSync(join(tmpdir(), 'openclaude-runtime-metadata-test-'))
+    tempDir = mkdtempSync(join(tmpdir(), 'RootClaude-runtime-metadata-test-'))
     process.env.CLAUDE_CONFIG_DIR = tempDir
     return await fn()
   } finally {

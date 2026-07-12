@@ -15,7 +15,7 @@ async function runSkillsList(args: string[]): Promise<{
   stderr: string
   stdout: string
 }> {
-  const root = mkdtempSync(join(tmpdir(), 'openclaude-skills-cli-'))
+  const root = mkdtempSync(join(tmpdir(), 'RootClaude-skills-cli-'))
   const projectDir = join(root, 'project')
   const homeDir = join(root, 'home')
   const configDir = join(root, 'config')
@@ -32,7 +32,7 @@ async function runSkillsList(args: string[]): Promise<{
       OPENAI_API_KEY: '',
       CLAUDE_CONFIG_DIR: configDir,
       HOME: homeDir,
-      OPENCLAUDE_DISABLE_EARLY_INPUT: '1',
+      RootClaude_DISABLE_EARLY_INPUT: '1',
     },
     stderr: 'pipe',
     stdout: 'pipe',
@@ -96,8 +96,8 @@ test('skills list bypasses provider startup validation after --setting-sources',
 }, 15_000)
 
 test('skills list honors --add-dir before provider startup validation', async () => {
-  const addDirRoot = mkdtempSync(join(tmpdir(), 'openclaude-skills-add-dir-'))
-  const skillDir = join(addDirRoot, '.openclaude', 'skills', 'addon')
+  const addDirRoot = mkdtempSync(join(tmpdir(), 'RootClaude-skills-add-dir-'))
+  const skillDir = join(addDirRoot, '.RootClaude', 'skills', 'addon')
   mkdirSync(skillDir, { recursive: true })
   writeFileSync(
     join(skillDir, 'SKILL.md'),
@@ -118,7 +118,7 @@ test('skills list honors --add-dir before provider startup validation', async ()
 }, 15_000)
 
 test('skills list accepts equals-form global flags before provider startup validation', async () => {
-  const root = mkdtempSync(join(tmpdir(), 'openclaude-skills-cli-flags-'))
+  const root = mkdtempSync(join(tmpdir(), 'RootClaude-skills-cli-flags-'))
   const providerEnvFile = join(root, 'provider.env')
   const pluginDir = join(root, 'plugin')
   try {
@@ -192,8 +192,8 @@ test('skills list accepts trailing global flags', async () => {
 }, 15_000)
 
 test('skills list honors trailing --add-dir', async () => {
-  const addDirRoot = mkdtempSync(join(tmpdir(), 'openclaude-skills-add-dir-'))
-  const skillDir = join(addDirRoot, '.openclaude', 'skills', 'addon')
+  const addDirRoot = mkdtempSync(join(tmpdir(), 'RootClaude-skills-add-dir-'))
+  const skillDir = join(addDirRoot, '.RootClaude', 'skills', 'addon')
   try {
     mkdirSync(skillDir, { recursive: true })
     writeFileSync(

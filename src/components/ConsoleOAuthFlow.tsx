@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+﻿import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS, logEvent } from 'src/services/analytics/index.js';
 import { installOAuthTokens } from '../cli/handlers/auth.js';
 import { useTerminalSize } from '../hooks/useTerminalSize.js';
@@ -262,7 +262,7 @@ export function ConsoleOAuthFlow({
           state: 'success'
         });
         void sendNotification({
-          message: 'OpenClaude login successful',
+          message: 'RootClaude login successful',
           notificationType: 'auth_success'
         }, terminal);
       }
@@ -330,7 +330,7 @@ export function ConsoleOAuthFlow({
         </Box>}
       {mode === 'setup-token' && oauthStatus.state === 'success' && oauthStatus.token && <Box key="tokenOutput" flexDirection="column" gap={1} paddingTop={1}>
             <Text color="success">
-              ✓ Long-lived authentication token created successfully!
+              âœ“ Long-lived authentication token created successfully!
             </Text>
             <Box flexDirection="column" gap={1}>
               <Text>Your OAuth token (valid for 1 year):</Text>
@@ -384,13 +384,13 @@ function OAuthStatusMessage({
     case 'idle': {
       const promptText =
         startingMessage ||
-        'OpenClaude can be used with your Claude subscription or billed based on API usage through your Console account.'
+        'RootClaude can be used with your Claude subscription or billed based on API usage through your Console account.'
 
       const loginOptions = [
         {
           label: (
             <Text>
-              Claude account with subscription ·{' '}
+              Claude account with subscription Â·{' '}
               <Text dimColor>Pro, Max, Team, or Enterprise</Text>
               {'\n'}
             </Text>
@@ -400,7 +400,7 @@ function OAuthStatusMessage({
         {
           label: (
             <Text>
-              Anthropic Console account ·{' '}
+              Anthropic Console account Â·{' '}
               <Text dimColor>API usage billing</Text>
               {'\n'}
             </Text>
@@ -410,7 +410,7 @@ function OAuthStatusMessage({
         {
           label: (
             <Text>
-              3rd-party platform ·{' '}
+              3rd-party platform Â·{' '}
               <Text dimColor>OpenAI, Gemini, Bedrock, Ollama, and more</Text>
               {'\n'}
             </Text>
@@ -487,7 +487,7 @@ function OAuthStatusMessage({
           {!showPastePrompt ? (
             <Box>
               <Spinner />
-              <Text>Opening browser to sign in…</Text>
+              <Text>Opening browser to sign inâ€¦</Text>
             </Box>
           ) : null}
           {showPastePrompt ? (
@@ -512,7 +512,7 @@ function OAuthStatusMessage({
         <Box flexDirection="column" gap={1}>
           <Box>
             <Spinner />
-            <Text>Creating API key for OpenClaude…</Text>
+            <Text>Creating API key for RootClaudeâ€¦</Text>
           </Box>
         </Box>
       )
@@ -520,7 +520,7 @@ function OAuthStatusMessage({
     case 'about_to_retry':
       return (
         <Box flexDirection="column" gap={1}>
-          <Text color="permission">Retrying…</Text>
+          <Text color="permission">Retryingâ€¦</Text>
         </Box>
       )
 
@@ -535,7 +535,7 @@ function OAuthStatusMessage({
                 </Text>
               ) : null}
               <Text color="success">
-                Login successful. Press <Text bold>Enter</Text> to continue…
+                Login successful. Press <Text bold>Enter</Text> to continueâ€¦
               </Text>
             </>
           )}

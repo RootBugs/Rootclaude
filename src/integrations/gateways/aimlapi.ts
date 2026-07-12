@@ -1,4 +1,4 @@
-import { defineGateway } from '../define.js'
+﻿import { defineGateway } from '../define.js'
 import { publicBuildVersion } from '../../utils/version.js'
 
 const AIMLAPI_CHAT_MODEL_TYPES = new Set([
@@ -75,12 +75,12 @@ export default defineGateway({
     openaiShim: {
       headers: {
         'X-AIMLAPI-Partner-ID': 'part_62yQoGYDq4Yqnrj2R1iGrDNJ',
-        'X-AIMLAPI-Integration-Repo': 'Gitlawb/openclaude',
+        'X-AIMLAPI-Integration-Repo': 'Gitlawb/RootClaude',
         'X-AIMLAPI-Integration-Version': publicBuildVersion,
         // Attribution headers AI/ML API records for api.aimlapi.com requests
         // (issue #835). `HTTP-Referer`/`X-Title` identify the referring app.
-        'HTTP-Referer': 'OpenClaude',
-        'X-Title': 'OpenClaude',
+        'HTTP-Referer': 'RootClaude',
+        'X-Title': 'RootClaude',
       },
       supportsAuthHeaders: false,
     },

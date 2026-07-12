@@ -1,4 +1,4 @@
-import { c as _c } from "react-compiler-runtime";
+﻿import { c as _c } from "react-compiler-runtime";
 import capitalize from 'lodash-es/capitalize.js';
 import * as React from 'react';
 import { useCallback, useMemo, useState } from 'react';
@@ -30,7 +30,7 @@ export type Props = {
    * `switchToProfileId` is the marker of the selected cross-profile option
    * (issue #1119). It is defined only when the picked option is a genuine
    * "switch profile" entry, so consumers must gate profile activation on this
-   * marker rather than re-parsing the encoded value — a literal custom model id
+   * marker rather than re-parsing the encoded value â€” a literal custom model id
    * that merely starts with `__switch_profile__:` arrives with it undefined.
    */
   onSelect: (
@@ -46,8 +46,8 @@ export type Props = {
   /**
    * When true, skip writing effortLevel to userSettings on selection.
    * Used by the assistant installer wizard where the model choice is
-   * project-scoped (written to the assistant's .openclaude/settings.json via
-   * install.ts) and should not leak to the user's global ~/.openclaude/settings.json.
+   * project-scoped (written to the assistant's .RootClaude/settings.json via
+   * install.ts) and should not leak to the user's global ~/.RootClaude/settings.json.
    */
   skipSettingsWrite?: boolean;
   optionsOverride?: ModelOption[];
@@ -334,7 +334,7 @@ export function ModelPicker(t0) {
       // memo's deps) and its entries spread the source ModelOption's
       // `switchToProfileId`. If two options share the selected value (a literal
       // custom id colliding with an encoded switch value), the selection is
-      // ambiguous — the Select cannot tell them apart — so treat it as NOT a
+      // ambiguous â€” the Select cannot tell them apart â€” so treat it as NOT a
       // switch rather than letting the literal borrow another option's marker.
       const selectedSwitchProfileId = resolveSelectedSwitchProfileId(selectOptions, selectedValue);
       onSelect(selectedValue, selectedEffort, selectedSwitchProfileId);
@@ -359,7 +359,7 @@ export function ModelPicker(t0) {
   } else {
     t15 = $[41];
   }
-  const t16 = headerText ?? "Switch between Claude models. Applies to this session and future OpenClaude sessions. For other/previous model names, specify with --model.";
+  const t16 = headerText ?? "Switch between Claude models. Applies to this session and future RootClaude sessions. For other/previous model names, specify with --model.";
   let t17;
   if ($[42] !== t16) {
     t17 = <Text dimColor={true}>{t16}</Text>;
@@ -377,7 +377,7 @@ export function ModelPicker(t0) {
     t18 = $[45];
   }
   const refreshHint = onRefresh ? <ConfigurableShortcutHint action="modelPicker:refresh" context="ModelPicker" fallback="r" description="refresh models" /> : null;
-  const discoveryLine = discoveryState ? <Text color={mapDiscoveryToneToColor(discoveryState.tone)}>{discoveryState.message}{refreshHint ? <Text color="subtle"> {" "}· {refreshHint}</Text> : null}</Text> : refreshHint ? <Text dimColor={true}>{refreshHint}</Text> : null;
+  const discoveryLine = discoveryState ? <Text color={mapDiscoveryToneToColor(discoveryState.tone)}>{discoveryState.message}{refreshHint ? <Text color="subtle"> {" "}Â· {refreshHint}</Text> : null}</Text> : refreshHint ? <Text dimColor={true}>{refreshHint}</Text> : null;
   const t19 = <Box marginBottom={1} flexDirection="column">{t15}{t17}{t18}{discoveryLine}</Box>;
   const t20 = onCancel ?? _temp4;
   let t21;
@@ -395,7 +395,7 @@ export function ModelPicker(t0) {
   }
   let t22;
   if ($[57] !== hiddenCount) {
-    t22 = hiddenCount > 0 && <Box paddingLeft={3}><Text dimColor={true}>and {hiddenCount} more…</Text></Box>;
+    t22 = hiddenCount > 0 && <Box paddingLeft={3}><Text dimColor={true}>and {hiddenCount} moreâ€¦</Text></Box>;
     $[57] = hiddenCount;
     $[58] = t22;
   } else {
@@ -412,7 +412,7 @@ export function ModelPicker(t0) {
   }
   let t24;
   if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort) {
-    t24 = <Box marginBottom={1} flexDirection="column">{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
+    t24 = <Box marginBottom={1} flexDirection="column">{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">â† â†’ to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
     $[62] = displayEffort;
     $[63] = focusedDefaultEffort;
     $[64] = focusedModelName;
@@ -489,7 +489,7 @@ function _temp(s) {
 // A picker value is a genuine cross-profile switch only when the option with
 // that exact value carries the `switchToProfileId` marker. A literal custom
 // model id that merely starts with `__switch_profile__:` is a plain option with
-// no marker and must NOT be decoded — otherwise the display resolver would
+// no marker and must NOT be decoded â€” otherwise the display resolver would
 // strip a real model id down to its `:`-tail. getModelOptions() is the
 // authority for the switch options (they only appear in the base list, never in
 // a discovery override, and discovered ids never carry the prefix). If two
@@ -504,7 +504,7 @@ function resolveOptionModel(value?: string): string | undefined {
   if (value === NO_PREFERENCE) return getDefaultMainLoopModel();
   // Cross-profile entries from /model encode the picker value as
   // `__switch_profile__:<profileId>:<model>`. Effort / display logic needs
-  // the bare target model id (e.g. `gpt-5.4`) — otherwise
+  // the bare target model id (e.g. `gpt-5.4`) â€” otherwise
   // `modelSupportsEffort` sees the prefixed string and reports
   // "Effort not supported" even for reasoning-capable models. Decode only when
   // the value is a genuine marker-backed switch option, not any prefixed id.

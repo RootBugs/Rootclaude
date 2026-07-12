@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto'
+﻿import { randomUUID } from 'crypto'
 import { writeToStderr } from 'src/utils/process.js'
 
 export const HEADLESS_HEARTBEAT_MIN_INTERVAL_MS = 5_000
@@ -349,7 +349,7 @@ function formatStderrHeartbeat(event: {
   session_id: string
 }): string {
   const parts = [
-    'openclaude: heartbeat',
+    'RootClaude: heartbeat',
     `elapsed=${formatSeconds(event.elapsed_ms)}`,
     `quiet=${formatSeconds(event.since_last_activity_ms)}`,
     `state=${event.state}`,

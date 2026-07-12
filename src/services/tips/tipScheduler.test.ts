@@ -170,16 +170,16 @@ describe('getTipToShowOnSpinner — earning branch', () => {
     // Opt-in earning (the mocked config provides ads.enabled + a code); every
     // slot earns so the cadence is deterministic.
     configRef.value = { ...configRef.value, ads: { enabled: true, earnCode: 'earn_x' } }
-    const prevTipEvery = process.env.OPENCLAUDE_ADS_TIP_EVERY
-    process.env.OPENCLAUDE_ADS_TIP_EVERY = '1'
+    const prevTipEvery = process.env.RootClaude_ADS_TIP_EVERY
+    process.env.RootClaude_ADS_TIP_EVERY = '1'
     try {
       const { getTipToShowOnSpinner } = await freshScheduler()
       const pick = await getTipToShowOnSpinner()
       // Earning branch takes precedence over the sponsored/regular partitioning.
       expect(pick?.id).toBe('gitlawb-earn')
     } finally {
-      if (prevTipEvery === undefined) delete process.env.OPENCLAUDE_ADS_TIP_EVERY
-      else process.env.OPENCLAUDE_ADS_TIP_EVERY = prevTipEvery
+      if (prevTipEvery === undefined) delete process.env.RootClaude_ADS_TIP_EVERY
+      else process.env.RootClaude_ADS_TIP_EVERY = prevTipEvery
     }
   })
 

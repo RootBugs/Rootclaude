@@ -1,4 +1,4 @@
-import { c as _c } from "react-compiler-runtime";
+﻿import { c as _c } from "react-compiler-runtime";
 import capitalize from 'lodash-es/capitalize.js';
 import * as React from 'react';
 import { useMemo } from 'react';
@@ -7,7 +7,7 @@ import { Box, Text } from '../../ink.js';
 import { estimateSkillFrontmatterTokens, getSkillsPath } from '../../skills/loadSkillsDir.js';
 import { getDisplayPath } from '../../utils/file.js';
 import { formatTokens } from '../../utils/format.js';
-import { getUserSkillExampleDisplayPath } from '../../utils/openclaudeDisplayPaths.js';
+import { getUserSkillExampleDisplayPath } from '../../utils/RootClaudeDisplayPaths.js';
 import { getSettingSourceName, type SettingSource } from '../../utils/settings/constants.js';
 import { plural } from '../../utils/stringUtils.js';
 import { ConfigurableShortcutHint } from '../ConfigurableShortcutHint.js';
@@ -34,7 +34,7 @@ function getSourceTitle(source: SkillSource): string {
 }
 function getSourceSubtitle(source: SkillSource, skills: SkillCommand[]): string | undefined {
   // MCP skills show server names; file-based skills show filesystem paths.
-  // Skill names are `<server>:<skill>`, not `mcp__<server>__…`.
+  // Skill names are `<server>:<skill>`, not `mcp__<server>__Ã¢â‚¬Â¦`.
   if (source === 'mcp') {
     const servers = [...new Set(skills.map(s => {
       const idx = s.name.indexOf(':');
@@ -51,7 +51,7 @@ function getSkillListLabel(skill: SkillCommand): string {
   return leafName === skill.name ? skill.name : `${skill.name} - ${leafName}`;
 }
 export function getEmptySkillsMenuMessage(): string {
-  return `Create skills in .openclaude/skills/<name>/SKILL.md or ${getUserSkillExampleDisplayPath()}`;
+  return `Create skills in .RootClaude/skills/<name>/SKILL.md or ${getUserSkillExampleDisplayPath()}`;
 }
 export function SkillsMenu(t0) {
   const $ = _c(35);
@@ -235,7 +235,7 @@ function _temp3(skill_0) {
   const estimatedTokens = estimateSkillFrontmatterTokens(skill_0);
   const tokenDisplay = `~${formatTokens(estimatedTokens)}`;
   const pluginName = skill_0.source === "plugin" ? skill_0.pluginInfo?.pluginManifest.name : undefined;
-  return <FullWidthRow key={`${skill_0.name}-${skill_0.source}`}><Text>{getSkillListLabel(skill_0)}</Text><Text dimColor={true}>{pluginName ? ` · ${pluginName}` : ""} · {tokenDisplay} description tokens</Text></FullWidthRow>;
+  return <FullWidthRow key={`${skill_0.name}-${skill_0.source}`}><Text>{getSkillListLabel(skill_0)}</Text><Text dimColor={true}>{pluginName ? ` Ã‚Â· ${pluginName}` : ""} Ã‚Â· {tokenDisplay} description tokens</Text></FullWidthRow>;
 }
 function _temp2(a, b) {
   return a.name.localeCompare(b.name);

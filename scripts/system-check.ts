@@ -118,15 +118,15 @@ export function buildMemoryGuardChecks(
   const disableAutoCompact = isTruthy(env.DISABLE_AUTO_COMPACT)
   const autoCompactAvailable =
     input.autoCompactEnabled && !disableCompact && !disableAutoCompact
-  const hardCapOverride = env.OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP
+  const hardCapOverride = env.ROOTCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP
   const hardCap = getMaxActiveMessagesHardCap(env)
   const configuredLimit =
     input.maxMessagesCompactionThreshold &&
     input.maxMessagesCompactionThreshold !== 'off'
       ? input.maxMessagesCompactionThreshold
       : undefined
-  const legacyLimit = parsePositiveInteger(env.OPENCLAUDE_MAX_ACTIVE_MESSAGES)
-  const memoryBudget = parsePositiveInteger(env.OPENCLAUDE_MAX_MEMORY_MB) || 1536
+  const legacyLimit = parsePositiveInteger(env.ROOTCLAUDE_MAX_ACTIVE_MESSAGES)
+  const memoryBudget = parsePositiveInteger(env.ROOTCLAUDE_MAX_MEMORY_MB) || 1536
 
   results.push(
     autoCompactAvailable
@@ -149,7 +149,7 @@ export function buildMemoryGuardChecks(
     hardCap === 0
       ? fail(
           'Active-message hard cap',
-          'Disabled by OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP=0; long sessions can grow without the active-message safety cap.',
+          'Disabled by ROOTCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP=0; long sessions can grow without the active-message safety cap.',
         )
       : pass(
           'Active-message hard cap',
@@ -614,7 +614,7 @@ export function readNodeExecutableVersion(
   if (result.error) {
     return {
       ok: false,
-      detail: `Unable to run \`node --version\`: ${result.error.message}. OpenClaude requires Node.js ${MIN_NODE_ENGINE_RANGE} on PATH.`,
+      detail: `Unable to run \`node --version\`: ${result.error.message}. RootClaude requires Node.js ${MIN_NODE_ENGINE_RANGE} on PATH.`,
     }
   }
 
@@ -623,7 +623,7 @@ export function readNodeExecutableVersion(
     const suffix = output ? `: ${output}` : `: exit code ${result.status ?? 'unknown'}`
     return {
       ok: false,
-      detail: `Unable to run \`node --version\`${suffix}. OpenClaude requires Node.js ${MIN_NODE_ENGINE_RANGE} on PATH.`,
+      detail: `Unable to run \`node --version\`${suffix}. RootClaude requires Node.js ${MIN_NODE_ENGINE_RANGE} on PATH.`,
     }
   }
 
@@ -631,7 +631,7 @@ export function readNodeExecutableVersion(
   if (!version) {
     return {
       ok: false,
-      detail: `Unable to read Node.js version from \`node --version\`. OpenClaude requires Node.js ${MIN_NODE_ENGINE_RANGE} on PATH.`,
+      detail: `Unable to read Node.js version from \`node --version\`. RootClaude requires Node.js ${MIN_NODE_ENGINE_RANGE} on PATH.`,
     }
   }
 
@@ -1066,7 +1066,7 @@ async function checkBaseUrlReachability(): Promise<CheckResult> {
         headers['chatgpt-account-id'] = credentials.accountId
       }
       headers['Content-Type'] = 'application/json'
-      headers.originator = 'openclaude'
+      headers.originator = 'rootclaude'
       method = 'POST'
       body = JSON.stringify({
         model: request.resolvedModel,

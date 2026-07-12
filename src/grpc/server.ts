@@ -1,4 +1,4 @@
-import * as grpc from '@grpc/grpc-js'
+﻿import * as grpc from '@grpc/grpc-js'
 import * as protoLoader from '@grpc/proto-loader'
 import path from 'path'
 import { randomUUID } from 'crypto'
@@ -10,7 +10,7 @@ import { FileStateCache, READ_FILE_STATE_CACHE_SIZE } from '../utils/fileStateCa
 import { getBuiltInAgents } from '../tools/AgentTool/builtInAgents.js'
 import type { Message } from '../types/message.js'
 
-const PROTO_PATH = path.resolve(import.meta.dirname, '../proto/openclaude.proto')
+const PROTO_PATH = path.resolve(import.meta.dirname, '../proto/RootClaude.proto')
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -21,7 +21,7 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 })
 
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition) as any
-const openclaudeProto = protoDescriptor.openclaude.v1
+const RootClaudeProto = protoDescriptor.RootClaude.v1
 
 const MAX_SESSIONS = 1000
 
@@ -89,7 +89,7 @@ export class GrpcServer {
 
   constructor() {
     this.server = new grpc.Server()
-    this.server.addService(openclaudeProto.AgentService.service, {
+    this.server.addService(RootClaudeProto.AgentService.service, {
       Chat: this.handleChat.bind(this),
     })
   }
@@ -150,7 +150,7 @@ export class GrpcServer {
             tools: getTools(appState.toolPermissionContext), // Gets all available tools
             commands: [], // Slash commands
             mcpClients: [],
-            // Register OpenClaude's built-in agents (general-purpose,
+            // Register RootClaude's built-in agents (general-purpose,
             // statusline-setup, optional code-guide). Without this the Agent
             // tool throws "Agent type 'general-purpose' not found" the moment
             // the model tries to spawn a subagent for investigation.

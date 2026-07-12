@@ -368,14 +368,14 @@ describe('getRoutingSummaryForDisplay', () => {
 
   test('uses env-backed smart-routing roles for pricing display', () => {
     const previous = {
-      OPENCLAUDE_SMART_ROUTING: process.env.OPENCLAUDE_SMART_ROUTING,
-      OPENCLAUDE_SMART_ROUTING_SIMPLE: process.env.OPENCLAUDE_SMART_ROUTING_SIMPLE,
-      OPENCLAUDE_SMART_ROUTING_STRONG: process.env.OPENCLAUDE_SMART_ROUTING_STRONG,
+      RootClaude_SMART_ROUTING: process.env.RootClaude_SMART_ROUTING,
+      RootClaude_SMART_ROUTING_SIMPLE: process.env.RootClaude_SMART_ROUTING_SIMPLE,
+      RootClaude_SMART_ROUTING_STRONG: process.env.RootClaude_SMART_ROUTING_STRONG,
     }
     try {
-      process.env.OPENCLAUDE_SMART_ROUTING = '1'
-      process.env.OPENCLAUDE_SMART_ROUTING_SIMPLE = 'mini'
-      process.env.OPENCLAUDE_SMART_ROUTING_STRONG = 'main'
+      process.env.RootClaude_SMART_ROUTING = '1'
+      process.env.RootClaude_SMART_ROUTING_SIMPLE = 'mini'
+      process.env.RootClaude_SMART_ROUTING_STRONG = 'main'
       recordRoutingDecision('simple')
       const out = getRoutingSummaryForDisplay(
         settings({

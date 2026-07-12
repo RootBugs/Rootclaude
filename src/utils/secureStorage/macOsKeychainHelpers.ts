@@ -1,13 +1,13 @@
-/**
+﻿/**
  * Lightweight helpers shared between keychainPrefetch.ts and
  * macOsKeychainStorage.ts.
  *
  * This module MUST NOT import execa, execFileNoThrow, or
  * execFileNoThrowPortable. keychainPrefetch.ts fires at the very top of
  * main.tsx (before the ~65ms of module evaluation it parallelizes), and Bun's
- * __esm wrapper evaluates the ENTIRE module when any symbol is accessed —
- * so a heavy transitive import here defeats the prefetch. The execa →
- * human-signals → cross-spawn chain alone is ~58ms of synchronous init.
+ * __esm wrapper evaluates the ENTIRE module when any symbol is accessed Ã¢â‚¬â€
+ * so a heavy transitive import here defeats the prefetch. The execa Ã¢â€ â€™
+ * human-signals Ã¢â€ â€™ cross-spawn chain alone is ~58ms of synchronous init.
  *
  * The imports below (envUtils, oauth constants, crypto, os) are already
  * evaluated by startupProfiler.ts at main.tsx:5, so they add no module-init
@@ -26,18 +26,18 @@ import type { SecureStorageData } from './index.js'
 
 // Suffix distinguishing the OAuth credentials keychain entry from the legacy
 // API key entry (which uses no suffix). Both share the service name base.
-// DO NOT change this value — it's part of the keychain lookup key and would
+// DO NOT change this value Ã¢â‚¬â€ it's part of the keychain lookup key and would
 // orphan existing stored credentials.
 export const CREDENTIALS_SERVICE_SUFFIX = '-credentials'
 
 /**
- * Get the service/resource name for secure storage, scoped by OPENCLAUDE_CONFIG_DIR
+ * Get the service/resource name for secure storage, scoped by RootClaude_CONFIG_DIR
  * if it's set to a non-default location.
  */
 export function getSecureStorageServiceName(
   serviceSuffix: string = '',
 ): string {
-  const configDirEnv = process.env.OPENCLAUDE_CONFIG_DIR || undefined
+  const configDirEnv = process.env.RootClaude_CONFIG_DIR || undefined
   const configDir = configDirEnv
     ? resolveClaudeConfigHomeDir({ configDirEnv })
     : getClaudeConfigHomeDir()
@@ -51,7 +51,7 @@ export function getSecureStorageServiceName(
   const dirHash = isDefaultDir
     ? ''
     : `-${createHash('sha256').update(normalizedConfigDir).digest('hex').substring(0, 8)}`
-  return `OpenClaude${getOauthConfig().OAUTH_FILE_SUFFIX}${serviceSuffix}${dirHash}`
+  return `RootClaude${getOauthConfig().OAUTH_FILE_SUFFIX}${serviceSuffix}${dirHash}`
 }
 
 export function getMacOsKeychainStorageServiceName(
@@ -77,14 +77,14 @@ export function getUsername(): string {
 //
 // The sync read() path takes ~500ms per `security` spawn. With 50+ claude.ai
 // MCP connectors authenticating at startup, a short TTL expires mid-storm and
-// triggers repeat sync reads — observed as a 5.5s event-loop stall
+// triggers repeat sync reads Ã¢â‚¬â€ observed as a 5.5s event-loop stall
 // (go/ccshare/adamj-20260326-212235). 30s of cross-process staleness is fine:
 // OAuth tokens expire in hours, and the only cross-process writer is another
 // CC instance's /login or refresh.
 //
 // Lives here (not in macOsKeychainStorage.ts) so keychainPrefetch.ts can
 // prime it without pulling in execa. Wrapped in an object because ES module
-// `let` bindings aren't writable across module boundaries — both this file
+// `let` bindings aren't writable across module boundaries Ã¢â‚¬â€ both this file
 // and macOsKeychainStorage.ts need to mutate all three fields.
 export const KEYCHAIN_CACHE_TTL_MS = 30_000
 
@@ -112,7 +112,7 @@ export function clearKeychainCache(): void {
 
 /**
  * Prime the keychain cache from a prefetch result (keychainPrefetch.ts).
- * Only writes if the cache hasn't been touched yet — if sync read() or
+ * Only writes if the cache hasn't been touched yet Ã¢â‚¬â€ if sync read() or
  * update() already ran, their result is authoritative and we discard this.
  */
 export function primeKeychainCacheFromPrefetch(stdout: string | null): void {
@@ -123,7 +123,7 @@ export function primeKeychainCacheFromPrefetch(stdout: string | null): void {
       // eslint-disable-next-line custom-rules/no-direct-json-operations -- jsonParse() pulls slowOperations (lodash-es/cloneDeep) into the early-startup import chain; see file header
       data = JSON.parse(stdout)
     } catch {
-      // malformed prefetch result — let sync read() re-fetch
+      // malformed prefetch result Ã¢â‚¬â€ let sync read() re-fetch
       return
     }
   }

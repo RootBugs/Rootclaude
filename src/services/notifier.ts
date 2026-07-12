@@ -1,4 +1,4 @@
-import type { TerminalNotification } from '../ink/useTerminalNotification.js'
+﻿import type { TerminalNotification } from '../ink/useTerminalNotification.js'
 import { getGlobalConfig } from '../utils/config.js'
 import { env } from '../utils/env.js'
 import { execFileNoThrow } from '../utils/execFileNoThrow.js'
@@ -35,7 +35,7 @@ export async function sendNotification(
   })
 }
 
-const DEFAULT_TITLE = 'OpenClaude'
+const DEFAULT_TITLE = 'RootClaude'
 
 async function sendToChannel(
   channel: string,
@@ -133,7 +133,7 @@ async function isAppleTerminalBellDisabled(): Promise<boolean> {
       return false
     }
 
-    // Lazy-load plist (~280KB with xmlbuilder+@xmldom) — only hit on
+    // Lazy-load plist (~280KB with xmlbuilder+@xmldom) â€” only hit on
     // Apple_Terminal with auto-channel, which is a small fraction of users.
     const plist = await import('plist')
     const parsed: Record<string, unknown> = plist.parse(defaultsOutput.stdout)

@@ -30,7 +30,7 @@ describe('auto-memory write permissions', () => {
     originalMemoryPathOverride = process.env.CLAUDE_COWORK_MEMORY_PATH_OVERRIDE
     delete process.env.CLAUDE_COWORK_MEMORY_PATH_OVERRIDE
     getAutoMemPath.cache.clear?.()
-    projectDir = await mkdtemp(join(tmpdir(), 'openclaude-memory-perms-'))
+    projectDir = await mkdtemp(join(tmpdir(), 'RootClaude-memory-perms-'))
     setProjectRoot(projectDir)
   })
 
@@ -61,7 +61,7 @@ describe('auto-memory write permissions', () => {
   })
 
   test('requires approval for overridden auto-memory writes', async () => {
-    const overrideDir = await mkdtemp(join(tmpdir(), 'openclaude-memory-'))
+    const overrideDir = await mkdtemp(join(tmpdir(), 'RootClaude-memory-'))
     process.env.CLAUDE_COWORK_MEMORY_PATH_OVERRIDE = overrideDir
     getAutoMemPath.cache.clear?.()
 
@@ -102,13 +102,13 @@ function permissionContext(mode: ToolPermissionContext['mode']) {
   } satisfies ToolPermissionContext
 }
 
-describe('OpenClaude commit message temp file permissions', () => {
+describe('RootClaude commit message temp file permissions', () => {
   let originalCwd: string
   let projectDir: string
 
   beforeEach(async () => {
     originalCwd = getOriginalCwd()
-    projectDir = await mkdtemp(join(tmpdir(), 'openclaude-perms-'))
+    projectDir = await mkdtemp(join(tmpdir(), 'RootClaude-perms-'))
     await mkdir(join(projectDir, '.git'))
     setOriginalCwd(projectDir)
   })
@@ -119,38 +119,38 @@ describe('OpenClaude commit message temp file permissions', () => {
     await rm(projectDir, { recursive: true, force: true })
   })
 
-  test('allows the project-local OPENCLAUDE_COMMIT_MSG file without a safety prompt', () => {
+  test('allows the project-local RootClaude_COMMIT_MSG file without a safety prompt', () => {
     const result = checkWritePermissionForTool(
       writeTool,
-      { file_path: join(projectDir, '.git', 'OPENCLAUDE_COMMIT_MSG') },
+      { file_path: join(projectDir, '.git', 'RootClaude_COMMIT_MSG') },
       permissionContext('bypassPermissions'),
     )
 
     expect(result.behavior).toBe('allow')
     expect(result.decisionReason).toMatchObject({
       type: 'other',
-      reason: 'OpenClaude commit message file is allowed for writing',
+      reason: 'RootClaude commit message file is allowed for writing',
     })
   })
 
-  test('allows the project-local OPENCLAUDE_COMMIT_MSG file in fullAccess mode', () => {
+  test('allows the project-local RootClaude_COMMIT_MSG file in fullAccess mode', () => {
     const result = checkWritePermissionForTool(
       writeTool,
-      { file_path: join(projectDir, '.git', 'OPENCLAUDE_COMMIT_MSG') },
+      { file_path: join(projectDir, '.git', 'RootClaude_COMMIT_MSG') },
       permissionContext('fullAccess'),
     )
 
     expect(result.behavior).toBe('allow')
     expect(result.decisionReason).toMatchObject({
       type: 'other',
-      reason: 'OpenClaude commit message file is allowed for writing',
+      reason: 'RootClaude commit message file is allowed for writing',
     })
   })
 
   test('still prompts for the commit message file in default mode', () => {
     const result = checkWritePermissionForTool(
       writeTool,
-      { file_path: join(projectDir, '.git', 'OPENCLAUDE_COMMIT_MSG') },
+      { file_path: join(projectDir, '.git', 'RootClaude_COMMIT_MSG') },
       permissionContext('default'),
     )
 
@@ -173,7 +173,7 @@ describe('OpenClaude commit message temp file permissions', () => {
     const otherDir = join(projectDir, 'other')
     const result = checkWritePermissionForTool(
       writeTool,
-      { file_path: join(otherDir, '.git', 'OPENCLAUDE_COMMIT_MSG') },
+      { file_path: join(otherDir, '.git', 'RootClaude_COMMIT_MSG') },
       permissionContext('bypassPermissions'),
     )
 
@@ -187,9 +187,9 @@ describe('OpenClaude commit message temp file permissions', () => {
     '.profile',
     '.mcp.json',
     '.claude.json',
-    '.openclaude.json',
+    '.RootClaude.json',
   ])('permits dangerous-file-list edit for %s in permissive safety mode', fileName => {
-    process.env.OPENCLAUDE_SAFETY_LEVEL = 'permissive'
+    process.env.RootClaude_SAFETY_LEVEL = 'permissive'
     resetSafetyLevelCache()
 
     const result = checkWritePermissionForTool(
@@ -207,7 +207,7 @@ describe('OpenClaude commit message temp file permissions', () => {
   })
 
   test('still prompts for dangerous directories in permissive safety mode', () => {
-    process.env.OPENCLAUDE_SAFETY_LEVEL = 'permissive'
+    process.env.RootClaude_SAFETY_LEVEL = 'permissive'
     resetSafetyLevelCache()
 
     const result = checkWritePermissionForTool(

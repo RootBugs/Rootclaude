@@ -1,4 +1,4 @@
-import type { LocalCommandCall } from '../../types/command.js'
+﻿import type { LocalCommandCall } from '../../types/command.js'
 import { getAttributionTexts } from '../../utils/attribution.js'
 import { settingsChangeDetector } from '../../utils/settings/changeDetector.js'
 import {
@@ -20,7 +20,7 @@ export const USAGE = [
   '  /commit-message status',
   '  /commit-message off',
   '  /commit-message default',
-  '  /commit-message set "Generated with OpenClaude using GPT-5.5"',
+  '  /commit-message set "Generated with RootClaude using GPT-5.5"',
   '  /commit-message co-author "Name" name@example.com',
 ].join('\n')
 

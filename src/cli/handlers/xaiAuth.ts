@@ -1,12 +1,11 @@
-/**
- * `openclaude auth xai ...` command handlers.
+﻿/**
+ * `rootclaude auth xai ...` command handlers.
  *
- * `login`   — browser OAuth (loopback callback on 127.0.0.1:56121).
- * `device`  — device-code flow for SSH / headless hosts.
- * `logout`  — clears stored xAI OAuth credentials.
- * `status`  — prints whether credentials are stored and whose account.
+ * `login`   â€” browser OAuth (loopback callback on 127.0.0.1:56121).
+ * `device`  â€” device-code flow for SSH / headless hosts.
+ * `logout`  â€” clears stored xAI OAuth credentials.
+ * `status`  â€” prints whether credentials are stored and whose account.
  */
-
 import {
   pollXaiDeviceCode,
   requestXaiDeviceCode,
@@ -25,9 +24,7 @@ import {
   getProviderProfiles,
 } from '../../utils/providerProfiles.js'
 import { clearStartupProviderOverrides } from '../../utils/providerStartupOverrides.js'
-
 export type XaiLoginFlow = 'browser' | 'device-code'
-
 export async function xaiLogin(options: {
   flow: XaiLoginFlow
 }): Promise<void> {
@@ -38,21 +35,18 @@ export async function xaiLogin(options: {
     process.exitCode = 1
     return
   }
-
   if (options.flow === 'browser') {
     await runBrowserFlow()
   } else {
     await runDeviceCodeFlow()
   }
 }
-
 async function runBrowserFlow(): Promise<void> {
   const service = new XaiOAuthService()
   let cleanupStdin: (() => void) | null = null
   try {
-    process.stderr.write('Starting xAI OAuth (browser sign-in)…\n')
+    process.stderr.write('Starting xAI OAuth (browser sign-in)â€¦\n')
     const handle = await service.beginOAuthFlow()
-
     process.stderr.write(
       `\nIf the browser does not open, visit:\n${handle.authUrl}\n\n`,
     )
@@ -62,19 +56,16 @@ async function runBrowserFlow(): Promise<void> {
         'Could not open a browser automatically. Open the URL above manually.\n',
       )
     }
-
     process.stderr.write(
       'If xAI shows "Could not establish connection" (CORS/firewall), copy\n' +
         'the code shown on that page and paste it here, then press Enter.\n' +
-        '(Otherwise just wait — the browser will redirect automatically.)\n\n' +
+        '(Otherwise just wait â€” the browser will redirect automatically.)\n\n' +
         'Code> ',
     )
-
     cleanupStdin = listenForManualCode(code => handle.submitManualCode(code))
     const tokens = await handle.waitForTokens()
     cleanupStdin?.()
     cleanupStdin = null
-
     const saved = persistXaiOAuthTokens(tokens)
     if (!saved.success) {
       process.stderr.write(
@@ -95,10 +86,9 @@ async function runBrowserFlow(): Promise<void> {
     cleanupStdin?.()
   }
 }
-
 /**
  * Read one line of stdin, trim, hand to `onLine`. Used as a recovery path
- * when xAI's loopback push fails — the user can paste the authorization
+ * when xAI's loopback push fails â€” the user can paste the authorization
  * code from xAI's auth page directly into the terminal.
  */
 function listenForManualCode(onLine: (line: string) => void): () => void {
@@ -107,13 +97,12 @@ function listenForManualCode(onLine: (line: string) => void): () => void {
   let active = true
   // Record the paused state BEFORE we touch it. We only need to resume
   // stdin if it was paused, and we must only re-pause it on cleanup if
-  // we were the ones who resumed it — otherwise a one-shot CLI process
-  // (`openclaude auth xai login`) stays alive after a successful
+  // we were the ones who resumed it â€” otherwise a one-shot CLI process
+  // (`rootclaude auth xai login`) stays alive after a successful
   // browser flow because the resumed stdin keeps the event loop busy,
   // and the user sees the command "hang" until they hit Ctrl+D.
   const wasPaused =
     typeof stdin.isPaused === 'function' ? stdin.isPaused() : false
-
   const onData = (chunk: Buffer | string): void => {
     if (!active) return
     buffer += typeof chunk === 'string' ? chunk : chunk.toString('utf8')
@@ -125,12 +114,10 @@ function listenForManualCode(onLine: (line: string) => void): () => void {
       onLine(line)
     }
   }
-
   stdin.on('data', onData)
   if (wasPaused && typeof stdin.resume === 'function') {
     stdin.resume()
   }
-
   return () => {
     if (!active) return
     active = false
@@ -140,10 +127,9 @@ function listenForManualCode(onLine: (line: string) => void): () => void {
     }
   }
 }
-
 async function runDeviceCodeFlow(): Promise<void> {
   try {
-    process.stderr.write('Starting xAI device-code login…\n')
+    process.stderr.write('Starting xAI device-code loginâ€¦\n')
     const { code, tokenEndpoint } = await requestXaiDeviceCode()
     const url = code.verificationUriComplete ?? code.verificationUri
     process.stderr.write(
@@ -178,16 +164,14 @@ async function runDeviceCodeFlow(): Promise<void> {
     process.exitCode = 1
   }
 }
-
 // The provider-name constant used by the /provider UI when it creates an
 // xAI OAuth profile. Kept in sync so the CLI logout can find and remove
 // the matching profile without needing UI state.
 const XAI_OAUTH_PROVIDER_NAME = 'xAI OAuth'
-
 /**
  * Dependencies for `xaiLogout`. Tests inject real implementations to
  * bypass `mock.module(...)` stubs that other test files install for
- * providerProfile / providerProfiles — Bun's module mocks leak across
+ * providerProfile / providerProfiles â€” Bun's module mocks leak across
  * files in the same process and `mock.restore()` doesn't undo them.
  * Production callers omit this argument and get the static imports.
  */
@@ -198,7 +182,6 @@ export type XaiLogoutDeps = {
   deleteProviderProfile?: typeof deleteProviderProfile
   clearStartupProviderOverrides?: typeof clearStartupProviderOverrides
 }
-
 export async function xaiLogout(deps?: XaiLogoutDeps): Promise<void> {
   const _clearXaiCredentials = deps?.clearXaiCredentials ?? clearXaiCredentials
   const _clearPersistedXaiOAuthProfile =
@@ -209,13 +192,12 @@ export async function xaiLogout(deps?: XaiLogoutDeps): Promise<void> {
     deps?.deleteProviderProfile ?? deleteProviderProfile
   const _clearStartupProviderOverrides =
     deps?.clearStartupProviderOverrides ?? clearStartupProviderOverrides
-
   // Mirror the /provider UI logout sequence so a user who configured
-  // xAI OAuth interactively and then ran `openclaude auth xai logout`
+  // xAI OAuth interactively and then ran `rootclaude auth xai logout`
   // ends up in a clean state. Without all four steps, the
-  // marker-tagged .openclaude-profile.json survives, startup
+  // marker-tagged .RootClaude-profile.json survives, startup
   // validation still accepts XAI_CREDENTIAL_SOURCE=oauth, but
-  // openaiShim can't resolve a token — the next non-interactive xAI
+  // openaiShim can't resolve a token â€” the next non-interactive xAI
   // launch hits api.x.ai without credentials instead of being logged
   // out cleanly.
   //
@@ -228,11 +210,10 @@ export async function xaiLogout(deps?: XaiLogoutDeps): Promise<void> {
     process.exitCode = 1
     return
   }
-
   // 2. Remove the xAI OAuth provider profile from global config (if any).
   // The CLI has no React state telling it which profile id corresponds
   // to the OAuth profile, so match on the canonical name + xai provider
-  // — the /provider UI always uses this exact name.
+  // â€” the /provider UI always uses this exact name.
   const xaiOAuthProfile = _getProviderProfiles().find(
     profile =>
       profile.provider === 'xai' &&
@@ -250,18 +231,15 @@ export async function xaiLogout(deps?: XaiLogoutDeps): Promise<void> {
     }
     activeProfileWasCleared = Boolean(result.activeProfileId)
   }
-
   // 3. Remove the marker-tagged startup profile file so validation
   // doesn't keep accepting XAI_CREDENTIAL_SOURCE=oauth at next launch.
   _clearPersistedXaiOAuthProfile()
-
   // 4. Clear the global-settings startup-provider override if the
-  // active profile changed — otherwise a stale settings.json override
+  // active profile changed â€” otherwise a stale settings.json override
   // can re-pin the (now-deleted) xAI profile on next launch.
   const settingsOverrideError = activeProfileWasCleared
     ? _clearStartupProviderOverrides()
     : null
-
   if (settingsOverrideError) {
     process.stderr.write(
       `xAI OAuth logged out. Warning: could not clear startup provider override (${settingsOverrideError}).\n`,
@@ -270,7 +248,6 @@ export async function xaiLogout(deps?: XaiLogoutDeps): Promise<void> {
   }
   process.stderr.write('xAI OAuth credentials cleared.\n')
 }
-
 export async function xaiStatus(): Promise<void> {
   const blob = await readXaiCredentialsAsync()
   if (!blob) {

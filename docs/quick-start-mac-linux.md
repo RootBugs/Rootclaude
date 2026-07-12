@@ -1,4 +1,4 @@
-# OpenClaude Quick Start for macOS and Linux
+# RootClaude Quick Start for macOS and Linux
 
 This guide uses a standard shell such as Terminal, iTerm, bash, or zsh.
 
@@ -15,15 +15,15 @@ node --version
 npm --version
 ```
 
-## 2. Install OpenClaude
+## 2. Install RootClaude
 
 ```bash
-npm install -g @gitlawb/openclaude@latest
+npm install -g @gitlawb/rootclaude@latest
 ```
-On Arch Linux, you can alternatively install OpenClaude via the community-maintained [AUR package](https://aur.archlinux.org/packages/openclaude):
+On Arch Linux, you can alternatively install RootClaude via the community-maintained [AUR package](https://aur.archlinux.org/packages/rootclaude):
 
 ```bash
-paru -S openclaude
+paru -S rootclaude
 ```
 ## 3. Pick One Provider
 
@@ -36,7 +36,7 @@ export CLAUDE_CODE_USE_OPENAI=1
 export OPENAI_API_KEY=sk-your-key-here
 export OPENAI_MODEL=gpt-4o
 
-openclaude
+rootclaude
 ```
 
 ### Option B: DeepSeek
@@ -47,7 +47,7 @@ export OPENAI_API_KEY=sk-your-key-here
 export OPENAI_BASE_URL=https://api.deepseek.com/v1
 export OPENAI_MODEL=deepseek-v4-flash
 
-openclaude
+rootclaude
 ```
 
 Use `deepseek-v4-pro` when you want the stronger model. `deepseek-chat` and `deepseek-reasoner` still work as DeepSeek's legacy API aliases.
@@ -67,14 +67,14 @@ export CLAUDE_CODE_USE_OPENAI=1
 export OPENAI_BASE_URL=http://localhost:11434/v1
 export OPENAI_MODEL=llama3.1:8b
 
-openclaude
+rootclaude
 ```
 
 No API key is needed for Ollama local models.
 
-OpenClaude asks Ollama for a 32768-token context window on each chat request.
-If you need a different size, set `OPENCLAUDE_OLLAMA_NUM_CTX` before launching
-OpenClaude, or start Ollama with a global context setting:
+RootClaude asks Ollama for a 32768-token context window on each chat request.
+If you need a different size, set `ROOTCLAUDE_OLLAMA_NUM_CTX` before launching
+RootClaude, or start Ollama with a global context setting:
 
 ```bash
 # Stop any existing Ollama app/server first, then run:
@@ -105,7 +105,7 @@ export OPENAI_BASE_URL=http://localhost:1234/v1
 export OPENAI_MODEL=your-model-name
 # export OPENAI_API_KEY=lmstudio  # optional: some users need a dummy key
 
-openclaude
+rootclaude
 ```
 
 Replace `your-model-name` with the model name shown in LM Studio.
@@ -114,21 +114,21 @@ No API key is needed for LM Studio local models (but uncomment the `OPENAI_API_K
 
 ### Option E: Using a .env file (Optional)
 
-If you prefer to keep your keys in a `.env` file instead of exporting them individually, note that OpenClaude does not load `.env` files automatically. You must explicitly pass it:
+If you prefer to keep your keys in a `.env` file instead of exporting them individually, note that RootClaude does not load `.env` files automatically. You must explicitly pass it:
 
 ```bash
-openclaude --provider-env-file .env
+rootclaude --provider-env-file .env
 ```
 
 Keep `.env` out of git because it contains secrets.
 The explicit loader accepts provider/setup variables. Export runtime/debug variables from your shell or launcher instead.
 
-## 4. If `openclaude` Is Not Found
+## 4. If `rootclaude` Is Not Found
 
 Close the terminal, open a new one, and try again:
 
 ```bash
-openclaude
+rootclaude
 ```
 
 ## 5. If Your Provider Fails
@@ -146,7 +146,7 @@ Check the basics:
 - make sure Ollama is running
 - make sure the model was pulled successfully
 - if same-session chat history appears missing, verify the active `CONTEXT`
-  value with `ollama ps`; OpenClaude requests 32K by default
+  value with `ollama ps`; RootClaude requests 32K by default
 
 ### For LM Studio
 
@@ -156,11 +156,11 @@ Check the basics:
 - make sure a model is loaded in LM Studio
 - make sure the model name matches what you set in `OPENAI_MODEL`
 
-## 6. Updating OpenClaude
+## 6. Updating RootClaude
 
 **Via npm:**
 ```bash
-npm install -g @gitlawb/openclaude@latest
+npm install -g @gitlawb/rootclaude@latest
 ```
 
 **Via AUR:**
@@ -169,16 +169,16 @@ paru
 ```
 *(Or use your preferred AUR helper like `yay -Syu`)*
 
-## 7. Uninstalling OpenClaude
+## 7. Uninstalling RootClaude
 
 **Via npm:**
 ```bash
-npm uninstall -g @gitlawb/openclaude
+npm uninstall -g @gitlawb/rootclaude
 ```
 
 **Via AUR (Arch Linux):**
 ```bash
-paru -Rns openclaude
+paru -Rns rootclaude
 ```
 
 ## Need Advanced Setup?

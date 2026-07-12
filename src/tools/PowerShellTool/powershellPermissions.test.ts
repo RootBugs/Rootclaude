@@ -47,7 +47,7 @@ describe('PowerShell .git write safety', () => {
 
   beforeEach(async () => {
     originalCwd = getOriginalCwd()
-    projectDir = await mkdtemp(join(tmpdir(), 'openclaude-ps-perms-'))
+    projectDir = await mkdtemp(join(tmpdir(), 'RootClaude-ps-perms-'))
     await mkdir(join(projectDir, '.git'))
     setOriginalCwd(projectDir)
     setCwdState(projectDir)
@@ -62,7 +62,7 @@ describe('PowerShell .git write safety', () => {
   test('does not force a .git safety prompt for the commit message temp file in bypass mode', () => {
     expect(
       isUnsafeDotGitWritePathForPowerShell(
-        '.git/OPENCLAUDE_COMMIT_MSG',
+        '.git/RootClaude_COMMIT_MSG',
         permissionContext('bypassPermissions'),
       ),
     ).toBe(false)
@@ -71,7 +71,7 @@ describe('PowerShell .git write safety', () => {
   test('does not force a .git safety prompt for the commit message temp file in full access mode', () => {
     expect(
       isUnsafeDotGitWritePathForPowerShell(
-        '.git/OPENCLAUDE_COMMIT_MSG',
+        '.git/RootClaude_COMMIT_MSG',
         permissionContext('fullAccess'),
       ),
     ).toBe(false)
@@ -80,7 +80,7 @@ describe('PowerShell .git write safety', () => {
   test('still prompts for the commit message temp file outside dangerous modes', () => {
     expect(
       isUnsafeDotGitWritePathForPowerShell(
-        '.git/OPENCLAUDE_COMMIT_MSG',
+        '.git/RootClaude_COMMIT_MSG',
         permissionContext('default'),
       ),
     ).toBe(true)
@@ -105,13 +105,13 @@ describe('PowerShell git commit governance policy', () => {
     fn: (checkPowerShellCommitMessagePolicy: CheckPowerShellCommitMessagePolicy) => void,
   ): Promise<void> {
     originalCwd = getOriginalCwd()
-    projectDir = await mkdtemp(join(tmpdir(), 'openclaude-ps-policy-'))
+    projectDir = await mkdtemp(join(tmpdir(), 'RootClaude-ps-policy-'))
     try {
       setOriginalCwd(projectDir)
       setAllowedSettingSources([...SETTING_SOURCES])
-      await mkdir(join(projectDir, '.openclaude'), { recursive: true })
+      await mkdir(join(projectDir, '.RootClaude'), { recursive: true })
       await writeFile(
-        join(projectDir, '.openclaude', 'settings.local.json'),
+        join(projectDir, '.RootClaude', 'settings.local.json'),
         JSON.stringify(settings),
       )
       resetSettingsCache()
@@ -132,7 +132,7 @@ describe('PowerShell git commit governance policy', () => {
       { git: { forbiddenCommitMessagePatterns: ['Generated with'] } },
       checkPowerShellCommitMessagePolicy => {
         const result = checkPowerShellCommitMessagePolicy(
-          'git -C ./repo commit -m "fix: policy\n\nGenerated with OpenClaude"',
+          'git -C ./repo commit -m "fix: policy\n\nGenerated with RootClaude"',
         )
 
         expect(result?.behavior).toBe('ask')
@@ -150,7 +150,7 @@ describe('PowerShell git commit governance policy', () => {
       { git: { forbiddenCommitMessagePatterns: ['Generated with'] } },
       checkPowerShellCommitMessagePolicy => {
         const result = checkPowerShellCommitMessagePolicy(
-          '& git commit -m "fix: policy\n\nGenerated with OpenClaude"',
+          '& git commit -m "fix: policy\n\nGenerated with RootClaude"',
         )
 
         expectPowerShellAskMessage(result, 'Generated with')
@@ -163,16 +163,16 @@ describe('PowerShell git commit governance policy', () => {
       { git: { forbiddenCommitMessagePatterns: ['Generated with'] } },
       checkPowerShellCommitMessagePolicy => {
         const quoted = checkPowerShellCommitMessagePolicy(
-          '& "git" commit -m "fix: policy\n\nGenerated with OpenClaude"',
+          '& "git" commit -m "fix: policy\n\nGenerated with RootClaude"',
         )
         const exe = checkPowerShellCommitMessagePolicy(
-          'git.exe commit -m "fix: policy\n\nGenerated with OpenClaude"',
+          'git.exe commit -m "fix: policy\n\nGenerated with RootClaude"',
         )
         const quotedExe = checkPowerShellCommitMessagePolicy(
-          '& "git.exe" commit -m "fix: policy\n\nGenerated with OpenClaude"',
+          '& "git.exe" commit -m "fix: policy\n\nGenerated with RootClaude"',
         )
         const singleQuotedExe = checkPowerShellCommitMessagePolicy(
-          "& 'git.exe' commit -m \"fix: policy\n\nGenerated with OpenClaude\"",
+          "& 'git.exe' commit -m \"fix: policy\n\nGenerated with RootClaude\"",
         )
 
         expect(quoted?.behavior).toBe('ask')
@@ -188,7 +188,7 @@ describe('PowerShell git commit governance policy', () => {
       { git: { forbiddenCommitMessagePatterns: ['Generated with'] } },
       checkPowerShellCommitMessagePolicy => {
         const result = checkPowerShellCommitMessagePolicy(
-          'Set-Location repo; git commit -m "fix: policy\n\nGenerated with OpenClaude"',
+          'Set-Location repo; git commit -m "fix: policy\n\nGenerated with RootClaude"',
         )
 
         expectPowerShellAskMessage(result, 'Generated with')
@@ -201,7 +201,7 @@ describe('PowerShell git commit governance policy', () => {
       { git: { forbiddenCommitMessagePatterns: ['Generated with'] } },
       checkPowerShellCommitMessagePolicy => {
         const result = checkPowerShellCommitMessagePolicy(
-          'Write-Output ok && git commit -m "fix: policy\n\nGenerated with OpenClaude"',
+          'Write-Output ok && git commit -m "fix: policy\n\nGenerated with RootClaude"',
         )
 
         expectPowerShellAskMessage(result, 'Generated with')
@@ -214,7 +214,7 @@ describe('PowerShell git commit governance policy', () => {
       { git: { forbiddenCommitMessagePatterns: ['Generated with'] } },
       checkPowerShellCommitMessagePolicy => {
         const result = checkPowerShellCommitMessagePolicy(
-          'Get-Content .git/OPENCLAUDE_COMMIT_MSG | git commit --file=-',
+          'Get-Content .git/RootClaude_COMMIT_MSG | git commit --file=-',
         )
 
         expectPowerShellAskMessage(result, 'loaded from a file')
@@ -227,10 +227,10 @@ describe('PowerShell git commit governance policy', () => {
       { git: { forbiddenCommitMessagePatterns: ['Generated'] } },
       checkPowerShellCommitMessagePolicy => {
         const spaced = checkPowerShellCommitMessagePolicy(
-          'git commit --message "fix: policy\n\nGenerated with OpenClaude"',
+          'git commit --message "fix: policy\n\nGenerated with RootClaude"',
         )
         const equals = checkPowerShellCommitMessagePolicy(
-          'git commit --message="fix: policy\n\nGenerated with OpenClaude"',
+          'git commit --message="fix: policy\n\nGenerated with RootClaude"',
         )
         const unquoted = checkPowerShellCommitMessagePolicy(
           'git commit --message=Generated',
@@ -248,7 +248,7 @@ describe('PowerShell git commit governance policy', () => {
       { git: { forbiddenCommitMessagePatterns: ['Generated with'] } },
       checkPowerShellCommitMessagePolicy => {
         const result = checkPowerShellCommitMessagePolicy(
-          'git commit --file=.git/OPENCLAUDE_COMMIT_MSG',
+          'git commit --file=.git/RootClaude_COMMIT_MSG',
         )
 
         expectPowerShellAskMessage(result, 'loaded from a file')
@@ -295,7 +295,7 @@ describe('PowerShell git commit governance policy', () => {
           'git commit -m "$msg"',
         )
         const subexpression = checkPowerShellCommitMessagePolicy(
-          'git commit --message="$(Get-Content .git/OPENCLAUDE_COMMIT_MSG)"',
+          'git commit --message="$(Get-Content .git/RootClaude_COMMIT_MSG)"',
         )
         const expandableHereString = checkPowerShellCommitMessagePolicy(
           'git commit -m @"\n$msg\n"@',
@@ -321,7 +321,7 @@ describe('PowerShell git commit governance policy', () => {
       { git: { addGeneratedWithFooter: false } },
       checkPowerShellCommitMessagePolicy => {
         const result = checkPowerShellCommitMessagePolicy(
-          'git commit -m "fix: policy\n\nCo-Authored-By: OpenClaude <openclaude@gitlawb.com>"',
+          'git commit -m "fix: policy\n\nCo-Authored-By: RootClaude <RootClaude@gitlawb.com>"',
         )
 
         expect(result).toBeNull()

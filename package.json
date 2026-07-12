@@ -4,7 +4,7 @@
   "description": "RootClaude - Root terminal for any LLM — OpenAI, Gemini, DeepSeek, Ollama, and 200+ models",
   "type": "module",
   "bin": {
-    "rootclaude": "./bin/openclaude"
+    "rootclaude": "./bin/rootclaude"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -20,7 +20,7 @@
     "dist/sdk.mjs",
     "src/entrypoints/sdk.d.ts",
     "src/entrypoints/sdk/coreTypes.generated.ts",
-    "scripts/windows/openclaude-aliases.ps1",
+    "scripts/windows/rootclaude-aliases.ps1",
     "vendor/node-domexception-shim/",
     "docs/windows-aliases-and-launchers.md",
     "README.md"
@@ -29,7 +29,7 @@
     "build": "bun run scripts/build.ts",
     "integrations:generate": "bun run scripts/generate-integrations-artifacts.ts",
     "integrations:check": "bun run scripts/generate-integrations-artifacts.ts --check",
-    "dev": "bun run build && node bin/openclaude",
+    "dev": "bun run build && node bin/rootclaude",
     "dev:profile": "bun run scripts/provider-launch.ts",
     "dev:profile:fast": "bun run scripts/provider-launch.ts auto --fast --bare",
     "dev:codex": "bun run scripts/provider-launch.ts codex",
@@ -48,7 +48,7 @@
     "dev:code": "bun run profile:code && bun run dev:profile",
     "dev:grpc": "bun run scripts/start-grpc.ts",
     "dev:grpc:cli": "bun run scripts/grpc-cli.ts",
-    "start": "node bin/openclaude",
+    "start": "node bin/rootclaude",
     "web:dev": "bun run --cwd web dev",
     "web:build": "bun run --cwd web build",
     "web:preview": "bun run --cwd web preview",
@@ -181,7 +181,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Gitlawb/openclaude.git"
+    "url": "https://github.com/RootBugs/rootclaude.git"
   },
   "keywords": [
     "claude-code",

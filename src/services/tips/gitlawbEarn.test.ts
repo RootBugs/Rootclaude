@@ -12,7 +12,7 @@ function setAds(ads: { enabled: boolean; earnCode?: string } | undefined): void 
 }
 
 const ORIGINAL_ADS_BASE_URL = process.env.ADS_BASE_URL
-const ORIGINAL_TIP_EVERY = process.env.OPENCLAUDE_ADS_TIP_EVERY
+const ORIGINAL_TIP_EVERY = process.env.RootClaude_ADS_TIP_EVERY
 const ORIGINAL_FETCH = globalThis.fetch
 let originalAds = getGlobalConfig().ads
 
@@ -22,7 +22,7 @@ beforeEach(() => {
   // Unreachable host → fetchNextTip fails fast and content() degrades to the
   // static fallback, so these tests never hit the network.
   process.env.ADS_BASE_URL = 'http://127.0.0.1:0'
-  delete process.env.OPENCLAUDE_ADS_TIP_EVERY
+  delete process.env.RootClaude_ADS_TIP_EVERY
 })
 
 // Restore env + global ads config so nothing leaks into other suites in the run.
@@ -31,8 +31,8 @@ afterEach(() => {
   saveGlobalConfig(c => ({ ...c, ads: originalAds }))
   if (ORIGINAL_ADS_BASE_URL === undefined) delete process.env.ADS_BASE_URL
   else process.env.ADS_BASE_URL = ORIGINAL_ADS_BASE_URL
-  if (ORIGINAL_TIP_EVERY === undefined) delete process.env.OPENCLAUDE_ADS_TIP_EVERY
-  else process.env.OPENCLAUDE_ADS_TIP_EVERY = ORIGINAL_TIP_EVERY
+  if (ORIGINAL_TIP_EVERY === undefined) delete process.env.RootClaude_ADS_TIP_EVERY
+  else process.env.RootClaude_ADS_TIP_EVERY = ORIGINAL_TIP_EVERY
 })
 
 describe('gitlawb earning tips', () => {
@@ -56,9 +56,9 @@ describe('gitlawb earning tips', () => {
     expect(shouldShowEarningTip()).toBe(true) //  turn 4
   })
 
-  test('OPENCLAUDE_ADS_TIP_EVERY=1 shows every turn', () => {
+  test('RootClaude_ADS_TIP_EVERY=1 shows every turn', () => {
     setAds({ enabled: true, earnCode: 'earn_abc' })
-    process.env.OPENCLAUDE_ADS_TIP_EVERY = '1'
+    process.env.RootClaude_ADS_TIP_EVERY = '1'
     resetEarningCadenceForTesting()
     expect(shouldShowEarningTip()).toBe(true)
     expect(shouldShowEarningTip()).toBe(true)

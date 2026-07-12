@@ -1,10 +1,10 @@
-/**
+﻿/**
  * REPL-specific wrapper around initBridgeCore. Owns the parts that read
- * bootstrap state — gates, cwd, session ID, git context, OAuth, title
- * derivation — then delegates to the bootstrap-free core.
+ * bootstrap state â€” gates, cwd, session ID, git context, OAuth, title
+ * derivation â€” then delegates to the bootstrap-free core.
  *
  * Split out of replBridge.ts because the sessionStorage import
- * (getCurrentSessionTitle) transitively pulls in src/commands.ts → the
+ * (getCurrentSessionTitle) transitively pulls in src/commands.ts â†’ the
  * entire slash command + React component tree (~1300 modules). Keeping
  * initBridgeCore in a file that doesn't touch sessionStorage lets
  * daemonBridge.ts import the core without bloating the Agent SDK bundle.
@@ -12,7 +12,6 @@
  * Called via dynamic import by useReplBridge (auto-start) and print.ts
  * (SDK -p mode via query.enableRemoteControl).
  */
-
 import { feature } from 'bun:bundle'
 import { hostname } from 'os'
 import { getOriginalCwd, getSessionId } from '../bootstrap/state.js'
@@ -73,7 +72,6 @@ import type { BridgeState, ReplBridgeHandle } from './replBridge.js'
 import { initBridgeCore } from './replBridge.js'
 import { setCseShimGate } from './sessionIdCompat.js'
 import type { BridgeWorkerType } from './types.js'
-
 export type InitBridgeOptions = {
   onInboundMessage?: (msg: SDKMessage) => void | Promise<void>
   onPermissionResponse?: (response: SDKControlResponse) => void
@@ -93,25 +91,24 @@ export type InitBridgeOptions = {
   initialName?: string
   // Fresh view of the full conversation at call time. Used by onUserMessage's
   // count-3 derivation to call generateSessionTitle over the full conversation.
-  // Optional — print.ts's SDK enableRemoteControl path has no REPL message
+  // Optional â€” print.ts's SDK enableRemoteControl path has no REPL message
   // array; count-3 falls back to the single message text when absent.
   getMessages?: () => Message[]
   // UUIDs already flushed in a prior bridge session. Messages with these
   // UUIDs are excluded from the initial flush to avoid poisoning the
   // server (duplicate UUIDs across sessions cause the WS to be killed).
-  // Mutated in place — newly flushed UUIDs are added after each flush.
+  // Mutated in place â€” newly flushed UUIDs are added after each flush.
   previouslyFlushedUUIDs?: Set<string>
   /** See BridgeCoreParams.perpetual. */
   perpetual?: boolean
   /**
    * When true, the bridge only forwards events outbound (no SSE inbound
-   * stream). Used by CCR mirror mode — local sessions visible on claude.ai
+   * stream). Used by CCR mirror mode â€” local sessions visible on claude.ai
    * without enabling inbound control.
    */
   outboundOnly?: boolean
   tags?: string[]
 }
-
 export async function initReplBridge(
   options?: InitBridgeOptions,
 ): Promise<ReplBridgeHandle | null> {
@@ -131,22 +128,18 @@ export async function initReplBridge(
     outboundOnly,
     tags,
   } = options ?? {}
-
   // Wire the cse_ shim kill switch so toCompatSessionId respects the
-  // GrowthBook gate. Daemon/SDK paths skip this — shim defaults to active.
+  // GrowthBook gate. Daemon/SDK paths skip this â€” shim defaults to active.
   setCseShimGate(isCseShimEnabled)
-
   // 1. Runtime gate
   if (!(await isBridgeEnabledBlocking())) {
     logBridgeSkip('not_enabled', '[bridge:repl] Skipping: bridge not enabled')
     return null
   }
-
-  // 1b. Minimum version check — deferred to after the v1/v2 branch below,
+  // 1b. Minimum version check â€” deferred to after the v1/v2 branch below,
   // since each implementation has its own floor (tengu_bridge_min_version
   // for v1, tengu_bridge_repl_v2_config.min_version for v2).
-
-  // 2. Check OAuth — must be signed in with claude.ai. Runs before the
+  // 2. Check OAuth â€” must be signed in with claude.ai. Runs before the
   // policy check so console-auth users get the actionable "/login" hint
   // instead of a misleading policy error from a stale/wrong-org cache.
   if (!getBridgeAccessToken()) {
@@ -154,8 +147,7 @@ export async function initReplBridge(
     onStateChange?.('failed', '/login')
     return null
   }
-
-  // 3. Check organization policy — remote control may be disabled
+  // 3. Check organization policy â€” remote control may be disabled
   await waitForPolicyLimitsToLoad()
   if (!isPolicyAllowed('allow_remote_control')) {
     logBridgeSkip(
@@ -165,20 +157,19 @@ export async function initReplBridge(
     onStateChange?.('failed', "disabled by your organization's policy")
     return null
   }
-
   // When CLAUDE_BRIDGE_OAUTH_TOKEN is set (internal-only local dev), the bridge
-  // uses that token directly via getBridgeAccessToken() — keychain state is
+  // uses that token directly via getBridgeAccessToken() â€” keychain state is
   // irrelevant. Skip 2b/2c to preserve that decoupling: an expired keychain
   // token shouldn't block a bridge connection that doesn't use it.
   if (!getBridgeTokenOverride()) {
     // 2a. Cross-process backoff. If N prior processes already saw this exact
-    // dead token (matched by expiresAt), skip silently — no event, no refresh
+    // dead token (matched by expiresAt), skip silently â€” no event, no refresh
     // attempt. The count threshold tolerates transient refresh failures (auth
     // server 5xx, lockfile errors per auth.ts:1437/1444/1485): each process
     // independently retries until 3 consecutive failures prove the token dead.
     // Mirrors useReplBridge's MAX_CONSECUTIVE_INIT_FAILURES for in-process.
-    // The expiresAt key is content-addressed: /login → new token → new expiresAt
-    // → this stops matching without any explicit clear.
+    // The expiresAt key is content-addressed: /login â†’ new token â†’ new expiresAt
+    // â†’ this stops matching without any explicit clear.
     const cfg = getGlobalConfig()
     if (
       cfg.bridgeOauthDeadExpiresAt != null &&
@@ -190,36 +181,34 @@ export async function initReplBridge(
       )
       return null
     }
-
-    // 2b. Proactively refresh if expired. Mirrors bridgeMain.ts:2096 — the REPL
+    // 2b. Proactively refresh if expired. Mirrors bridgeMain.ts:2096 â€” the REPL
     // bridge fires at useEffect mount BEFORE any v1/messages call, making this
     // usually the first OAuth request of the session. Without this, ~9% of
-    // registrations hit the server with a >8h-expired token → 401 → withOAuthRetry
+    // registrations hit the server with a >8h-expired token â†’ 401 â†’ withOAuthRetry
     // recovers, but the server logs a 401 we can avoid. VPN egress IPs observed
     // at 30:1 401:200 when many unrelated users cluster at the 8h TTL boundary.
     //
-    // Fresh-token cost: one memoized read + one Date.now() comparison (~µs).
+    // Fresh-token cost: one memoized read + one Date.now() comparison (~Âµs).
     // checkAndRefreshOAuthTokenIfNeeded clears its own cache in every path that
     // touches the keychain (refresh success, lockfile race, throw), so no
-    // explicit clearOAuthTokenCache() here — that would force a blocking
+    // explicit clearOAuthTokenCache() here â€” that would force a blocking
     // keychain spawn on the 91%+ fresh-token path.
     await checkAndRefreshOAuthTokenIfNeeded()
-
     // 2c. Skip if token is still expired post-refresh-attempt. Env-var / FD
-    // tokens (auth.ts:894-917) have expiresAt=null → never trip this. But a
+    // tokens (auth.ts:894-917) have expiresAt=null â†’ never trip this. But a
     // keychain token whose refresh token is dead (password change, org left,
-    // token GC'd) has expiresAt<now AND refresh just failed — the client would
-    // otherwise loop 401 forever: withOAuthRetry → handleOAuth401Error →
-    // refresh fails again → retry with same stale token → 401 again.
+    // token GC'd) has expiresAt<now AND refresh just failed â€” the client would
+    // otherwise loop 401 forever: withOAuthRetry â†’ handleOAuth401Error â†’
+    // refresh fails again â†’ retry with same stale token â†’ 401 again.
     // Datadog 2026-03-08: single IPs generating 2,879 such 401s/day. Skip the
     // guaranteed-fail API call; useReplBridge surfaces the failure.
     //
-    // Intentionally NOT using isOAuthTokenExpired here — that has a 5-minute
+    // Intentionally NOT using isOAuthTokenExpired here â€” that has a 5-minute
     // proactive-refresh buffer, which is the right heuristic for "should
     // refresh soon" but wrong for "provably unusable". A token with 3min left
     // + transient refresh endpoint blip (5xx/timeout/wifi-reconnect) would
     // falsely trip a buffered check; the still-valid token would connect fine.
-    // Check actual expiry instead: past-expiry AND refresh-failed → truly dead.
+    // Check actual expiry instead: past-expiry AND refresh-failed â†’ truly dead.
     const tokens = getClaudeAIOAuthTokens()
     if (tokens && tokens.expiresAt !== null && tokens.expiresAt <= Date.now()) {
       logBridgeSkip(
@@ -230,7 +219,7 @@ export async function initReplBridge(
       // Persist for the next process. Increments failCount when re-discovering
       // the same dead token (matched by expiresAt); resets to 1 for a different
       // token. Once count reaches 3, step 2a's early-return fires and this path
-      // is never reached again — writes are capped at 3 per dead token.
+      // is never reached again â€” writes are capped at 3 per dead token.
       // Local const captures the narrowed type (closure loses !==null narrowing).
       const deadExpiresAt = tokens.expiresAt
       saveGlobalConfig(c => ({
@@ -244,16 +233,14 @@ export async function initReplBridge(
       return null
     }
   }
-
-  // 4. Compute baseUrl — needed by both v1 (env-based) and v2 (env-less)
+  // 4. Compute baseUrl â€” needed by both v1 (env-based) and v2 (env-less)
   // paths. Hoisted above the v2 gate so both can use it.
   const baseUrl = getBridgeBaseUrl()
-
-  // 5. Derive session title. Precedence: explicit initialName → /rename
-  // (session storage) → last meaningful user message → generated slug.
+  // 5. Derive session title. Precedence: explicit initialName â†’ /rename
+  // (session storage) â†’ last meaningful user message â†’ generated slug.
   // Cosmetic only (claude.ai session list); the model never sees it.
-  // Two flags: `hasExplicitTitle` (initialName or /rename — never auto-
-  // overwrite) vs. `hasTitle` (any title, including auto-derived — blocks
+  // Two flags: `hasExplicitTitle` (initialName or /rename â€” never auto-
+  // overwrite) vs. `hasTitle` (any title, including auto-derived â€” blocks
   // the count-1 re-derivation but not count-3). The onUserMessage callback
   // (wired to both v1 and v2 below) derives from the 1st prompt and again
   // from the 3rd so mobile/web show a title that reflects more context.
@@ -279,8 +266,8 @@ export async function initReplBridge(
     } else if (initialMessages && initialMessages.length > 0) {
       // Find the last user message that has meaningful content. Skip meta
       // (nudges), tool results, compact summaries ("This session is being
-      // continued…"), non-human origins (task notifications, channel pushes),
-      // and synthetic interrupts ([Request interrupted by user]) — none are
+      // continuedâ€¦"), non-human origins (task notifications, channel pushes),
+      // and synthetic interrupts ([Request interrupted by user]) â€” none are
       // human-authored. Same filter as extractTitleText + isSyntheticMessage.
       for (let i = initialMessages.length - 1; i >= 0; i--) {
         const msg = initialMessages[i]!
@@ -303,12 +290,11 @@ export async function initReplBridge(
       }
     }
   }
-
-  // Shared by both v1 and v2 — fires on every title-worthy user message until
+  // Shared by both v1 and v2 â€” fires on every title-worthy user message until
   // it returns true. At count 1: deriveTitle placeholder immediately, then
   // generateSessionTitle (Haiku, sentence-case) fire-and-forget upgrade. At
   // count 3: re-generate over the full conversation. Skips entirely if the
-  // title is explicit (/remote-control <name> or /rename) — re-checks
+  // title is explicit (/remote-control <name> or /rename) â€” re-checks
   // sessionStorage at call time so /rename between messages isn't clobbered.
   // Skips count 1 if initialMessages already derived (that title is fresh);
   // still refreshes at count 3. v2 passes cse_*; updateBridgeSessionTitle
@@ -333,7 +319,7 @@ export async function initReplBridge(
   }
   // Fire-and-forget Haiku generation with post-await guards. Re-checks /rename
   // (sessionStorage), v1 env-lost (lastBridgeSessionId), and same-session
-  // out-of-order resolution (genSeq — count-1's Haiku resolving after count-3
+  // out-of-order resolution (genSeq â€” count-1's Haiku resolving after count-3
   // would clobber the richer title). generateSessionTitle never rejects.
   const generateAndPatch = (input: string, bridgeSessionId: string): void => {
     const gen = ++genSeq
@@ -385,15 +371,13 @@ export async function initReplBridge(
     // Also re-latches if v1 env-lost resets the transport's done flag past 3.
     return userMessageCount >= 3
   }
-
   // Note: the open-source flag shim resolves from the local feature-flags
   // file and takes no refresh-window argument.
   const initialHistoryCap = getFeatureValue_CACHED_WITH_REFRESH(
     'tengu_bridge_initial_history_cap',
     200,
   )
-
-  // Fetch orgUUID before the v1/v2 branch — both paths need it. v1 for
+  // Fetch orgUUID before the v1/v2 branch â€” both paths need it. v1 for
   // environment registration; v2 for archive (which lives at the compat
   // /v1/sessions/{id}/archive, not /v1/code/sessions). Without it, v2
   // archive 404s and sessions stay alive in CCR after /exit.
@@ -403,11 +387,10 @@ export async function initReplBridge(
     onStateChange?.('failed', '/login')
     return null
   }
-
-  // ── GrowthBook gate: env-less bridge ──────────────────────────────────
+  // â”€â”€ GrowthBook gate: env-less bridge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // When enabled, skips the Environments API layer entirely (no register/
-  // poll/ack/heartbeat) and connects directly via POST /bridge → worker_jwt.
-  // See server PR #292605 (renamed in #293280). REPL-only — daemon/print stay
+  // poll/ack/heartbeat) and connects directly via POST /bridge â†’ worker_jwt.
+  // See server PR #292605 (renamed in #293280). REPL-only â€” daemon/print stay
   // on env-based.
   //
   // NAMING: "env-less" is distinct from "CCR v2" (the /worker/* transport).
@@ -415,7 +398,7 @@ export async function initReplBridge(
   // tengu_bridge_repl_v2 gates env-less (no poll loop), not transport version.
   //
   // perpetual (assistant-mode session continuity via bridge-pointer.json) is
-  // env-coupled and not yet implemented here — fall back to env-based when set
+  // env-coupled and not yet implemented here â€” fall back to env-based when set
   // so KAIROS users don't silently lose cross-restart continuity.
   if (isEnvLessBridgeEnabled() && !perpetual) {
     const versionError = await checkEnvLessBridgeMinVersion()
@@ -425,7 +408,7 @@ export async function initReplBridge(
         `[bridge:repl] Skipping: ${versionError}`,
         true,
       )
-      onStateChange?.('failed', 'run `openclaude update` to upgrade')
+      onStateChange?.('failed', 'run `rootclaude update` to upgrade')
       return null
     }
     logForDebugging(
@@ -442,8 +425,8 @@ export async function initReplBridge(
       initialHistoryCap,
       initialMessages,
       // v2 always creates a fresh server session (new cse_* id), so
-      // previouslyFlushedUUIDs is not passed — there's no cross-session
-      // UUID collision risk, and the ref persists across enable→disable→
+      // previouslyFlushedUUIDs is not passed â€” there's no cross-session
+      // UUID collision risk, and the ref persists across enableâ†’disableâ†’
       // re-enable cycles which would cause the new session to receive zero
       // history (all UUIDs already in the set from the prior enable).
       // v1 handles this by calling previouslyFlushedUUIDs.clear() on fresh
@@ -460,23 +443,19 @@ export async function initReplBridge(
       tags,
     })
   }
-
-  // ── v1 path: env-based (register/poll/ack/heartbeat) ──────────────────
-
+  // â”€â”€ v1 path: env-based (register/poll/ack/heartbeat) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const versionError = checkBridgeMinVersion()
   if (versionError) {
     logBridgeSkip('version_too_old', `[bridge:repl] Skipping: ${versionError}`)
-    onStateChange?.('failed', 'run `openclaude update` to upgrade')
+    onStateChange?.('failed', 'run `rootclaude update` to upgrade')
     return null
   }
-
-  // Gather git context — this is the bootstrap-read boundary.
+  // Gather git context â€” this is the bootstrap-read boundary.
   // Everything from here down is passed explicitly to bridgeCore.
   const branch = await getBranch()
   const gitRepoUrl = await getRemoteUrl()
   const sessionIngressUrl =
     process.env.CLAUDE_BRIDGE_SESSION_INGRESS_URL || baseUrl
-
   // Assistant-mode sessions advertise a distinct worker_type so the web UI
   // can filter them into a dedicated picker. KAIROS guard keeps the
   // assistant module out of external builds entirely.
@@ -490,10 +469,9 @@ export async function initReplBridge(
       workerType = 'claude_code_assistant'
     }
   }
-
   // 6. Delegate. BridgeCoreHandle is a structural superset of
   // ReplBridgeHandle (adds writeSdkMessages which REPL callers don't use),
-  // so no adapter needed — just the narrower type on the way out.
+  // so no adapter needed â€” just the narrower type on the way out.
   return initBridgeCore({
     dir: getOriginalCwd(),
     machineName: hostname(),
@@ -521,7 +499,7 @@ export async function initReplBridge(
         // teardown_archive_timeout_ms default.
         timeoutMs: 1500,
       }).catch((err: unknown) => {
-        // archiveBridgeSession has no try/catch — 5xx/timeout/network throw
+        // archiveBridgeSession has no try/catch â€” 5xx/timeout/network throw
         // straight through. Previously swallowed silently, making archive
         // failures BQ-invisible and undiagnosable from debug logs.
         logForDebugging(
@@ -531,7 +509,7 @@ export async function initReplBridge(
       }),
     // getCurrentTitle is read on reconnect-after-env-lost to re-title the new
     // session. /rename writes to session storage; onUserMessage mutates
-    // `title` directly — both paths are picked up here.
+    // `title` directly â€” both paths are picked up here.
     getCurrentTitle: () => getCurrentSessionTitle(getSessionId()) ?? title,
     onUserMessage,
     toSDKMessages,
@@ -550,9 +528,7 @@ export async function initReplBridge(
     perpetual,
   })
 }
-
 const TITLE_MAX_LEN = 50
-
 /**
  * Quick placeholder title: strip display tags, take the first sentence,
  * collapse whitespace, truncate to 50 chars. Returns undefined if the result
@@ -560,14 +536,14 @@ const TITLE_MAX_LEN = 50
  * generateSessionTitle once Haiku resolves (~1-15s).
  */
 function deriveTitle(raw: string): string | undefined {
-  // Strip <ide_opened_file>, <session-start-hook>, etc. — these appear in
+  // Strip <ide_opened_file>, <session-start-hook>, etc. â€” these appear in
   // user messages when IDE/hooks inject context. stripDisplayTagsAllowEmpty
   // returns '' (not the original) so pure-tag messages are skipped.
   const clean = stripDisplayTagsAllowEmpty(raw)
   // First sentence is usually the intent; rest is often context/detail.
-  // Capture group instead of lookbehind — keeps YARR JIT happy.
+  // Capture group instead of lookbehind â€” keeps YARR JIT happy.
   const firstSentence = /^(.*?[.!?])\s/.exec(clean)?.[1] ?? clean
-  // Collapse newlines/tabs — titles are single-line in the claude.ai list.
+  // Collapse newlines/tabs â€” titles are single-line in the claude.ai list.
   const flat = firstSentence.replace(/\s+/g, ' ').trim()
   if (!flat) return undefined
   return flat.length > TITLE_MAX_LEN

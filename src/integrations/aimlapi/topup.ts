@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AI/ML API seamless top-up flow.
  *
  * End to end:
@@ -9,7 +9,7 @@
  *      the hosted page needs no AI/ML API account, the CLI already holds auth)
  *   5. Poll the session until it is `paid`
  *   6. Exchange the paid session for a raw key (once)
- *   7. Write the key into OpenClaude's provider profile -> the agent now runs
+ *   7. Write the key into RootClaude's provider profile -> the agent now runs
  *      on AI/ML API's OpenAI-compatible endpoint
  *
  * After pay/cancel the provider redirects the browser to the co-branded AI/ML
@@ -224,7 +224,7 @@ export async function runAimlapiTopup(options: AimlapiTopupOptions): Promise<voi
   console.log(chalk.dim('  -> Provisioning API key...'))
   const { apiKey, apiKeyId } = await client.exchange(token, paid.sessionToken)
 
-  // 7. Persist into OpenClaude's provider profile.
+  // 7. Persist into RootClaude's provider profile.
   const profilePath = saveProfileFile({
     profile: 'openai',
     env: {
@@ -240,7 +240,7 @@ export async function runAimlapiTopup(options: AimlapiTopupOptions): Promise<voi
   console.log(`    base URL ${chalk.dim(endpoints.inferenceBaseUrl)}`)
   console.log(`    model    ${chalk.dim(model)}`)
   console.log(`    profile  ${chalk.dim(profilePath)}`)
-  console.log(chalk.dim(`\n  Run ${chalk.bold('openclaude')} to start coding on AI/ML API.\n`))
+  console.log(chalk.dim(`\n  Run ${chalk.bold('RootClaude')} to start coding on AI/ML API.\n`))
 }
 
 export async function provisionAimlapiKey(

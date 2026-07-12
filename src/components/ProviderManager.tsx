@@ -1,4 +1,4 @@
-import figures from 'figures'
+﻿import figures from 'figures'
 import * as React from 'react'
 import { DEFAULT_CODEX_BASE_URL } from '../services/api/providerConfig.js'
 import { Box, Text } from '../ink.js'
@@ -263,7 +263,7 @@ function getPresetLabel(preset: ProviderPreset, label: string, metadata?: { badg
       return (
         <Text>
           <Text>{label} </Text>
-          <Text color={metadata.badge.color ?? 'success'} bold>★ Recommended</Text>
+          <Text color={metadata.badge.color ?? 'success'} bold>â˜… Recommended</Text>
         </Text>
       )
     }
@@ -314,13 +314,13 @@ function profileSummary(profile: ProviderProfile, isActive: boolean): string {
       : `${models[0]}, ${models[1]} + ${models.length - 2} more`
   const modeInfo =
     routeSupportsApiFormatSelection(routeId)
-      ? ` · ${profile.apiFormat === 'responses_compat' ? 'responses (compat)' : profile.apiFormat === 'responses' ? 'responses' : 'chat/completions'}`
+      ? ` Â· ${profile.apiFormat === 'responses_compat' ? 'responses (compat)' : profile.apiFormat === 'responses' ? 'responses' : 'chat/completions'}`
       : ''
   const authInfo =
     routeSupportsAuthHeaders(routeId) && profile.authHeader
-      ? ` · ${profile.authHeader} auth`
+      ? ` Â· ${profile.authHeader} auth`
       : ''
-  return `${providerKind} · ${profile.baseUrl} · ${modelDisplay}${modeInfo}${authInfo} · ${keyInfo}${activeSuffix}`
+  return `${providerKind} Â· ${profile.baseUrl} Â· ${modelDisplay}${modeInfo}${authInfo} Â· ${keyInfo}${activeSuffix}`
 }
 
 function getGithubCredentialSourceFromEnv(
@@ -409,7 +409,7 @@ function getGithubProviderSummary(
         ? 'token via env'
         : 'no token found'
   const activeSuffix = isActive ? ' (active)' : ''
-  return `github-models · ${GITHUB_PROVIDER_DEFAULT_BASE_URL} · ${getGithubProviderModel(processEnv)} · ${credentialSummary}${activeSuffix}`
+  return `github-models Â· ${GITHUB_PROVIDER_DEFAULT_BASE_URL} Â· ${getGithubProviderModel(processEnv)} Â· ${credentialSummary}${activeSuffix}`
 }
 
 function describeAtomicChatSelectionIssue(
@@ -544,18 +544,18 @@ function XaiOAuthSetup({
         xAI OAuth (Grok)
       </Text>
       <Text>
-        Sign in with your xAI account in the browser. OpenClaude will store
+        Sign in with your xAI account in the browser. RootClaude will store
         the resulting OAuth credentials securely and switch this session to
         Grok when setup completes.
       </Text>
       <Text dimColor>
-        The xAI consent screen may label the app "Grok Build" — that's
-        expected. OpenClaude uses xAI's shared OAuth client.
+        The xAI consent screen may label the app "Grok Build" â€” that's
+        expected. RootClaude uses xAI's shared OAuth client.
       </Text>
       {status.state === 'starting' ? (
         <Text dimColor>
           Starting local callback on 127.0.0.1:56121 and preparing your
-          browser…
+          browserâ€¦
         </Text>
       ) : status.browserOpened === false ? (
         <>
@@ -573,7 +573,7 @@ function XaiOAuthSetup({
           <Text>{status.authUrl}</Text>
         </>
       ) : (
-        <Text dimColor>Opening your browser…</Text>
+        <Text dimColor>Opening your browserâ€¦</Text>
       )}
       {status.state === 'waiting' ? (
         <>
@@ -600,7 +600,7 @@ function XaiManualCodeInput({
   const inputColumns = Math.max(20, Math.min(80, terminalColumns - 8))
   return (
     <Box>
-      <Text>Code › </Text>
+      <Text>Code â€º </Text>
       <TextInput
         value={value}
         onChange={setValue}
@@ -633,7 +633,7 @@ function CodexManualCallbackInput({
   const inputColumns = Math.max(20, Math.min(120, terminalColumns - 12))
   return (
     <Box>
-      <Text>Callback URL › </Text>
+      <Text>Callback URL â€º </Text>
       <TextInput
         value={value}
         onChange={setValue}
@@ -645,7 +645,7 @@ function CodexManualCallbackInput({
           if (trimmed) onSubmit(trimmed)
         }}
         // The pasted callback URL carries the OAuth `code` and `state` query
-        // params — enough to complete the in-flight exchange — so mask it the
+        // params â€” enough to complete the in-flight exchange â€” so mask it the
         // same way the xAI manual-code field above does, to keep it out of
         // terminal scrollback, recordings, and shared sessions.
         mask="*"
@@ -727,7 +727,7 @@ function CodexOAuthSetup({
         Codex OAuth
       </Text>
       <Text>
-        Sign in with your ChatGPT account in the browser. OpenClaude will store
+        Sign in with your ChatGPT account in the browser. RootClaude will store
         the resulting Codex credentials securely and switch this session to the
         new Codex login when setup completes.
       </Text>
@@ -755,7 +755,7 @@ function CodexOAuthSetup({
         <>
           {isRemoteSession ? (
             <Text color="warning">
-              SSH session detected — the browser cannot reach this host's
+              SSH session detected â€” the browser cannot reach this host's
               localhost callback. After signing in, copy the full URL your
               browser was redirected to (it starts with http://localhost:) and
               paste it below.
@@ -916,7 +916,7 @@ export function ProviderManager({ mode, onDone }: Props): React.ReactNode {
   // in that case even when no profiles are saved and GitHub credentials have
   // gone away (cleared storage / removed env token); otherwise the user is
   // stranded on an unusable provider with no way back. Scoped to the activate
-  // path only — edit/delete still require an actual profile.
+  // path only â€” edit/delete still require an actual profile.
   const isNonAnthropicProviderActive = isGithubActive || activeProfileId != null
   const canSwitchActiveProvider =
     hasSelectableProviders || isNonAnthropicProviderActive
@@ -1216,10 +1216,10 @@ export function ProviderManager({ mode, onDone }: Props): React.ReactNode {
     }
 
     if (options.warnings.length > 0) {
-      return `${options.prefix}. OpenClaude switched to it for this session with warnings: ${formatWarningsForMessage(options.warnings)}`
+      return `${options.prefix}. RootClaude switched to it for this session with warnings: ${formatWarningsForMessage(options.warnings)}`
     }
 
-    return `${options.prefix}. OpenClaude switched to it for this session.`
+    return `${options.prefix}. RootClaude switched to it for this session.`
   }
 
   function buildXaiOAuthActivationMessage(options: {
@@ -1231,9 +1231,9 @@ export function ProviderManager({ mode, onDone }: Props): React.ReactNode {
       return `${options.prefix}. Saved for next startup. Warning: ${options.warnings.join('; ')}.`
     }
     if (options.warnings.length > 0) {
-      return `${options.prefix}. OpenClaude switched to it for this session with warnings: ${options.warnings.join('; ')}.`
+      return `${options.prefix}. RootClaude switched to it for this session with warnings: ${options.warnings.join('; ')}.`
     }
-    return `${options.prefix}. OpenClaude switched to it for this session.`
+    return `${options.prefix}. RootClaude switched to it for this session.`
   }
 
   async function activateXaiOAuthSession(options?: {
@@ -2049,7 +2049,7 @@ export function ProviderManager({ mode, onDone }: Props): React.ReactNode {
   // xAI OAuth setup renders a TextInput for the manual-code recovery
   // path, which registers its own useInput listener. The child-component
   // useKeybinding inside XaiOAuthSetup ends up racing the input handler
-  // and can lose. Register Esc at the top level — same pattern that
+  // and can lose. Register Esc at the top level â€” same pattern that
   // makes Esc work on preset-api-key (which also has a TextInput).
   function handleBackFromXaiOAuth(): void {
     setErrorMessage(undefined)
@@ -2087,7 +2087,7 @@ export function ProviderManager({ mode, onDone }: Props): React.ReactNode {
         label: (
           <Text>
             <Text>Codex OAuth </Text>
-            <Text color="success" bold>★ Recommended</Text>
+            <Text color="success" bold>â˜… Recommended</Text>
           </Text>
         ),
         description:
@@ -2889,7 +2889,7 @@ export function ProviderManager({ mode, onDone }: Props): React.ReactNode {
         profile.id === activeProfileId
           ? `${profile.name} (active)`
           : profile.name,
-      description: `${getRouteProviderTypeLabel(resolveProfileRoute(profile.provider).routeId)} · ${profile.baseUrl} · ${profile.model}`,
+      description: `${getRouteProviderTypeLabel(resolveProfileRoute(profile.provider).routeId)} Â· ${profile.baseUrl} Â· ${profile.model}`,
     }))
 
     if (includeGithub && githubProviderAvailable) {
@@ -2898,19 +2898,19 @@ export function ProviderManager({ mode, onDone }: Props): React.ReactNode {
         label: isGithubActive
           ? `${GITHUB_PROVIDER_LABEL} (active)`
           : GITHUB_PROVIDER_LABEL,
-        description: `github-models · ${GITHUB_PROVIDER_DEFAULT_BASE_URL} · ${getGithubProviderModel()}`,
+        description: `github-models Â· ${GITHUB_PROVIDER_DEFAULT_BASE_URL} Â· ${getGithubProviderModel()}`,
       })
     }
 
     // Offer a way back to built-in Anthropic only when a third-party provider
-    // (saved profile or GitHub Models) is currently active — otherwise the user
+    // (saved profile or GitHub Models) is currently active â€” otherwise the user
     // is already on Anthropic and the option is a no-op (#1426).
     if (includeAnthropic && (activeProfileId || isGithubActive)) {
       selectOptions.push({
         value: ANTHROPIC_DEFAULT_PROFILE_ID,
         label: 'Use Anthropic (built-in)',
         description:
-          'Switch back to Claude now without a restart — saved profiles are kept',
+          'Switch back to Claude now without a restart â€” saved profiles are kept',
       })
     }
 
@@ -3012,7 +3012,7 @@ export function ProviderManager({ mode, onDone }: Props): React.ReactNode {
             const activationWarning = await activateXaiOAuthSession({
               model: saved.model,
             })
-            // Update the running session's model — otherwise the next
+            // Update the running session's model â€” otherwise the next
             // request keeps hitting the previous provider's model name
             // (e.g. kimi-k2.6) and gets a 400 "Model not found" against
             // api.x.ai. Mirrors the activateSelectedProvider /

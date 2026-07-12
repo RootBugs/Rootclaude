@@ -1,5 +1,4 @@
-import { setAdditionalDirectoriesForClaudeMd } from '../../bootstrap/state.js'
-
+﻿import { setAdditionalDirectoriesForClaudeMd } from '../../bootstrap/state.js'
 type SkillsCliOptions = {
   additionalDirectories: string[]
   force?: boolean
@@ -9,7 +8,6 @@ type SkillsCliOptions = {
   registry?: string
   sha256?: string
 }
-
 const TRAILING_GLOBAL_BOOLEAN_FLAGS = new Set([
   '--bare',
   '--debug',
@@ -32,7 +30,6 @@ const TRAILING_GLOBAL_BOOLEAN_FLAGS = new Set([
   '--strict-mcp-config',
   '--verbose',
 ])
-
 const TRAILING_GLOBAL_VALUE_FLAGS = new Set([
   '--agent',
   '--append-system-prompt',
@@ -62,7 +59,6 @@ const TRAILING_GLOBAL_VALUE_FLAGS = new Set([
   '-n',
   '--name',
 ])
-
 const TRAILING_GLOBAL_MULTI_VALUE_FLAGS = new Set([
   '--add-dir',
   '--allowedTools',
@@ -76,16 +72,13 @@ const TRAILING_GLOBAL_MULTI_VALUE_FLAGS = new Set([
   '--provider-env-file',
   '--tools',
 ])
-
-const SKILLS_HELP = `Usage: openclaude skills <command> [options]
-
+const SKILLS_HELP = `Usage:rootclaude skills <command> [options]
 Commands:
   list [--json]                    List installed skills
   show <name>                      Show details for an installed skill
   validate <path>                  Validate a local skill directory
   install <idOrUrlOrPath> [options] Install a skill (--sha256 required for HTTP(S) URLs)
   remove <name> [--global]         Remove an installed skill`
-
 function parseSkillsCliArgs(args: string[]): {
   options: SkillsCliOptions
   positionals: string[]
@@ -93,7 +86,6 @@ function parseSkillsCliArgs(args: string[]): {
 } {
   const options: SkillsCliOptions = { additionalDirectories: [] }
   const positionals: string[] = []
-
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index]
     if (arg === '--json') {
@@ -180,10 +172,8 @@ function parseSkillsCliArgs(args: string[]): {
       return { options, positionals, error: `Unknown skills option: ${arg}` }
     }
   }
-
   return { options, positionals }
 }
-
 export async function runSkillsCliAction(
   action: () => Promise<void>,
 ): Promise<void> {
@@ -194,7 +184,6 @@ export async function runSkillsCliAction(
     process.exitCode = 1
   }
 }
-
 export async function runSkillsCli(args: string[]): Promise<void> {
   const subcommand = args[1] ?? 'list'
   const { options, positionals, error } = parseSkillsCliArgs(args.slice(2))
@@ -209,7 +198,6 @@ export async function runSkillsCli(args: string[]): Promise<void> {
   if (options.additionalDirectories.length > 0) {
     setAdditionalDirectoriesForClaudeMd(options.additionalDirectories)
   }
-
   const {
     skillsInstallHandler,
     skillsListHandler,
@@ -217,7 +205,6 @@ export async function runSkillsCli(args: string[]): Promise<void> {
     skillsShowHandler,
     skillsValidateHandler,
   } = await import('./skills.js')
-
   await runSkillsCliAction(async () => {
     switch (subcommand) {
       case 'list':
@@ -264,6 +251,5 @@ export async function runSkillsCli(args: string[]): Promise<void> {
         process.exit(1)
     }
   })
-
   process.exit(process.exitCode ?? 0)
 }

@@ -1,4 +1,4 @@
-import { getDirectConnectServerUrl, getSessionId } from '../bootstrap/state.js'
+﻿import { getDirectConnectServerUrl, getSessionId } from '../bootstrap/state.js'
 import { stringWidth } from '../ink/stringWidth.js'
 import type { LogOption } from '../types/logs.js'
 import { getSubscriptionName, isClaudeAISubscriber } from './auth.js'
@@ -100,7 +100,7 @@ export function calculateOptimalLeftWidth(
  */
 export function formatWelcomeMessage(username: string | null): string {
   if (!username || username.length > MAX_USERNAME_LENGTH) {
-    return 'Welcome to OpenClaude'
+    return 'Welcome to RootClaude'
   }
   return `Welcome back, ${username}`
 }
@@ -113,8 +113,8 @@ export function truncatePath(path: string, maxLength: number): string {
   if (stringWidth(path) <= maxLength) return path
 
   const separator = '/'
-  const ellipsis = '…'
-  const ellipsisWidth = 1 // '…' is always 1 column
+  const ellipsis = 'â€¦'
+  const ellipsisWidth = 1 // 'â€¦' is always 1 column
   const separatorWidth = 1
 
   const parts = path.split(separator)
@@ -282,7 +282,7 @@ export function formatModelAndBilling(
   truncatedModel: string
   truncatedBilling: string
 } {
-  const separator = ' · '
+  const separator = ' Â· '
   const combinedWidth =
     stringWidth(modelName) + separator.length + stringWidth(billingType)
   const shouldSplit = combinedWidth > availableWidth

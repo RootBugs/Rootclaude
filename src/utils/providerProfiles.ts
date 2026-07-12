@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto'
+﻿import { randomBytes } from 'crypto'
 import {
   getAdditionalModelOptionsCacheScope,
   isCodexBaseUrl,
@@ -465,7 +465,7 @@ function hasProviderSelectionFlags(
  * concrete config value that tells us WHERE to route (a base URL) or WHAT
  * to run (a model id). A bare `CLAUDE_CODE_USE_OPENAI=1` with nothing else
  * is almost always a stale shell export from a previous session, not real
- * intent — and if we respect it, we skip the user's saved active profile
+ * intent â€” and if we respect it, we skip the user's saved active profile
  * and fall back to hardcoded defaults (gpt-4o / api.openai.com), which is
  * the exact bug users report as "my saved provider isn't picked up".
  *
@@ -730,7 +730,7 @@ function isProcessEnvAlignedWithProfile(
  * distinct from `undefined`. Without it, clearing the active id falls through
  * to `profiles[0]` (see below), so a user with any saved third-party profile
  * could never return to Anthropic from `/provider` without hand-editing
- * `~/.openclaude.json` and restarting (#1426). Storing the sentinel preserves
+ * `~/.RootClaude.json` and restarting (#1426). Storing the sentinel preserves
  * the saved profiles for re-selection while expressing "no third-party active".
  */
 export const ANTHROPIC_DEFAULT_PROFILE_ID = '__anthropic_default__'
@@ -792,11 +792,11 @@ export function applyProviderProfileToProcessEnv(
   let profileEnv: ProfileEnv
 
   if (route.routeId === 'unknown-fallback') {
-    // Safe fallback for unrecognised providers — OpenAI-compatible so the
+    // Safe fallback for unrecognised providers â€” OpenAI-compatible so the
     // user can still interact, but warn that the provider string was not
     // resolved to a known descriptor.
     console.warn(
-      `[applyProviderProfileToProcessEnv] Unknown provider "${profile.provider}" — falling back to OpenAI-compatible env shaping.`,
+      `[applyProviderProfileToProcessEnv] Unknown provider "${profile.provider}" â€” falling back to OpenAI-compatible env shaping.`,
     )
   }
 
@@ -1005,7 +1005,7 @@ export function applyActiveProviderProfileFromConfig(
     // NOTE: we gate on hasCompleteProviderSelection (flag + concrete config)
     // rather than hasProviderSelectionFlags alone. A bare CLAUDE_CODE_USE_*=1
     // with no BASE_URL/MODEL is almost always a stale shell export, not
-    // intent — respecting it would skip the saved profile and fall through
+    // intent â€” respecting it would skip the saved profile and fall through
     // to hardcoded provider defaults, which surfaces as "my saved provider
     // isn't being picked up at startup".
     if (!isCurrentEnvProfileManaged) {
@@ -1121,7 +1121,7 @@ export function updateProviderProfile(
 
     const currentActive = trimOrUndefined(current.activeProviderProfileId)
     // Updating any profile must not reactivate profiles[0] when the user is on
-    // built-in Anthropic — the sentinel is a valid active state to preserve.
+    // built-in Anthropic â€” the sentinel is a valid active state to preserve.
     const nextActiveId =
       currentActive &&
       (currentActive === ANTHROPIC_DEFAULT_PROFILE_ID ||
@@ -1582,7 +1582,7 @@ export function deleteProviderProfile(profileId: string): {
 
     const nextProfiles = currentProfiles.filter(profile => profile.id !== profileId)
     const currentActive = trimOrUndefined(current.activeProviderProfileId)
-    // The Anthropic sentinel survives deletion of any other profile — deleting
+    // The Anthropic sentinel survives deletion of any other profile â€” deleting
     // an inactive saved profile must not knock a built-in-Anthropic user back
     // onto profiles[0] (#1426).
     const activeWasDeleted =

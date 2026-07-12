@@ -1,4 +1,4 @@
-import { feature } from 'bun:bundle'
+﻿import { feature } from 'bun:bundle'
 import { z } from 'zod/v4'
 import { SandboxSettingsSchema } from '../../entrypoints/sandboxTypes.js'
 import { isEnvTruthy } from '../envUtils.js'
@@ -216,19 +216,19 @@ export const DeniedMcpServerEntrySchema = lazySchema(() =>
 /**
  * Unified schema for settings files
  *
- * ⚠️ BACKWARD COMPATIBILITY NOTICE ⚠️
+ * Ã¢Å¡Â Ã¯Â¸Â BACKWARD COMPATIBILITY NOTICE Ã¢Å¡Â Ã¯Â¸Â
  *
- * This schema defines the structure of user settings files (~/.openclaude/settings.json).
+ * This schema defines the structure of user settings files (~/.RootClaude/settings.json).
  * We support backward-compatible changes! Here's how:
  *
- * ✅ ALLOWED CHANGES:
+ * Ã¢Å“â€¦ ALLOWED CHANGES:
  * - Adding new optional fields (always use .optional())
  * - Adding new enum values (keeping existing ones)
  * - Adding new properties to objects
  * - Making validation more permissive
  * - Using union types for gradual migration (e.g., z.union([oldType, newType]))
  *
- * ❌ BREAKING CHANGES TO AVOID:
+ * Ã¢ÂÅ’ BREAKING CHANGES TO AVOID:
  * - Removing fields (mark as deprecated instead)
  * - Removing enum values
  * - Making optional fields required
@@ -293,7 +293,7 @@ export const SettingsSchema = lazySchema(() =>
       // Gated so the SDK generator (which runs without CLAUDE_CODE_ENABLE_XAA)
       // doesn't surface this in GlobalClaudeSettings. Read via getXaaIdpSettings().
       // .passthrough() on the outer object keeps an existing settings.json key
-      // alive across env-var-off sessions — it's just not schema-validated then.
+      // alive across env-var-off sessions Ã¢â‚¬â€ it's just not schema-validated then.
       ...(isEnvTruthy(process.env.CLAUDE_CODE_ENABLE_XAA)
         ? {
             xaaIdp: z
@@ -488,7 +488,7 @@ export const SettingsSchema = lazySchema(() =>
             .optional()
             .describe(
               'Directories to include when creating worktrees, via git sparse-checkout (cone mode). ' +
-                'Dramatically faster in large monorepos — only the listed paths are written to disk.',
+                'Dramatically faster in large monorepos Ã¢â‚¬â€ only the listed paths are written to disk.',
             ),
           autoConfigureLongPaths: z
             .boolean()
@@ -509,7 +509,7 @@ export const SettingsSchema = lazySchema(() =>
         .boolean()
         .optional()
         .describe('Disable all hooks and statusLine execution'),
-      // Which shell backs input-box `!` (see docs/design/ps-shell-selection.md §4.2)
+      // Which shell backs input-box `!` (see docs/design/ps-shell-selection.md Ã‚Â§4.2)
       defaultShell: z
         .enum(['bash', 'powershell'])
         .optional()
@@ -569,7 +569,7 @@ export const SettingsSchema = lazySchema(() =>
           // Forwards-compat: drop unknown surface names so a future enum
           // value (e.g. 'commands') doesn't fail safeParse and null out the
           // ENTIRE managed-settings file (settings.ts:101). ["skills",
-          // "commands"] on an old client → ["skills"] → locks what it knows,
+          // "commands"] on an old client Ã¢â€ â€™ ["skills"] Ã¢â€ â€™ locks what it knows,
           // ignores what it doesn't. Degrades to less-locked, never to
           // everything-unlocked.
           v =>
@@ -582,7 +582,7 @@ export const SettingsSchema = lazySchema(() =>
         )
         .optional()
         // Non-array invalid values ("skills" string, {object}) pass through
-        // the preprocess unchanged and would fail the union → null the whole
+        // the preprocess unchanged and would fail the union Ã¢â€ â€™ null the whole
         // managed-settings file. .catch drops the field to undefined instead.
         // Degrades to unlocked-for-this-field, never to everything-broken.
         // Doctor flags the raw value.
@@ -592,7 +592,7 @@ export const SettingsSchema = lazySchema(() =>
             'Array form locks specific surfaces (e.g. ["skills", "hooks"]); `true` locks all four; `false` is an explicit no-op. ' +
             'Blocked: ~/.claude/{surface}/, .claude/{surface}/ (project), settings.json hooks, .mcp.json. ' +
             'NOT blocked: managed (policySettings) sources, plugin-provided customizations. ' +
-            'Composes with strictKnownMarketplaces for end-to-end admin control — plugins gated by ' +
+            'Composes with strictKnownMarketplaces for end-to-end admin control Ã¢â‚¬â€ plugins gated by ' +
             'marketplace allowlist, everything else blocked here.',
         ),
       // Status line for custom status line display
@@ -621,9 +621,9 @@ export const SettingsSchema = lazySchema(() =>
           // For settings sources, key must equal source.name. diffMarketplaces
           // looks up materialized state by dict key; addMarketplaceSource stores
           // under marketplace.name (= source.name for settings). A mismatch means
-          // the reconciler never converges — every session: key-lookup misses →
-          // 'missing' → source-idempotency returns alreadyMaterialized but
-          // installed++ anyway → pointless cache clears. For github/git/url the
+          // the reconciler never converges Ã¢â‚¬â€ every session: key-lookup misses Ã¢â€ â€™
+          // 'missing' Ã¢â€ â€™ source-idempotency returns alreadyMaterialized but
+          // installed++ anyway Ã¢â€ â€™ pointless cache clears. For github/git/url the
           // name comes from a fetched marketplace.json (mismatch is expected and
           // benign); for settings, both key and name are user-authored in the
           // same JSON object.
@@ -645,7 +645,7 @@ export const SettingsSchema = lazySchema(() =>
         })
         .optional()
         .describe(
-          'Additional marketplaces to make available for this repository. Typically used in repository .openclaude/settings.json to ensure team members have required plugin sources.',
+          'Additional marketplaces to make available for this repository. Typically used in repository .RootClaude/settings.json to ensure team members have required plugin sources.',
         ),
       // Enterprise strict list of allowed marketplace sources (policy settings only)
       // When set, ONLY these exact sources can be added. Check happens BEFORE download.
@@ -656,7 +656,7 @@ export const SettingsSchema = lazySchema(() =>
           'Enterprise strict list of allowed marketplace sources. When set in managed settings, ' +
             'ONLY these exact sources can be added as marketplaces. The check happens BEFORE ' +
             'downloading, so blocked sources never touch the filesystem. ' +
-            'Note: this is a policy gate only — it does NOT register marketplaces. ' +
+            'Note: this is a policy gate only Ã¢â‚¬â€ it does NOT register marketplaces. ' +
             'To pre-register allowed marketplaces for users, also set extraKnownMarketplaces.',
         ),
       // Enterprise blocklist of marketplace sources (policy settings only)
@@ -708,7 +708,7 @@ export const SettingsSchema = lazySchema(() =>
         .max(1)
         .optional()
         .describe(
-          'Probability (0–1) that the session quality survey appears when eligible. 0.05 is a reasonable starting point.',
+          'Probability (0Ã¢â‚¬â€œ1) that the session quality survey appears when eligible. 0.05 is a reasonable starting point.',
         ),
       spinnerTipsEnabled: z
         .boolean()
@@ -837,7 +837,7 @@ export const SettingsSchema = lazySchema(() =>
         .optional()
         .describe(
           'Ordered list of providerProfile ids. When the active provider returns a rate-limit ' +
-            'or quota error, OpenClaude advances to the next profile in this list (starting after ' +
+            'or quota error, RootClaude advances to the next profile in this list (starting after ' +
             'the currently-active id) and retries the turn. ' +
             'Example: ["provider_anthropic", "provider_openai", "provider_ollama"]',
         ),
@@ -980,7 +980,7 @@ export const SettingsSchema = lazySchema(() =>
         .optional()
         .describe(
           'Custom directory for plan files, relative to project root. ' +
-            'If not set, defaults to ~/.openclaude/plans/',
+            'If not set, defaults to ~/.RootClaude/plans/',
         ),
       ...(process.env.USER_TYPE === 'ant'
         ? {
@@ -1056,7 +1056,7 @@ export const SettingsSchema = lazySchema(() =>
             'Set true to allow; users then select servers via --channels.',
         ),
       // Org-level channel plugin allowlist. When set, REPLACES the
-      // Anthropic ledger — admin owns the trust decision. Undefined means
+      // Anthropic ledger Ã¢â‚¬â€ admin owns the trust decision. Undefined means
       // fall back to the ledger. Plugin-only entry shape (same as the
       // ledger); server-kind entries still need the dev flag.
       allowedChannelPlugins: z
@@ -1069,7 +1069,7 @@ export const SettingsSchema = lazySchema(() =>
         .optional()
         .describe(
           'Teams/Enterprise allowlist of channel plugins. When set, ' +
-            'replaces the default Anthropic allowlist — admins decide which ' +
+            'replaces the default Anthropic allowlist Ã¢â‚¬â€ admins decide which ' +
             'plugins may push inbound messages. Undefined falls back to the default. ' +
             'Requires channelsEnabled: true.',
         ),
@@ -1093,7 +1093,7 @@ export const SettingsSchema = lazySchema(() =>
         .boolean()
         .optional()
         .describe(
-          'Enable auto-memory for this project. When false, Claude will not read from or write to the auto-memory directory. Equivalent to `memory.autoWrite` — see that setting for the governance-focused shape requested in #1326.',
+          'Enable auto-memory for this project. When false, Claude will not read from or write to the auto-memory directory. Equivalent to `memory.autoWrite` Ã¢â‚¬â€ see that setting for the governance-focused shape requested in #1326.',
         ),
       memory: z
         .object({
@@ -1126,7 +1126,7 @@ export const SettingsSchema = lazySchema(() =>
             .boolean()
             .optional()
             .describe(
-              'When true, opt in to the generated OpenClaude footer for PR descriptions. When false in any settings source, generated PR attribution is blocked.',
+              'When true, opt in to the generated RootClaude footer for PR descriptions. When false in any settings source, generated PR attribution is blocked.',
             ),
           forbiddenCommitMessagePatterns: z
             .array(z.string())
@@ -1143,7 +1143,7 @@ export const SettingsSchema = lazySchema(() =>
         .string()
         .optional()
         .describe(
-          'Custom directory path for auto-memory storage. Supports ~/ prefix for home directory expansion. Ignored if set in projectSettings (checked-in .openclaude/settings.json) for security. When unset, defaults to ~/.openclaude/projects/<sanitized-cwd>/memory/.',
+          'Custom directory path for auto-memory storage. Supports ~/ prefix for home directory expansion. Ignored if set in projectSettings (checked-in .RootClaude/settings.json) for security. When unset, defaults to ~/.RootClaude/projects/<sanitized-cwd>/memory/.',
         ),
       autoDreamEnabled: z
         .boolean()

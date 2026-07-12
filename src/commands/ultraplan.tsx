@@ -1,4 +1,4 @@
-import { REMOTE_CONTROL_DISCONNECTED_MSG } from '../bridge/types.js';
+﻿import { REMOTE_CONTROL_DISCONNECTED_MSG } from '../bridge/types.js';
 import type { Command } from '../commands.js';
 import { DIAMOND_OPEN } from '../constants/figures.js';
 import { getRemoteSessionUrl } from '../constants/product.js';
@@ -23,7 +23,7 @@ import { pollForApprovedExitPlanMode, UltraplanPollError } from '../utils/ultrap
 const ULTRAPLAN_TIMEOUT_MS = 30 * 60 * 1000;
 export const CCR_TERMS_URL = 'https://code.claude.com/docs/en/claude-code-on-the-web';
 
-// CCR runs against the first-party API — use the canonical ID, not the
+// CCR runs against the first-party API â€” use the canonical ID, not the
 // provider-specific string getModelStrings() would return (which may be a
 // Bedrock ARN or Vertex ID on the local CLI). Read at call time, not module
 // load: the GrowthBook cache is empty at import and `/config` Gates can flip
@@ -90,7 +90,7 @@ function startDetachedPoll(taskId: string, sessionId: string, url: string, getAp
         execution_target: executionTarget as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
       });
       if (executionTarget === 'remote') {
-        // User chose "execute in CCR" in the browser PlanModal — the remote
+        // User chose "execute in CCR" in the browser PlanModal â€” the remote
         // session is now coding. Skip archive (ARCHIVE has no running-check,
         // would kill mid-execution) and skip the choice dialog (already chose).
         // Guard on task status so a poll that resolves after stopUltraplan
@@ -107,7 +107,7 @@ function startDetachedPoll(taskId: string, sessionId: string, url: string, getAp
           ultraplanSessionUrl: undefined
         } : prev);
         enqueuePendingNotification({
-          value: [`Ultraplan approved — executing in OpenClaude on the web. Follow along at: ${url}`, '', 'Results will land as a pull request when the remote session finishes. There is nothing to do here.'].join('\n'),
+          value: [`Ultraplan approved â€” executing in RootClaude on the web. Follow along at: ${url}`, '', 'Results will land as a pull request when the remote session finishes. There is nothing to do here.'].join('\n'),
           mode: 'task-notification'
         });
       } else {
@@ -130,7 +130,7 @@ function startDetachedPoll(taskId: string, sessionId: string, url: string, getAp
       }
     } catch (e) {
       // If the task was stopped (stopUltraplan sets status=killed), the poll
-      // erroring is expected — skip the failure notification and cleanup
+      // erroring is expected â€” skip the failure notification and cleanup
       // (kill() already archived; stopUltraplan cleared the URL).
       const task = getAppState().tasks?.[taskId];
       if (task?.status !== 'running') return;
@@ -176,10 +176,10 @@ function startDetachedPoll(taskId: string, sessionId: string, url: string, getAp
 // multi-second teleportToRemote round-trip.
 function buildLaunchMessage(disconnectedBridge?: boolean): string {
   const prefix = disconnectedBridge ? `${REMOTE_CONTROL_DISCONNECTED_MSG} ` : '';
-  return `${DIAMOND_OPEN} ultraplan\n${prefix}Starting OpenClaude on the web…`;
+  return `${DIAMOND_OPEN} ultraplan\n${prefix}Starting RootClaude on the webâ€¦`;
 }
 function buildSessionReadyMessage(url: string): string {
-  return `${DIAMOND_OPEN} ultraplan · Monitor progress in OpenClaude on the web ${url}\nYou can continue working — when the ${DIAMOND_OPEN} fills, press ↓ to view results`;
+  return `${DIAMOND_OPEN} ultraplan Â· Monitor progress in RootClaude on the web ${url}\nYou can continue working â€” when the ${DIAMOND_OPEN} fills, press â†“ to view results`;
 }
 function buildAlreadyActiveMessage(url: string | undefined): string {
   return url ? `ultraplan: already polling. Open ${url} to check status, or wait for the plan to land here.` : 'ultraplan: already launching. Please wait for the session to start.';
@@ -193,7 +193,7 @@ function buildAlreadyActiveMessage(url: string | undefined): string {
  * the catch block early-returns when status !== 'running'.
  */
 export async function stopUltraplan(taskId: string, sessionId: string, setAppState: (f: (prev: AppState) => AppState) => void): Promise<void> {
-  // RemoteAgentTask.kill archives the session (with .catch) — no separate
+  // RemoteAgentTask.kill archives the session (with .catch) â€” no separate
   // archive call needed here.
   await RemoteAgentTask.kill(taskId, setAppState);
   setAppState(prev => prev.ultraplanSessionUrl || prev.ultraplanPendingChoice || prev.ultraplanLaunching ? {
@@ -208,7 +208,7 @@ export async function stopUltraplan(taskId: string, sessionId: string, setAppSta
     mode: 'task-notification'
   });
   enqueuePendingNotification({
-    value: 'The user stopped the ultraplan session above. Do not respond to the stop notification — wait for their next message.',
+    value: 'The user stopped the ultraplan session above. Do not respond to the stop notification â€” wait for their next message.',
     mode: 'task-notification',
     isMeta: true
   });
@@ -234,8 +234,8 @@ export async function launchUltraplan(opts: {
   /**
    * Called once teleportToRemote resolves with a session URL. Callers that
    * have setMessages (REPL) append this as a second transcript message so the
-   * URL is visible without opening the ↓ detail view. Callers without
-   * transcript access (ExitPlanModePermissionRequest) omit this — the pill
+   * URL is visible without opening the â†“ detail view. Callers without
+   * transcript access (ExitPlanModePermissionRequest) omit this â€” the pill
    * still shows live status.
    */
   onSessionReady?: (msg: string) => void;
@@ -260,11 +260,11 @@ export async function launchUltraplan(opts: {
     return buildAlreadyActiveMessage(active);
   }
   if (!blurb && !seedPlan) {
-    // No event — bare /ultraplan is a usage query, not an attempt.
+    // No event â€” bare /ultraplan is a usage query, not an attempt.
     return [
     // Rendered via <Markdown>; raw <message> is tokenized as HTML
     // and dropped. Backslash-escape the brackets.
-    'Usage: /ultraplan \\<prompt\\>, or include "ultraplan" anywhere', 'in your prompt', '', 'Advanced multi-agent plan mode with our most powerful model', '(Opus). Runs in OpenClaude on the web. When the plan is ready,', 'you can execute it in the web session or send it back here.', 'Terminal stays free while the remote plans.', 'Requires /login.', '', `Terms: ${CCR_TERMS_URL}`].join('\n');
+    'Usage: /ultraplan \\<prompt\\>, or include "ultraplan" anywhere', 'in your prompt', '', 'Advanced multi-agent plan mode with our most powerful model', '(Opus). Runs in RootClaude on the web. When the plan is ready,', 'you can execute it in the web session or send it back here.', 'Terminal stays free while the remote plans.', 'Requires /login.', '', `Terms: ${CCR_TERMS_URL}`].join('\n');
   }
 
   // Set synchronously before the detached flow to prevent duplicate launches
@@ -312,7 +312,7 @@ async function launchDetached(opts: {
       });
       const reasons = eligibility.errors.map(formatPreconditionError).join('\n');
       enqueuePendingNotification({
-        value: `ultraplan: cannot launch remote session —\n${reasons}`,
+        value: `ultraplan: cannot launch remote session â€”\n${reasons}`,
         mode: 'task-notification'
       });
       return;
@@ -336,7 +336,7 @@ async function launchDetached(opts: {
         reason: (bundleFailMsg ? 'bundle_fail' : 'teleport_null') as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
       });
       enqueuePendingNotification({
-        value: `ultraplan: session creation failed${bundleFailMsg ? ` — ${bundleFailMsg}` : ''}. See --debug for details.`,
+        value: `ultraplan: session creation failed${bundleFailMsg ? ` â€” ${bundleFailMsg}` : ''}. See --debug for details.`,
         mode: 'task-notification'
       });
       return;
@@ -378,11 +378,11 @@ async function launchDetached(opts: {
       reason: 'unexpected_error' as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
     });
     enqueuePendingNotification({
-      value: `ultraplan: unexpected error — ${errorMessage(e)}`,
+      value: `ultraplan: unexpected error â€” ${errorMessage(e)}`,
       mode: 'task-notification'
     });
     if (sessionId) {
-      // Error after teleport succeeded — archive so the remote doesn't sit
+      // Error after teleport succeeded â€” archive so the remote doesn't sit
       // running for 30min with nobody polling it.
       void archiveRemoteSession(sessionId).catch(err => logForDebugging('ultraplan: failed to archive orphaned session', err));
       // ultraplanSessionUrl may have been set before the throw; clear it so
@@ -403,7 +403,7 @@ async function launchDetached(opts: {
 const call: LocalJSXCommandCall = async (onDone, context, args) => {
   const blurb = args.trim();
 
-  // Bare /ultraplan (no args, no seed plan) just shows usage — no dialog.
+  // Bare /ultraplan (no args, no seed plan) just shows usage â€” no dialog.
   if (!blurb) {
     const msg = await launchUltraplan({
       blurb,
@@ -417,7 +417,7 @@ const call: LocalJSXCommandCall = async (onDone, context, args) => {
     return null;
   }
 
-  // Guard matches launchUltraplan's own check — showing the dialog when a
+  // Guard matches launchUltraplan's own check â€” showing the dialog when a
   // session is already active or launching would waste the user's click and set
   // hasSeenUltraplanTerms before the launch fails.
   const {
@@ -443,7 +443,7 @@ const call: LocalJSXCommandCall = async (onDone, context, args) => {
       blurb
     }
   }));
-  // 'skip' suppresses the (no content) echo — the dialog's choice handler
+  // 'skip' suppresses the (no content) echo â€” the dialog's choice handler
   // adds the real /ultraplan echo + launch confirmation.
   onDone(undefined, {
     display: 'skip'
@@ -453,7 +453,7 @@ const call: LocalJSXCommandCall = async (onDone, context, args) => {
 export default {
   type: 'local-jsx',
   name: 'ultraplan',
-  description: `~10–30 min · OpenClaude on the web drafts an advanced plan you can edit and approve. See ${CCR_TERMS_URL}`,
+  description: `~10â€“30 min Â· RootClaude on the web drafts an advanced plan you can edit and approve. See ${CCR_TERMS_URL}`,
   argumentHint: '<prompt>',
   isEnabled: () => false,
   load: () => Promise.resolve({

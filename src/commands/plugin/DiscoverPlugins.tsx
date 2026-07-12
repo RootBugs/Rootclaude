@@ -1,4 +1,4 @@
-import { c as _c } from "react-compiler-runtime";
+﻿import { c as _c } from "react-compiler-runtime";
 import figures from 'figures';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -145,7 +145,7 @@ export function DiscoverPlugins({
                 marketplaceName: name,
                 pluginId,
                 // Only block when globally installed (user/managed scope).
-                // Project/local-scope installs don't block — user may want to
+                // Project/local-scope installs don't block â€” user may want to
                 // promote to user scope so it's available everywhere (gh-29997).
                 isInstalled: isPluginGloballyInstalled(pluginId)
               });
@@ -258,12 +258,12 @@ export function DiscoverPlugins({
 
     // Handle installation results
     if (failureCount === 0) {
-      const message = `✓ Installed ${successCount_0} ${plural(successCount_0, 'plugin')}. ` + `Run /reload-plugins to activate.`;
+      const message = `âœ“ Installed ${successCount_0} ${plural(successCount_0, 'plugin')}. ` + `Run /reload-plugins to activate.`;
       setResult(message);
     } else if (successCount_0 === 0) {
       setError(`Failed to install: ${formatFailureDetails(newFailedPlugins, true)}`);
     } else {
-      const message_0 = `✓ Installed ${successCount_0} of ${successCount_0 + failureCount} plugins. ` + `Failed: ${formatFailureDetails(newFailedPlugins, false)}. ` + `Run /reload-plugins to activate successfully installed plugins.`;
+      const message_0 = `âœ“ Installed ${successCount_0} of ${successCount_0 + failureCount} plugins. ` + `Failed: ${formatFailureDetails(newFailedPlugins, false)}. ` + `Run /reload-plugins to activate successfully installed plugins.`;
       setResult(message_0);
     }
     if (successCount_0 > 0) {
@@ -478,10 +478,10 @@ export function DiscoverPlugins({
     return <PluginOptionsFlow plugin={plugin_4} pluginId={pluginId_0} onDone={(outcome, detail) => {
       switch (outcome) {
         case 'configured':
-          finish(`✓ Installed and configured ${plugin_4.name}. Run /reload-plugins to apply.`);
+          finish(`âœ“ Installed and configured ${plugin_4.name}. Run /reload-plugins to apply.`);
           break;
         case 'skipped':
-          finish(`✓ Installed ${plugin_4.name}. Run /reload-plugins to apply.`);
+          finish(`âœ“ Installed ${plugin_4.name}. Run /reload-plugins to apply.`);
           break;
         case 'error':
           finish(`Installed but failed to save config: ${detail}`);
@@ -492,7 +492,7 @@ export function DiscoverPlugins({
 
   // Loading state
   if (loading) {
-    return <Text>Loading…</Text>;
+    return <Text>Loadingâ€¦</Text>;
   }
 
   // Error state
@@ -536,7 +536,7 @@ export function DiscoverPlugins({
               {detailsMenuIndex === index && <Text>{'> '}</Text>}
               {detailsMenuIndex !== index && <Text>{'  '}</Text>}
               <Text bold={detailsMenuIndex === index}>
-                {isInstalling && option.action.startsWith('install-') ? 'Installing…' : option.label}
+                {isInstalling && option.action.startsWith('install-') ? 'Installingâ€¦' : option.label}
               </Text>
             </Box>)}
         </Box>
@@ -616,10 +616,10 @@ export function DiscoverPlugins({
               <Text>
                 {isInstallingThis ? figures.ellipsis : isSelectedForInstall ? figures.radioOn : figures.radioOff}{' '}
                 {plugin_5.entry.name}
-                <Text dimColor> · {plugin_5.marketplaceName}</Text>
+                <Text dimColor> Â· {plugin_5.marketplaceName}</Text>
                 {plugin_5.entry.tags?.includes('community-managed') && <Text dimColor> [Community Managed]</Text>}
                 {installCounts && plugin_5.marketplaceName === OFFICIAL_MARKETPLACE_NAME && <Text dimColor>
-                      {' · '}
+                      {' Â· '}
                       {formatInstallCount(installCounts.get(plugin_5.pluginId) ?? 0)}{' '}
                       installs
                     </Text>}
@@ -713,7 +713,7 @@ function EmptyStateMessage(t0) {
       {
         let t1;
         if ($[0] === Symbol.for("react.memo_cache_sentinel")) {
-          t1 = <><Text dimColor={true}>Git is required to install marketplaces.</Text><Text dimColor={true}>Please install git and restart OpenClaude.</Text></>;
+          t1 = <><Text dimColor={true}>Git is required to install marketplaces.</Text><Text dimColor={true}>Please install git and restart RootClaude.</Text></>;
           $[0] = t1;
         } else {
           t1 = $[0];

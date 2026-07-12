@@ -1,4 +1,4 @@
-import { AuthCodeListener } from '../oauth/auth-code-listener.js'
+﻿import { AuthCodeListener } from '../oauth/auth-code-listener.js'
 import {
   generateCodeChallenge,
   generateCodeVerifier,
@@ -72,8 +72,8 @@ function renderSuccessPage(): string {
   </head>
   <body>
     <h1>Codex login complete</h1>
-    <p>You can return to OpenClaude now.</p>
-    <p>OpenClaude will finish activating your new Codex OAuth login.</p>
+    <p>You can return to RootClaude now.</p>
+    <p>RootClaude will finish activating your new Codex OAuth login.</p>
   </body>
 </html>`
 }
@@ -94,7 +94,7 @@ function renderErrorPage(message: string): string {
   <body>
     <h1>Codex login failed</h1>
     <p>${safeMessage}</p>
-    <p>You can close this window and try again in OpenClaude.</p>
+    <p>You can close this window and try again in RootClaude.</p>
   </body>
 </html>`
 }
@@ -113,7 +113,7 @@ function renderCancelledPage(): string {
   </head>
   <body>
     <h1>Codex login cancelled</h1>
-    <p>You can close this window and retry in OpenClaude.</p>
+    <p>You can close this window and retry in RootClaude.</p>
   </body>
 </html>`
 }
@@ -222,9 +222,10 @@ export class CodexOAuthService {
   }
 
   /**
-   * Recover the flow when the loopback callback is unreachable — typically a
+   * Recover the flow when the loopback callback is unreachable Ã¢â‚¬â€ typically a
    * remote SSH session where the user's browser redirects to a localhost URL
-   * that resolves to their workstation, not the openclaude host. The user
+   * that resolves to their workstation, not the
+ * rootclaude host. The user
    * pastes the full redirected URL (or just its query string), we validate
    * the state parameter against the in-flight flow, and resolve the same
    * authorization code the loopback path would have produced.
@@ -256,7 +257,7 @@ export class CodexOAuthService {
     } catch {
       return {
         ok: false,
-        error: 'Could not parse the callback URL — paste the full address.',
+        error: 'Could not parse the callback URL Ã¢â‚¬â€ paste the full address.',
       }
     }
 
@@ -270,7 +271,7 @@ export class CodexOAuthService {
       return {
         ok: false,
         error: description
-          ? `Authorization failed: ${errorParam} — ${description}`
+          ? `Authorization failed: ${errorParam} Ã¢â‚¬â€ ${description}`
           : `Authorization failed: ${errorParam}`,
       }
     }
@@ -287,7 +288,7 @@ export class CodexOAuthService {
       return {
         ok: false,
         error:
-          'State mismatch — the URL is from a different login attempt. Start over.',
+          'State mismatch Ã¢â‚¬â€ the URL is from a different login attempt. Start over.',
       }
     }
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SDK Core Schemas - Zod schemas for serializable SDK data types.
  *
  * These schemas are the single source of truth for SDK data types.
@@ -229,7 +229,7 @@ export const McpServerStatusSchema = lazySchema(() =>
         })
         .optional()
         .describe(
-          "@internal Server capabilities (available when connected). experimental['claude/channel'] is only present if the server's plugin is on the approved channels allowlist — use its presence to decide whether to show an Enable-channel prompt.",
+          "@internal Server capabilities (available when connected). experimental['claude/channel'] is only present if the server's plugin is on the approved channels allowlist â€” use its presence to decide whether to show an Enable-channel prompt.",
         ),
     })
     .describe('Status information for an MCP server connection.'),
@@ -1197,7 +1197,7 @@ export const AgentDefinitionSchema = lazySchema(() =>
         .enum(['user', 'project', 'local'])
         .optional()
         .describe(
-          "Scope for auto-loading agent memory files. 'user' - ~/.openclaude/agent-memory/<agentType>/, 'project' - .openclaude/agent-memory/<agentType>/, 'local' - .openclaude/agent-memory-local/<agentType>/",
+          "Scope for auto-loading agent memory files. 'user' - ~/.RootClaude/agent-memory/<agentType>/, 'project' - .RootClaude/agent-memory/<agentType>/, 'local' - .RootClaude/agent-memory-local/<agentType>/",
         ),
       effort: z
         .union([z.enum(['low', 'medium', 'high', 'xhigh', 'max']), z.number().int()])
@@ -1225,9 +1225,9 @@ export const SettingSourceSchema = lazySchema(() =>
     .enum(['user', 'project', 'local'])
     .describe(
       'Source for loading filesystem-based settings. ' +
-        "'user' - Global user settings (~/.openclaude/settings.json). " +
-        "'project' - Project settings (.openclaude/settings.json). " +
-        "'local' - Local settings (.openclaude/settings.local.json).",
+        "'user' - Global user settings (~/.RootClaude/settings.json). " +
+        "'project' - Project settings (.RootClaude/settings.json). " +
+        "'local' - Local settings (.RootClaude/settings.local.json).",
     ),
 )
 
@@ -1776,7 +1776,7 @@ export const SDKSessionStateChangedMessageSchema = lazySchema(() =>
       session_id: z.string(),
     })
     .describe(
-      "Mirrors notifySessionStateChanged. 'idle' fires after heldBackResult flushes and the bg-agent do-while exits — authoritative turn-over signal.",
+      "Mirrors notifySessionStateChanged. 'idle' fires after heldBackResult flushes and the bg-agent do-while exits â€” authoritative turn-over signal.",
     ),
 )
 

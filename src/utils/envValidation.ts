@@ -1,7 +1,7 @@
-import { logForDebugging } from './debug.js'
+﻿import { logForDebugging } from './debug.js'
 import { z } from 'zod/v4'
 
-// ─── Original bounded int validation ───
+// â”€â”€â”€ Original bounded int validation â”€â”€â”€
 
 export type EnvVarValidationResult = {
   effective: number
@@ -40,7 +40,7 @@ export function validateBoundedIntEnvVar(
   return { effective: parsed, status: 'valid' }
 }
 
-// ─── Zod startup validation ───
+// â”€â”€â”€ Zod startup validation â”€â”€â”€
 
 const optionalNonEmptyString = z.preprocess(
   value => (value === '' ? undefined : value),
@@ -50,7 +50,7 @@ const optionalNonEmptyString = z.preprocess(
 const EnvSchema = z.object({
   ANTHROPIC_API_KEY: optionalNonEmptyString,
   ANTHROPIC_AUTH_TOKEN: optionalNonEmptyString,
-  OPENCLAUDE_CONFIG_DIR: optionalNonEmptyString,
+  RootClaude_CONFIG_DIR: optionalNonEmptyString,
   CLAUDE_CONFIG_DIR: optionalNonEmptyString,
   HTTP_PROXY: z.string().url().optional().or(z.literal('')),
   HTTPS_PROXY: z.string().url().optional().or(z.literal('')),
@@ -71,7 +71,7 @@ export function validateEnvVars(): ValidatedEnv {
       return `  ${path}: ${issue.message}`
     }).join('\n')
 
-    console.error('❌ Environment variable validation failed:')
+    console.error('âŒ Environment variable validation failed:')
     console.error(errors)
     console.error('\nPlease fix the above environment variables and try again.')
     process.exit(1)

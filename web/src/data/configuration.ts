@@ -8,24 +8,24 @@ export interface SettingsFile {
 
 export const settingsFiles: SettingsFile[] = [
   {
-    path: '~/.openclaude/settings.json',
+    path: '~/.rootclaude/settings.json',
     scope: 'user',
-    notes: 'Default global settings path for every project on the machine; OPENCLAUDE_CONFIG_DIR moves this under the configured config home.',
+    notes: 'Default global settings path for every project on the machine; ROOTCLAUDE_CONFIG_DIR moves this under the configured config home.',
   },
   {
-    path: '.openclaude/settings.json',
+    path: '.rootclaude/settings.json',
     scope: 'project',
     notes: 'Shared project settings, committed to the repo.',
   },
   {
-    path: '.openclaude/settings.local.json',
+    path: '.rootclaude/settings.local.json',
     scope: 'local',
     notes: 'Per-machine overrides for one project; typically gitignored.',
   },
   {
-    path: '~/.openclaude/keybindings.json',
+    path: '~/.rootclaude/keybindings.json',
     scope: 'user',
-    notes: 'Default keyboard shortcut overrides path; OPENCLAUDE_CONFIG_DIR moves this under the configured config home.',
+    notes: 'Default keyboard shortcut overrides path; ROOTCLAUDE_CONFIG_DIR moves this under the configured config home.',
   },
   {
     path: 'CLAUDE.md / .claude/CLAUDE.md',
@@ -70,13 +70,13 @@ export const envVars: EnvVar[] = [
   { name: 'MIMO_API_KEY', description: 'Xiaomi MiMo API key.' },
   { name: 'OPENCODE_API_KEY', description: 'OpenCode Zen / Go gateway key.' },
   { name: 'GITHUB_TOKEN', description: 'GitHub token for GitHub Models and PR workflows.' },
-  { name: 'OPENCLAUDE_CONFIG_DIR', description: 'Preferred config directory override. Defaults to ~/.openclaude when unset.' },
-  { name: 'CLAUDE_CONFIG_DIR', description: 'Legacy config directory override. Used only when OPENCLAUDE_CONFIG_DIR is unset.' },
+  { name: 'ROOTCLAUDE_CONFIG_DIR', description: 'Preferred config directory override. Defaults to ~/.rootclaude when unset.' },
+  { name: 'CLAUDE_CONFIG_DIR', description: 'Legacy config directory override. Used only when ROOTCLAUDE_CONFIG_DIR is unset.' },
   { name: 'BASH_MAX_OUTPUT_LENGTH', description: 'Max characters of shell output shown inline before truncation (default 30000, cap 150000). Truncated runs save the captured output to a file the agent can read back (very large outputs may be capped).' },
   { name: 'HTTP_PROXY / HTTPS_PROXY', description: 'Route API traffic through a proxy.' },
   { name: 'NODE_EXTRA_CA_CERTS', description: 'Extra CA certificates for corporate TLS interception.' },
   { name: 'CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC', description: 'Disable non-essential network traffic.' },
-  { name: 'OPENCLAUDE_SMART_ROUTING', description: 'Set to 1/true to enable smart auto-routing as a startup default (settings.smartRouting overrides it).' },
-  { name: 'OPENCLAUDE_SMART_ROUTING_SIMPLE', description: 'agentModels key or model id used for turns classified "simple".' },
-  { name: 'OPENCLAUDE_SMART_ROUTING_STRONG', description: 'agentModels key or model id used for "strong" turns and as the routed-error fallback.' },
+  { name: 'ROOTCLAUDE_SMART_ROUTING', description: 'Set to 1/true to enable smart auto-routing as a startup default (settings.smartRouting overrides it).' },
+  { name: 'ROOTCLAUDE_SMART_ROUTING_SIMPLE', description: 'agentModels key or model id used for turns classified "simple".' },
+  { name: 'ROOTCLAUDE_SMART_ROUTING_STRONG', description: 'agentModels key or model id used for "strong" turns and as the routed-error fallback.' },
 ]

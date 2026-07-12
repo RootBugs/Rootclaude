@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Settings Sync Types
  *
  * Zod schemas and types for the user settings sync API.
@@ -59,9 +59,9 @@ export type SettingsSyncUploadResult = {
  * Keys used for sync entries
  */
 export const SYNC_KEYS = {
-  USER_SETTINGS: '~/.openclaude/settings.json',
-  USER_MEMORY: '~/.openclaude/CLAUDE.md',
+  USER_SETTINGS: '~/.RootClaude/settings.json',
+  USER_MEMORY: '~/.RootClaude/CLAUDE.md',
   projectSettings: (projectId: string) =>
-    `projects/${projectId}/.openclaude/settings.local.json`,
+    `projects/${projectId}/.RootClaude/settings.local.json`,
   projectMemory: (projectId: string) => `projects/${projectId}/CLAUDE.local.md`,
 } as const

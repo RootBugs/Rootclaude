@@ -1,4 +1,4 @@
-import type { ClientOptions } from '@anthropic-ai/sdk'
+﻿import type { ClientOptions } from '@anthropic-ai/sdk'
 import type { MessageCreateParamsBase } from '@anthropic-ai/sdk/resources/messages/messages'
 
 type AccessTokenProvider = () => Promise<string>
@@ -127,8 +127,8 @@ function diagnoseEmptyResponse(json: GeminiVertexResponse): string {
 }
 
 // Role + part-kind sequence of the request we sent (no content, just shape).
-// Surfaced alongside the response diagnostic so a structural cause — a trailing
-// model turn, a missing functionResponse, an empty part — is visible directly.
+// Surfaced alongside the response diagnostic so a structural cause â€” a trailing
+// model turn, a missing functionResponse, an empty part â€” is visible directly.
 function summarizeRequestContents(contents: GeminiVertexContent[]): string {
   const seq = contents
     .map(c => {
@@ -146,7 +146,7 @@ function summarizeRequestContents(contents: GeminiVertexContent[]): string {
 
 // Thinking-capable Vertex Gemini models spend a chunk of maxOutputTokens on
 // internal reasoning (thoughtsTokenCount) before emitting any visible text.
-// If openclaude passes a tight budget — common for the first turn of a chat —
+// If RootClaude passes a tight budget â€” common for the first turn of a chat â€”
 // the model burns the entire allotment thinking and the response comes back
 // with finishReason=MAX_TOKENS and no `parts`. Boost the floor for these
 // families so a simple greeting actually produces a reply.
@@ -212,7 +212,7 @@ type GeminiVertexPromise = Promise<GeminiVertexMessage> & {
   withResponse(): Promise<GeminiVertexWithResponseResult>
 }
 
-// JSON Schema → Vertex schema. Vertex's schema is an OpenAPI 3.0 subset: it
+// JSON Schema â†’ Vertex schema. Vertex's schema is an OpenAPI 3.0 subset: it
 // requires UPPERCASE type names and rejects ANY field it doesn't recognize
 // (e.g. propertyNames, exclusiveMinimum, const, $schema, additionalProperties).
 // We therefore use an ALLOWLIST: only fields Vertex documents are forwarded,
@@ -282,12 +282,12 @@ function toVertexSchema(schema: unknown): GeminiVertexSchema {
       out[key] = value
     }
     // Any other key (propertyNames, additionalProperties, $schema, $ref, if,
-    // patternProperties, ...) is silently dropped — Vertex would 400 on it.
+    // patternProperties, ...) is silently dropped â€” Vertex would 400 on it.
   }
   return out
 }
 
-// Anthropic tool definitions → Vertex `tools: [{ functionDeclarations }]`.
+// Anthropic tool definitions â†’ Vertex `tools: [{ functionDeclarations }]`.
 // Drops tools without an input_schema (e.g. server-side connector tools the
 // Anthropic SDK exposes that aren't function-calls) so they don't pollute the
 // declaration list.
@@ -364,7 +364,7 @@ function stringifyToolResultContent(content: unknown): string {
         if (block && typeof block === 'object' && 'text' in block) {
           return String((block as { text?: unknown }).text ?? '')
         }
-        // ToolSearch results are tool_reference blocks with no text payload —
+        // ToolSearch results are tool_reference blocks with no text payload â€”
         // render them so the model learns which deferred tools were loaded
         // (their schemas arrive in the next request's tools array).
         if (
@@ -383,14 +383,14 @@ function stringifyToolResultContent(content: unknown): string {
   return ''
 }
 
-// Translate Anthropic message history → Vertex `contents`. Handles:
+// Translate Anthropic message history â†’ Vertex `contents`. Handles:
 //   - plain text on user/assistant turns
-//   - assistant tool_use blocks → model functionCall parts (keeps a name map
+//   - assistant tool_use blocks â†’ model functionCall parts (keeps a name map
 //     so the subsequent tool_result can be wired back to the right function)
-//   - user tool_result blocks → user functionResponse parts, looking up the
+//   - user tool_result blocks â†’ user functionResponse parts, looking up the
 //     function name from the most recent tool_use with the same id
 // Drops blocks we can't translate (e.g. images) instead of failing the whole
-// request — Vertex will respond from whatever it received.
+// request â€” Vertex will respond from whatever it received.
 function toGeminiContents(
   messages: MessageCreateParamsBase['messages'],
 ): GeminiVertexContent[] {
@@ -401,8 +401,8 @@ function toGeminiContents(
     const role: 'user' | 'model' = message.role === 'assistant' ? 'model' : 'user'
     // Gemini's function-calling protocol expects a turn carrying
     // functionResponse parts to be PURE (no text mixed in) and to immediately
-    // follow the model's functionCall turn. openclaude, however, appends
-    // system-reminder text blocks to the same user message as a tool_result —
+    // follow the model's functionCall turn. RootClaude, however, appends
+    // system-reminder text blocks to the same user message as a tool_result â€”
     // which would emit `user[functionResponse, text]`. Vertex then silently
     // produces an empty response (finishReason STOP, 0 tokens). So we collect
     // functionResponse parts separately and emit them in their own clean turn,
@@ -458,8 +458,8 @@ function toGeminiContents(
   return out
 }
 
-// openclaude ships a large coding-agent system prompt as params.system. Vertex
-// expects it in the top-level `systemInstruction` field — passing it inside
+// RootClaude ships a large coding-agent system prompt as params.system. Vertex
+// expects it in the top-level `systemInstruction` field â€” passing it inside
 // `contents` would lose its role and confuse the model. Returns undefined if
 // the caller didn't send one (so we don't emit an empty instruction object).
 function toGeminiSystemInstruction(
@@ -552,7 +552,7 @@ function extractContentBlocks(
 }
 
 // Adapt the completed Vertex response to the Anthropic streaming event
-// sequence the rest of openclaude consumes. Emits one content_block_start /
+// sequence the rest of RootClaude consumes. Emits one content_block_start /
 // delta / stop trio per block so the streaming accumulator builds the right
 // shape for multi-block (text + tool_use) responses.
 async function* toAnthropicStream(
@@ -622,7 +622,7 @@ export function createGeminiVertexClient(options: GeminiVertexClientOptions) {
 
       // For thinking models, raise the floor so the model has room to think
       // *and* still emit visible output. Honor the caller's value when it's
-      // already large enough — only boost when the requested budget would
+      // already large enough â€” only boost when the requested budget would
       // certainly be eaten by the thinking phase.
       const requestedMaxTokens = params.max_tokens
       const effectiveMaxTokens = thinking
@@ -632,8 +632,8 @@ export function createGeminiVertexClient(options: GeminiVertexClientOptions) {
       // Gemini 3 thinking models misbehave below temperature 1.0: Google warns
       // it "may lead to unexpected behavior, such as looping or degraded
       // performance". In practice the model burns its budget thinking and then
-      // emits ZERO text parts (finishReason STOP, empty response). openclaude,
-      // like most coding agents, sends a low temperature for determinism — so
+      // emits ZERO text parts (finishReason STOP, empty response). RootClaude,
+      // like most coding agents, sends a low temperature for determinism â€” so
       // we clamp thinking models to the documented 1.0 floor. Non-thinking
       // models keep the caller's temperature untouched.
       const effectiveTemperature = thinking
@@ -689,7 +689,7 @@ export function createGeminiVertexClient(options: GeminiVertexClientOptions) {
 
       // Surface every silent-empty-response path explicitly. We treat the
       // response as empty only when the candidate produced neither text nor
-      // a function call — a function-call-only turn is a perfectly valid
+      // a function call â€” a function-call-only turn is a perfectly valid
       // agent response and must be passed through to the orchestrator.
       if (!text && !hasToolCall) {
         // 1. Prompt-level block: Vertex refuses to process the input before
@@ -746,14 +746,14 @@ export function createGeminiVertexClient(options: GeminiVertexClientOptions) {
         }
 
         // 5. Catch-all: model finished normally (STOP / OTHER / undefined)
-        //    but produced no text or function call. Surface it — with a compact
-        //    diagnostic of the raw response — instead of silently dropping, so
+        //    but produced no text or function call. Surface it â€” with a compact
+        //    diagnostic of the raw response â€” instead of silently dropping, so
         //    the true cause (thought-only output, empty parts, blocked content)
         //    is visible from one test rather than guessed at.
         throw new Error(
           `Gemini Vertex returned an empty response from "${model}"` +
             `${finishReason ? ` (finishReason: ${finishReason})` : ''}. ` +
-            `This usually means the model couldn't generate output for this prompt — try another model or rephrase. ` +
+            `This usually means the model couldn't generate output for this prompt â€” try another model or rephrase. ` +
             diagnoseEmptyResponse(json) +
             ' ' +
             summarizeRequestContents(contents),

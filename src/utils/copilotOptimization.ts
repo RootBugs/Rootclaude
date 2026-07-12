@@ -1,11 +1,11 @@
-import { isEnvTruthy } from './envUtils.js'
+﻿import { isEnvTruthy } from './envUtils.js'
 import { getAPIProvider } from './model/providers.js'
 
 /**
  * GitHub Copilot Premium Request Optimization
  *
  * GitHub Copilot tracks "Premium Requests" per billing cycle. Each HTTP request
- * to api.githubcopilot.com counts toward this quota. OpenClaude's sub-agent
+ * to api.githubcopilot.com counts toward this quota. RootClaude's sub-agent
  * architecture can consume multiple Premium Requests per chat interaction
  * (one per agent per turn), rapidly depleting the quota.
  *
@@ -15,10 +15,10 @@ import { getAPIProvider } from './model/providers.js'
  *
  *   GITHUB_COPILOT_MAX_SUBAGENTS=N       Max concurrent sub-agents (default: 1).
  *                                        Only 0 and 1 are enforced at runtime:
- *                                          0 → sub-agents are suppressed entirely
- *                                          1 → sub-agents run synchronously (one at a time)
+ *                                          0 â†’ sub-agents are suppressed entirely
+ *                                          1 â†’ sub-agents run synchronously (one at a time)
  *                                        Values 2-10 are parsed and clamped but have
- *                                        no enforced effect — setting N=3 does NOT
+ *                                        no enforced effect â€” setting N=3 does NOT
  *                                        limit concurrency to 3; it behaves the same
  *                                        as N=1 (synchronous, one at a time).
  *                                        Set to 0 to disable sub-agents entirely
@@ -71,7 +71,7 @@ export function shouldSuppressSubagentsInCopilotMode(): boolean {
   if (!isGitHubCopilotMode()) return false
   // Explicit opt-ins to run sub-agents take precedence over the
   // MAX_SUBAGENTS=0 suppression. ALLOW_SUBAGENTS re-enables async fan-out and
-  // FORCE_SYNC asks for synchronous sub-agents — both mean "run sub-agents",
+  // FORCE_SYNC asks for synchronous sub-agents â€” both mean "run sub-agents",
   // not "disable them". Without this, MAX_SUBAGENTS=0 + FORCE_SYNC=1 would
   // throw "Sub-agents are disabled" instead of running them one at a time.
   if (isEnvTruthy(process.env.GITHUB_COPILOT_ALLOW_SUBAGENTS)) return false

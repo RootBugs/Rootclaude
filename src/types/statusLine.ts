@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Input passed (as JSON on stdin) to the user's configured statusLine
  * command. Built in src/components/StatusLine.tsx and consumed by
  * executeStatusLineCommand in src/utils/hooks.ts.
  *
- * This shape is part of the public statusline contract — fields are
+ * This shape is part of the public statusline contract â€” fields are
  * additive-only.
  */
 
@@ -63,7 +63,7 @@ export type StatusLineCommandInput = {
       cache_read_input_tokens: number
       /**
        * Present when the active provider did not report token usage and
-       * OpenClaude estimated the current context from the transcript.
+       * RootClaude estimated the current context from the transcript.
        */
       is_estimated?: boolean
     } | null

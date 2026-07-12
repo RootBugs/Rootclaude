@@ -1,4 +1,4 @@
-// biome-ignore-all assist/source/organizeImports: internal-only import markers must not be reordered
+﻿// biome-ignore-all assist/source/organizeImports: internal-only import markers must not be reordered
 import { Box, Text } from '../ink.js';
 import * as React from 'react';
 import { getLargeMemoryFiles, MAX_MEMORY_CHARACTER_COUNT, type MemoryFileInfo } from './claudemd.js';
@@ -17,7 +17,6 @@ import type { PermissionMode } from './permissions/PermissionMode.js';
 import { modelSupportsAutoMode } from './betas.js';
 import { getAPIProvider } from './model/providers.js';
 import { logForDebugging } from './debug.js';
-
 // Types
 export type StatusNoticeType = 'warning' | 'info';
 export type StatusNoticeContext = {
@@ -38,7 +37,6 @@ export type StatusNoticeDefinition = {
   isActive: (context: StatusNoticeContext) => boolean;
   render: (context: StatusNoticeContext) => React.ReactNode;
 };
-
 function WarningNoticeRow({
   children,
   marginTop,
@@ -55,7 +53,6 @@ function WarningNoticeRow({
       </Box>
     </Box>;
 }
-
 // Individual notice definitions
 const largeMemoryFilesNotice: StatusNoticeDefinition = {
   id: 'large-memory-files',
@@ -76,7 +73,7 @@ const largeMemoryFilesNotice: StatusNoticeDefinition = {
                 Large <Text bold>{displayPath}</Text> will impact performance (
                 {formatNumber(file.content.length)} chars &gt;{' '}
                 {formatNumber(MAX_MEMORY_CHARACTER_COUNT)})
-                <Text dimColor> · /memory to edit</Text>
+                <Text dimColor> Â· /memory to edit</Text>
               </Text>
             </WarningNoticeRow>;
       })}
@@ -121,7 +118,7 @@ const apiKeyConflictNotice: StatusNoticeDefinition = {
     return <WarningNoticeRow marginTop={1}>
         <Text color="warning">
           Auth conflict: Using {apiKeySource} instead of Anthropic Console key.
-          Either unset {apiKeySource}, or run `openclaude /logout`.
+          Either unset {apiKeySource}, or run `rootclaude /logout`.
         </Text>
       </WarningNoticeRow>;
   }
@@ -154,13 +151,13 @@ const bothAuthMethodsNotice: StatusNoticeDefinition = {
         </WarningNoticeRow>
         <Box flexDirection="column" marginLeft={3}>
           <Text color="warning">
-            · Trying to use{' '}
+            Â· Trying to use{' '}
             {authTokenInfo.source === 'claude.ai' ? 'claude.ai' : authTokenInfo.source}
             ?{' '}
             {apiKeySource === 'ANTHROPIC_API_KEY' ? 'Unset the ANTHROPIC_API_KEY environment variable, or claude /logout then say "No" to the API key approval before login.' : apiKeySource === 'apiKeyHelper' ? 'Unset the apiKeyHelper setting.' : 'claude /logout'}
           </Text>
           <Text color="warning">
-            · Trying to use {apiKeySource}?{' '}
+            Â· Trying to use {apiKeySource}?{' '}
             {authTokenInfo.source === 'claude.ai' ? 'claude /logout to sign out of claude.ai.' : `Unset the ${authTokenInfo.source} environment variable.`}
           </Text>
         </Box>
@@ -184,7 +181,7 @@ const largeAgentDescriptionsNotice: StatusNoticeDefinition = {
           Large cumulative agent descriptions will impact performance (~
           {formatNumber(totalTokens)} tokens &gt;{' '}
           {formatNumber(AGENT_DESCRIPTIONS_THRESHOLD)})
-          <Text dimColor> · /agents to manage</Text>
+          <Text dimColor> Â· /agents to manage</Text>
         </Text>
       </WarningNoticeRow>;
   }
@@ -244,14 +241,13 @@ const localModelContextLoadNotice: StatusNoticeDefinition = {
       </Box>
   }
 };
-
 // Permissive permission modes (acceptEdits, bypassPermissions, auto) suppress
 // the per-tool consent prompt that normally gives the user a moment to inspect
 // what the model is about to do. On first-party Claude, the AI safety
 // classifier (gated by `modelSupportsAutoMode`) is the backstop that catches
 // PI-driven dangerous calls in that consent-free path. For 3P providers the
 // classifier never runs (betas.ts:166), so users get the consent shortcut
-// without the safety net — silently. See issue #244 finding 1.
+// without the safety net â€” silently. See issue #244 finding 1.
 const PERMISSIVE_MODES_REQUIRING_CLASSIFIER: ReadonlyArray<PermissionMode> = [
   'acceptEdits',
   'bypassPermissions',
@@ -310,10 +306,8 @@ const dangerouslySkipPermissionsNotice: StatusNoticeDefinition = {
       </Text>
     </WarningNoticeRow>
 };
-
 // All notice definitions
 export const statusNoticeDefinitions: StatusNoticeDefinition[] = [largeMemoryFilesNotice, largeAgentDescriptionsNotice, localModelContextLoadNotice, claudeAiSubscriberExternalTokenNotice, apiKeyConflictNotice, bothAuthMethodsNotice, jetbrainsPluginNotice, thirdPartyPermissiveModeNotice, dangerouslySkipPermissionsNotice];
-
 // Helper functions for external use
 export function getActiveNotices(context: StatusNoticeContext): StatusNoticeDefinition[] {
   return statusNoticeDefinitions.filter(notice => {

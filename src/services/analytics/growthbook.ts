@@ -1,26 +1,26 @@
-/**
- * No-op GrowthBook stub — all feature gates return false / default values,
+﻿/**
+ * No-op GrowthBook stub â€” all feature gates return false / default values,
  * all config lookups return the provided default, and initialization is a no-op.
  *
- * OpenClaude does not phone home. This module replaces the original
+ * RootClaude does not phone home. This module replaces the original
  * analytics-driven GrowthBook client with a local-only implementation that
- * reads feature flags from ~/.openclaude/feature-flags.json for developer overrides.
+ * reads feature flags from ~/.RootClaude/feature-flags.json for developer overrides.
  *
- * Priority: OPENCLAUDE_FEATURE_FLAGS_FILE env > CLAUDE_FEATURE_FLAGS_FILE env > ~/.openclaude/feature-flags.json > defaultValue
+ * Priority: RootClaude_FEATURE_FLAGS_FILE env > CLAUDE_FEATURE_FLAGS_FILE env > ~/.RootClaude/feature-flags.json > defaultValue
  */
 
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 
-// ── Open-build feature flag overrides ───────────────────────────────────
-// Only keys that DIFFER from upstream belong here — these are runtime gates
+// â”€â”€ Open-build feature flag overrides â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Only keys that DIFFER from upstream belong here â€” these are runtime gates
 // that should be enabled in the open build regardless of upstream defaults.
 const _openBuildDefaults: Record<string, unknown> = {
-	tengu_sedge_lantern: true, // AWAY_SUMMARY — "while you were away" recap
-	tengu_hive_evidence: true, // VERIFICATION_AGENT — read-only test/verification agent
-	tengu_passport_quail: true, // EXTRACT_MEMORIES — enable memory extraction
-	tengu_coral_fern: true, // EXTRACT_MEMORIES — enable memory search in past context
+	tengu_sedge_lantern: true, // AWAY_SUMMARY â€” "while you were away" recap
+	tengu_hive_evidence: true, // VERIFICATION_AGENT â€” read-only test/verification agent
+	tengu_passport_quail: true, // EXTRACT_MEMORIES â€” enable memory extraction
+	tengu_coral_fern: true, // EXTRACT_MEMORIES â€” enable memory search in past context
 }
 
 let _flags: Record<string, unknown> | null | undefined = undefined
@@ -29,9 +29,9 @@ function _loadFlags(): void {
 	if (_flags !== undefined) return
 	try {
 		const flagsPath =
-			process.env.OPENCLAUDE_FEATURE_FLAGS_FILE ||
+			process.env.RootClaude_FEATURE_FLAGS_FILE ||
 			process.env.CLAUDE_FEATURE_FLAGS_FILE ||
-			join(homedir(), '.openclaude', 'feature-flags.json')
+			join(homedir(), '.RootClaude', 'feature-flags.json')
 		const parsed = JSON.parse(readFileSync(flagsPath, 'utf-8'))
 		_flags =
 			parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null
@@ -49,7 +49,7 @@ function _getFlagValue<T>(key: string, defaultValue: T): T {
 	return defaultValue
 }
 
-/** User attributes shape — kept for type compatibility. */
+/** User attributes shape â€” kept for type compatibility. */
 export type GrowthBookUserAttributes = {
 	id: string
 	sessionId: string
@@ -70,7 +70,7 @@ export type GrowthBookUserAttributes = {
 /** No-op: no background refresh to subscribe to. The listener is never invoked. */
 export function onGrowthBookRefresh(_listener?: () => void): void {}
 
-/** Returns false — no env overrides when GrowthBook is disabled. */
+/** Returns false â€” no env overrides when GrowthBook is disabled. */
 export function hasGrowthBookEnvOverride(_feature: string): boolean {
 	return false
 }
@@ -81,29 +81,29 @@ export function getAllGrowthBookFeatures(): Record<string, unknown> {
 	return _flags || {}
 }
 
-/** Returns `{}` — no config overrides. */
+/** Returns `{}` â€” no config overrides. */
 export function getGrowthBookConfigOverrides(): Record<string, unknown> {
 	return {}
 }
 
-/** No-op — nothing to override. */
+/** No-op â€” nothing to override. */
 export function setGrowthBookConfigOverride(
 	_key: string,
 	_value: unknown,
 ): void {}
 
-/** No-op — nothing to clear. */
+/** No-op â€” nothing to clear. */
 export function clearGrowthBookConfigOverrides(): void {}
 
-/** Returns `undefined` — no API base URL override. */
+/** Returns `undefined` â€” no API base URL override. */
 export function getApiBaseUrlHost(): string | undefined {
 	return undefined
 }
 
-/** No-op initialization — GrowthBook client is never created. */
+/** No-op initialization â€” GrowthBook client is never created. */
 export function initializeGrowthBook(): void {}
 
-/** Returns the default value — feature flags resolve from local file or default. */
+/** Returns the default value â€” feature flags resolve from local file or default. */
 export function getFeatureValue_DEPRECATED<T>(
 	_featureName: string,
 	defaultValue: T,
@@ -111,7 +111,7 @@ export function getFeatureValue_DEPRECATED<T>(
 	return _getFlagValue(_featureName, defaultValue)
 }
 
-/** Returns the default value — feature flags resolve from local file or default. */
+/** Returns the default value â€” feature flags resolve from local file or default. */
 export function getFeatureValue_CACHED_MAY_BE_STALE<T>(
 	_featureName: string,
 	defaultValue: T,
@@ -119,7 +119,7 @@ export function getFeatureValue_CACHED_MAY_BE_STALE<T>(
 	return _getFlagValue(_featureName, defaultValue)
 }
 
-/** Returns the default value — feature flags resolve from local file or default. */
+/** Returns the default value â€” feature flags resolve from local file or default. */
 export function getFeatureValue_CACHED_WITH_REFRESH<T>(
 	_featureName: string,
 	defaultValue: T,
@@ -138,7 +138,7 @@ export function checkStatsigFeatureGate_CACHED_MAY_BE_STALE(
 }
 
 /**
- * Always returns false — security restriction gates must not be overridable
+ * Always returns false â€” security restriction gates must not be overridable
  * via local flags, as they protect bypass-permissions mode.
  */
 export async function checkSecurityRestrictionGate(
@@ -154,7 +154,7 @@ export async function checkGate_CACHED_OR_BLOCKING(
 	return Boolean(_getFlagValue(gateName, false))
 }
 
-/** No-op — nothing to refresh. */
+/** No-op â€” nothing to refresh. */
 export function refreshGrowthBookAfterAuthChange(): void {}
 
 /** Resets cached flags so the file is re-read on next access. */
@@ -167,13 +167,13 @@ export async function refreshGrowthBookFeatures(): Promise<void> {
 	_flags = undefined
 }
 
-/** No-op — no periodic refresh to set up. */
+/** No-op â€” no periodic refresh to set up. */
 export function setupPeriodicGrowthBookRefresh(): void {}
 
-/** No-op — no periodic refresh to stop. */
+/** No-op â€” no periodic refresh to stop. */
 export function stopPeriodicGrowthBookRefresh(): void {}
 
-/** Returns the default value — dynamic configs resolve from local file or default. */
+/** Returns the default value â€” dynamic configs resolve from local file or default. */
 export async function getDynamicConfig_BLOCKS_ON_INIT<T>(
 	_configName: string,
 	defaultValue: T,
@@ -181,7 +181,7 @@ export async function getDynamicConfig_BLOCKS_ON_INIT<T>(
 	return _getFlagValue(_configName, defaultValue)
 }
 
-/** Returns the default value — dynamic configs resolve from local file or default. */
+/** Returns the default value â€” dynamic configs resolve from local file or default. */
 export function getDynamicConfig_CACHED_MAY_BE_STALE<T>(
 	_configName: string,
 	defaultValue: T,

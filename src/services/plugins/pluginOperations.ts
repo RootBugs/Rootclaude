@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Core plugin operations (install, uninstall, enable, disable, update)
  *
  * This module provides pure library functions that can be used by both:
@@ -116,14 +116,14 @@ export function getProjectPathForScope(scope: PluginScope): string | undefined {
 }
 
 /**
- * Is this plugin enabled (value === true) in .openclaude/settings.json?
+ * Is this plugin enabled (value === true) in .RootClaude/settings.json?
  *
  * Distinct from V2 installed_plugins.json scope: that file tracks where a
  * plugin was *installed from*, but the same plugin can also be enabled at
  * project scope via settings. The uninstall UI needs to check THIS, because
  * a user-scope install with a project-scope enablement means "uninstall"
  * would succeed at removing the user install while leaving the project
- * enablement active — the plugin keeps running.
+ * enablement active â€” the plugin keeps running.
  */
 export function isPluginEnabledAtProjectScope(pluginId: string): boolean {
   return (
@@ -182,7 +182,7 @@ function findPluginInSettings(plugin: string): {
   scope: InstallableScope
 } | null {
   const hasMarketplace = plugin.includes('@')
-  // Most specific first — first match wins
+  // Most specific first â€” first match wins
   const searchOrder: InstallableScope[] = ['local', 'project', 'user']
 
   for (const scope of searchOrder) {
@@ -307,10 +307,10 @@ export function getPluginInstallationFromV2(pluginId: string): {
  *
  * Order of operations:
  *   1. Search materialized marketplaces for the plugin
- *   2. Write settings (THE ACTION — declares intent)
+ *   2. Write settings (THE ACTION â€” declares intent)
  *   3. Cache plugin + record version hint (materialization)
  *
- * Marketplace reconciliation is NOT this function's responsibility — startup
+ * Marketplace reconciliation is NOT this function's responsibility â€” startup
  * reconcile handles declared-but-not-materialized marketplaces. If the
  * marketplace isn't found, "not found" is the correct error.
  *
@@ -327,7 +327,7 @@ export async function installPluginOp(
   const { name: pluginName, marketplace: marketplaceName } =
     parsePluginIdentifier(plugin)
 
-  // ── Search materialized marketplaces for the plugin ──
+  // â”€â”€ Search materialized marketplaces for the plugin â”€â”€
   let foundPlugin: PluginMarketplaceEntry | undefined
   let foundMarketplace: string | undefined
   let marketplaceInstallLocation: string | undefined
@@ -456,7 +456,7 @@ export async function uninstallPluginOp(
       ) ?? (plugin.includes('@') ? plugin : foundPlugin.name)
     pluginName = foundPlugin.name
   } else {
-    // Plugin not found via marketplace lookup — it may have been delisted.
+    // Plugin not found via marketplace lookup â€” it may have been delisted.
     // Fall back to installed_plugins.json (V2) which tracks installations
     // independently of marketplace state.
     const resolved = resolveDelistedPluginId(plugin)
@@ -482,12 +482,12 @@ export async function uninstallPluginOp(
     // Try to find where the plugin is actually installed to provide a helpful error
     const { scope: actualScope } = getPluginInstallationFromV2(pluginId)
     if (actualScope !== scope && installations && installations.length > 0) {
-      // Project scope is special: .openclaude/settings.json is shared with the team.
+      // Project scope is special: .RootClaude/settings.json is shared with the team.
       // Point users at the local-override escape hatch instead of --scope project.
       if (actualScope === 'project') {
         return {
           success: false,
-          message: `Plugin "${plugin}" is enabled at project scope (.openclaude/settings.json, shared with your team). To disable just for you: claude plugin disable ${plugin} --scope local`,
+          message: `Plugin "${plugin}" is enabled at project scope (.RootClaude/settings.json, shared with your team). To disable just for you: claude plugin disable ${plugin} --scope local`,
         }
       }
       return {
@@ -527,8 +527,8 @@ export async function uninstallPluginOp(
   if (isLastScope && installPath) {
     await markPluginVersionOrphaned(installPath)
   }
-  // Separate from the `&& installPath` guard above — deletePluginOptions only
-  // needs pluginId, not installPath. Last scope removed → wipe stored options
+  // Separate from the `&& installPath` guard above â€” deletePluginOptions only
+  // needs pluginId, not installPath. Last scope removed â†’ wipe stored options
   // and secrets. Before this, uninstalling left orphaned entries in
   // settings.pluginConfigs (including the legacy ungated mcpServers sub-key
   // from the MCPB Configure flow) and keychain pluginSecrets forever. No
@@ -543,7 +543,7 @@ export async function uninstallPluginOp(
   }
 
   // Warn (don't block) if other enabled plugins depend on this one.
-  // Blocking creates tombstones — can't tear down a graph with a delisted
+  // Blocking creates tombstones â€” can't tear down a graph with a delisted
   // plugin. Load-time verifyAndDemote catches the fallout.
   const reverseDependents = findReverseDependents(pluginId, allPlugins)
   const depWarn = formatReverseDependentsSuffix(reverseDependents)
@@ -562,7 +562,7 @@ export async function uninstallPluginOp(
 /**
  * Set plugin enabled/disabled status (settings-first).
  *
- * Resolves the plugin ID and scope from settings — does NOT pre-gate on
+ * Resolves the plugin ID and scope from settings â€” does NOT pre-gate on
  * installed_plugins.json. Settings declares intent; if the plugin isn't
  * cached yet, the next load will cache it.
  *
@@ -609,7 +609,7 @@ export async function setPluginEnabledOp(
     assertInstallableScope(scope)
   }
 
-  // ── Resolve pluginId and scope from settings ──
+  // â”€â”€ Resolve pluginId and scope from settings â”€â”€
   // Search across editable scopes for any mention (enabled or disabled) of
   // this plugin. Does NOT pre-gate on installed_plugins.json.
   let pluginId: string
@@ -637,7 +637,7 @@ export async function setPluginEnabledOp(
     pluginId = found.pluginId
     resolvedScope = found.scope
   } else if (plugin.includes('@')) {
-    // Not in any settings scope, but full pluginId given — default to user
+    // Not in any settings scope, but full pluginId given â€” default to user
     // scope (matches install default). This allows enabling a plugin that
     // was cached but never declared.
     pluginId = plugin
@@ -649,7 +649,7 @@ export async function setPluginEnabledOp(
     }
   }
 
-  // ── Policy guard ──
+  // â”€â”€ Policy guard â”€â”€
   // Org-blocked plugins cannot be enabled at any scope. Check after pluginId
   // is resolved so we catch both full identifiers and bare-name lookups.
   if (enabled && isPluginBlockedByPolicy(pluginId)) {
@@ -663,12 +663,12 @@ export async function setPluginEnabledOp(
   const scopeSettingsValue =
     getSettingsForSource(settingSource)?.enabledPlugins?.[pluginId]
 
-  // ── Cross-scope hint: explicit scope given but plugin is elsewhere ──
+  // â”€â”€ Cross-scope hint: explicit scope given but plugin is elsewhere â”€â”€
   // If the plugin is absent from the requested scope but present at a
-  // different scope, guide the user to the right --scope — UNLESS they're
+  // different scope, guide the user to the right --scope â€” UNLESS they're
   // writing to a higher-precedence scope to override a lower one
   // (e.g. `disable --scope local` to override a project-enabled plugin
-  // without touching the shared .openclaude/settings.json).
+  // without touching the shared .RootClaude/settings.json).
   const SCOPE_PRECEDENCE: Record<InstallableScope, number> = {
     user: 0,
     project: 1,
@@ -689,11 +689,11 @@ export async function setPluginEnabledOp(
     }
   }
 
-  // ── Check current state (for idempotency messaging) ──
+  // â”€â”€ Check current state (for idempotency messaging) â”€â”€
   // When explicit scope given: check that scope's settings value directly
   // (merged state can be wrong if plugin is enabled elsewhere but disabled here).
   // When auto-detected: use merged effective state.
-  // When overriding a lower scope: check merged state — scopeSettingsValue is
+  // When overriding a lower scope: check merged state â€” scopeSettingsValue is
   // undefined (plugin not in this scope yet), which would read as "already
   // disabled", but the whole point of the override is to write an explicit
   // `false` that masks the lower scope's `true`.
@@ -720,7 +720,7 @@ export async function setPluginEnabledOp(
     if (rdeps.length > 0) reverseDependents = rdeps
   }
 
-  // ── ACTION: write settings ──
+  // â”€â”€ ACTION: write settings â”€â”€
   const { error } = updateSettingsForSource(settingSource, {
     enabledPlugins: {
       ...getSettingsForSource(settingSource)?.enabledPlugins,
@@ -944,7 +944,7 @@ async function performPluginUpdate({
     )
   } else {
     // Local plugin: use path from marketplace
-    // Stat directly — handle ENOENT inline rather than pre-checking existence
+    // Stat directly â€” handle ENOENT inline rather than pre-checking existence
     let marketplaceStats
     try {
       marketplaceStats = await fs.stat(marketplaceInstallLocation)
@@ -964,10 +964,10 @@ async function performPluginUpdate({
       : dirname(marketplaceInstallLocation)
     sourcePath = join(marketplaceDir, entry.source)
 
-    // Verify sourcePath exists. This stat is required — neither downstream
+    // Verify sourcePath exists. This stat is required â€” neither downstream
     // op reliably surfaces ENOENT:
-    //   1. calculatePluginVersion → findGitRoot walks UP past a missing dir
-    //      to the marketplace .git, returning the same SHA as install-time →
+    //   1. calculatePluginVersion â†’ findGitRoot walks UP past a missing dir
+    //      to the marketplace .git, returning the same SHA as install-time â†’
     //      silent false-positive {success: true, alreadyUpToDate: true}.
     //   2. copyPluginToVersionedCache (when versions differ) throws a raw
     //      ENOENT with no friendly message.

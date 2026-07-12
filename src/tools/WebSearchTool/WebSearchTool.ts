@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   BetaContentBlock,
   BetaWebSearchTool20250305,
 } from '@anthropic-ai/sdk/resources/beta/messages/messages.mjs'
@@ -89,7 +89,7 @@ export type { WebSearchProgress } from '../../types/tools.js'
 import type { WebSearchProgress } from '../../types/tools.js'
 
 // ---------------------------------------------------------------------------
-// Shared formatting: ProviderOutput → Output
+// Shared formatting: ProviderOutput â†’ Output
 // ---------------------------------------------------------------------------
 
 function formatProviderOutput(po: ProviderOutput, query: string): Output {
@@ -97,7 +97,7 @@ function formatProviderOutput(po: ProviderOutput, query: string): Output {
 
   const snippets = po.hits
     .filter(h => h.description)
-    .map(h => `**${h.title}** — ${h.description} (${h.url})`)
+    .map(h => `**${h.title}** â€” ${h.description} (${h.url})`)
     .join('\n')
   if (snippets) results.push(snippets)
 
@@ -122,7 +122,7 @@ function buildEmptyAdapterResultHint(provider: string, providerName: string): st
     `No results from "${providerName}" search backend for provider "${provider}". ` +
     `The default DuckDuckGo backend is rate-limited from many networks (datacenter IPs, VPNs, repeated requests) and returns 0 results when blocked. ` +
     `For reliable web search on this provider, set one of: ` +
-    `FIRECRAWL_API_KEY, TAVILY_API_KEY, EXA_API_KEY, JINA_API_KEY, BING_API_KEY, MOJEEK_API_KEY, LINKUP_API_KEY, YOU_API_KEY — ` +
+    `FIRECRAWL_API_KEY, TAVILY_API_KEY, EXA_API_KEY, JINA_API_KEY, BING_API_KEY, MOJEEK_API_KEY, LINKUP_API_KEY, YOU_API_KEY â€” ` +
     `or switch to an Anthropic / Vertex / Foundry provider that supports the native web_search tool.`
   )
 }
@@ -224,7 +224,7 @@ function buildCodexWebSearchInput(input: Input): Array<Record<string, unknown>> 
 
 function buildCodexWebSearchInstructions(): string {
   return [
-    'You are the OpenClaude web search tool.',
+    'You are the RootClaude web search tool.',
     'Search the web for the user query and return a concise factual answer.',
     'Include source URLs in the response.',
   ].join(' ')
@@ -356,7 +356,7 @@ function makeOutputFromCodexWebSearchResponse(
  * web-search fallback (openai-shim providers like moonshot/minimax/nvidia-nim/
  * github copilot). Without this, the only signal would be a `console.error`
  * the user never sees, and the eventual native call silently returns
- * "Did 0 searches" — issue #994.
+ * "Did 0 searches" â€” issue #994.
  *
  * The embedded `errMsg` carries the underlying adapter failure (rate-limit,
  * timeout, 5xx, etc.) so the user can act on it instead of guessing.
@@ -420,7 +420,7 @@ async function runCodexWebSearch(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${credentials.apiKey}`,
       'chatgpt-account-id': credentials.accountId,
-      originator: 'openclaude',
+      originator: 'RootClaude',
     },
     body: JSON.stringify(body),
     signal,
@@ -517,19 +517,19 @@ function makeOutputFromSearchResponse(
 function isTransientError(err: unknown): boolean {
   if (!(err instanceof Error)) return true
   const msg = err.message.toLowerCase()
-  // Guardrail / config errors — must surface
+  // Guardrail / config errors â€” must surface
   if (msg.includes('must use https')) return false
   if (msg.includes('private/reserved address')) return false
   if (msg.includes('not in the safe allowlist')) return false
   if (msg.includes('exceeds') && msg.includes('bytes')) return false
   if (msg.includes('not a valid url')) return false
   if (msg.includes('is not configured')) return false
-  // Transient errors — safe to fall through
+  // Transient errors â€” safe to fall through
   if (err.name === 'AbortError') return true
   if (msg.includes('timed out')) return true
   if (msg.includes('fetch failed') || msg.includes('econnrefused') || msg.includes('enotfound')) return true
   if (msg.includes('returned 5')) return true // HTTP 5xx
-  // Unknown — treat as transient to preserve auto-mode fallback semantics
+  // Unknown â€” treat as transient to preserve auto-mode fallback semantics
   return true
 }
 
@@ -537,7 +537,7 @@ function isTransientError(err: unknown): boolean {
  * Returns true when we should use the adapter-based provider system.
  *
  * In auto mode: native/first-party/Codex paths take precedence.
- *   → Only falls back to adapter if no native path is available.
+ *   â†’ Only falls back to adapter if no native path is available.
  * In explicit adapter modes (tavily, ddg, custom, etc.): always true.
  * In native mode: never true.
  */
@@ -552,7 +552,7 @@ function shouldUseAdapterProvider(): boolean {
   if (provider === 'firstParty' || provider === 'vertex' || provider === 'foundry') {
     return false
   }
-  // No native path available — fall back to adapter
+  // No native path available â€” fall back to adapter
   return getAvailableProviders().length > 0
 }
 
@@ -669,7 +669,7 @@ export const WebSearchTool = buildTool({
   renderToolUseProgressMessage,
   renderToolResultMessage,
   extractSearchText() {
-    // renderToolResultMessage shows only "Did N searches in Xs" chrome —
+    // renderToolResultMessage shows only "Did N searches in Xs" chrome â€”
     // the results[] content never appears on screen. Heuristic would index
     // string entries in results[] (phantom match). Nothing to search.
     return ''
@@ -718,7 +718,7 @@ export const WebSearchTool = buildTool({
         // native fallback exists. For openai-shim providers (minimax,
         // moonshot, nvidia-nim, github copilot, etc.) the native path
         // silently returns "Did 0 searches" because those providers do
-        // not support Anthropic's web_search_20250305 tool — same root
+        // not support Anthropic's web_search_20250305 tool â€” same root
         // cause as the catch branch below. Surface the empty result with
         // an actionable note so users see why nothing came back.
         if (!hasNativeSearchFallback()) {
@@ -738,7 +738,7 @@ export const WebSearchTool = buildTool({
         // Auto mode: only fall through on transient errors (network, timeout, 5xx).
         // Config / guardrail errors (SSRF, HTTPS, bad URL, etc.) must surface.
         if (!isTransientError(err)) throw err
-        // No viable fallback for this provider — surface the adapter error
+        // No viable fallback for this provider â€” surface the adapter error
         // instead of falling through to a broken native path.
         if (!hasNativeSearchFallback()) {
           const provider = getAPIProvider()

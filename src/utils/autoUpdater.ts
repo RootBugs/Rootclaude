@@ -1,4 +1,4 @@
-import axios from 'axios'
+﻿import axios from 'axios'
 import { constants as fsConstants } from 'fs'
 import { access, writeFile } from 'fs/promises'
 import { homedir } from 'os'
@@ -93,8 +93,8 @@ export async function assertMinVersion(): Promise<void> {
   }
 
   // Skip version check for third-party providers using upstream Anthropic
-  // builds — the min version kill-switch is first-party-specific. Builds
-  // with a custom PACKAGE_URL (like OpenClaude) should still be checked.
+  // builds â€” the min version kill-switch is first-party-specific. Builds
+   // with a custom PACKAGE_URL (like RootClaude) should still be checked.
   if (
     getAPIProvider() !== 'firstParty' &&
     MACRO.PACKAGE_URL === '@anthropic-ai/claude-code'
@@ -258,7 +258,7 @@ async function acquireLock(): Promise<boolean> {
       try {
         // fs.mkdir from getFsImplementation() is always recursive:true and
         // swallows EEXIST internally, so a dir-creation race cannot reach the
-        // catch below — only writeFile's EEXIST (true lock contention) can.
+        // catch below â€” only writeFile's EEXIST (true lock contention) can.
         await fs.mkdir(getClaudeConfigHomeDir())
         await writeFile(lockPath, `${process.pid}`, {
           encoding: 'utf8',
@@ -372,7 +372,7 @@ export async function getLatestVersion(
       logForDebugging(`npm stdout: ${result.stdout.trim()}`)
     }
     // npm may be unavailable (bun/pnpm/yarn-only installs) or transiently
-    // failing — fall back to a direct registry request so update checks still
+    // failing â€” fall back to a direct registry request so update checks still
     // work without npm on the PATH.
     return getLatestVersionFromRegistryHttp(npmTag)
   }

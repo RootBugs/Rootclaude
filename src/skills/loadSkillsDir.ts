@@ -1,4 +1,4 @@
-import { realpath } from 'fs/promises'
+﻿import { realpath } from 'fs/promises'
 import ignore from 'ignore'
 import memoize from 'lodash-es/memoize.js'
 import {
@@ -82,11 +82,11 @@ export function getSkillsPath(
 ): string {
   switch (source) {
     case 'policySettings':
-      return join(getManagedFilePath(), '.openclaude', dir)
+      return join(getManagedFilePath(), '.RootClaude', dir)
     case 'userSettings':
       return join(getClaudeConfigHomeDir(), dir)
     case 'projectSettings':
-      return `.openclaude/${dir}`
+      return `.RootClaude/${dir}`
     case 'plugin':
       return 'plugin'
     default:
@@ -100,8 +100,8 @@ export function getProjectSkillsPaths(dir: string): string[] {
   )
 }
 
-function prefersOpenClaudeConfigDir(path: string): number {
-  return path.split(pathSep).includes('.openclaude') ? 0 : 1
+function prefersRootClaudeConfigDir(path: string): number {
+  return path.split(pathSep).includes('.RootClaude') ? 0 : 1
 }
 
 function compareSkillDirPrecedence(a: string, b: string): number {
@@ -109,7 +109,7 @@ function compareSkillDirPrecedence(a: string, b: string): number {
   if (depthDelta !== 0) {
     return depthDelta
   }
-  return prefersOpenClaudeConfigDir(a) - prefersOpenClaudeConfigDir(b)
+  return prefersRootClaudeConfigDir(a) - prefersRootClaudeConfigDir(b)
 }
 
 /**
@@ -413,8 +413,8 @@ export function createSkillCommand({
         getSessionId(),
       )
 
-      // Security: MCP skills are remote and untrusted — never execute inline
-      // shell commands (!`…` / ```! … ```) from their markdown body.
+      // Security: MCP skills are remote and untrusted â€” never execute inline
+      // shell commands (!`â€¦` / ```! â€¦ ```) from their markdown body.
       // ${CLAUDE_SKILL_DIR} is meaningless for MCP skills anyway.
       if (loadedFrom !== 'mcp') {
         finalContent = await executeShellCommandsInPrompt(
@@ -776,7 +776,7 @@ async function loadSkillsFromCommandsDir(
 export const getSkillDirCommands = memoize(
   async (cwd: string): Promise<Command[]> => {
     const userSkillsDir = join(getClaudeConfigHomeDir(), 'skills')
-    const managedSkillsDir = join(getManagedFilePath(), '.openclaude', 'skills')
+    const managedSkillsDir = join(getManagedFilePath(), '.RootClaude', 'skills')
     const projectSkillsDirs = getProjectDirsUpToHome(
       'skills',
       cwd,
@@ -794,7 +794,7 @@ export const getSkillDirCommands = memoize(
 
     // --bare: skip auto-discovery (managed/user/project dir walks + legacy
     // commands-dir). Load ONLY explicit --add-dir paths. Bundled skills
-    // register separately. skillsLocked still applies — --bare is not a
+    // register separately. skillsLocked still applies â€” --bare is not a
     // policy bypass.
     if (isBareMode()) {
       if (additionalDirs.length === 0 || !projectSettingsEnabled) {
@@ -809,12 +809,12 @@ export const getSkillDirCommands = memoize(
           .sort(compareSkillDirPrecedence)
           .map(dir => loadSkillsFromSkillsDir(dir, 'projectSettings')),
       )
-      // No dedup needed — explicit dirs, user controls uniqueness.
+      // No dedup needed â€” explicit dirs, user controls uniqueness.
       return additionalSkillsNested.flat().map(s => s.skill)
     }
 
     // Load from /skills/ directories, additional dirs, and legacy /commands/ in parallel
-    // (all independent — different directories, no shared state)
+    // (all independent â€” different directories, no shared state)
     const [
       managedSkills,
       userSkills,
@@ -845,7 +845,7 @@ export const getSkillDirCommands = memoize(
         : Promise.resolve([]),
       // Legacy commands-as-skills goes through markdownConfigLoader with
       // subdir='commands', which our agents-only guard there skips. Block
-      // here when skills are locked — these ARE skills, regardless of the
+      // here when skills are locked â€” these ARE skills, regardless of the
       // directory they load from.
       skillsLocked ? Promise.resolve([]) : loadSkillsFromCommandsDir(cwd),
     ])
@@ -976,7 +976,7 @@ const skillsLoaded = createSignal()
 export function onDynamicSkillsLoaded(callback: () => void): () => void {
   // Wrap at subscribe time so a throwing listener is logged and skipped
   // rather than aborting skillsLoaded.emit() and breaking skill loading.
-  // Same callSafe pattern as growthbook.ts — createSignal.emit() has no
+  // Same callSafe pattern as growthbook.ts â€” createSignal.emit() has no
   // per-listener try/catch.
   return skillsLoaded.subscribe(() => {
     try {
@@ -1012,7 +1012,7 @@ export async function discoverSkillDirsForPaths(
     // Use prefix+separator check to avoid matching /project-backup when cwd is /project
     while (currentDir.startsWith(resolvedCwd + pathSep)) {
       for (const skillDir of getProjectSkillsPaths(currentDir)) {
-        // Skip if we've already checked this path (hit or miss) — avoids
+        // Skip if we've already checked this path (hit or miss) â€” avoids
         // repeating the same failed stat on every Read/Write/Edit call when
         // the directory doesn't exist (the common case).
         if (!dynamicSkillDirs.has(skillDir)) {
@@ -1020,10 +1020,10 @@ export async function discoverSkillDirsForPaths(
           try {
             await fs.stat(skillDir)
             // Skills dir exists. Before loading, check if the containing dir
-            // is gitignored — blocks e.g. node_modules/pkg/.openclaude/skills from
+            // is gitignored â€” blocks e.g. node_modules/pkg/.RootClaude/skills from
             // loading silently. `git check-ignore` handles nested .gitignore,
             // .git/info/exclude, and global gitignore. Fails open outside a
-            // git repo (exit 128 → false); the invocation-time trust dialog
+            // git repo (exit 128 â†’ false); the invocation-time trust dialog
             // is the actual security boundary.
             if (await isPathGitignored(currentDir, resolvedCwd)) {
               logForDebugging(
@@ -1033,7 +1033,7 @@ export async function discoverSkillDirsForPaths(
             }
             newDirs.push(skillDir)
           } catch {
-            // Directory doesn't exist — already recorded above, continue
+            // Directory doesn't exist â€” already recorded above, continue
           }
         }
       }

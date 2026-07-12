@@ -1,4 +1,4 @@
-import { feature } from 'bun:bundle'
+﻿import { feature } from 'bun:bundle'
 import chalk from 'chalk'
 import { spawnSync } from 'child_process'
 import {
@@ -67,8 +67,8 @@ const MAX_WORKTREE_SLUG_LENGTH = 64
 /**
  * Validates a worktree slug to prevent path traversal and directory escape.
  *
- * The slug is joined into `.openclaude/worktrees/<slug>` via path.join, which
- * normalizes `..` segments — so `../../../target` would escape the worktrees
+ * The slug is joined into `.RootClaude/worktrees/<slug>` via path.join, which
+ * normalizes `..` segments â€” so `../../../target` would escape the worktrees
  * directory. Similarly, an absolute path (leading `/` or `C:\`) would discard
  * the prefix entirely.
  *
@@ -76,7 +76,7 @@ const MAX_WORKTREE_SLUG_LENGTH = 64
  * segment is validated independently against the allowlist, so `.` / `..`
  * segments and drive-spec characters are still rejected.
  *
- * Throws synchronously — callers rely on this running before any side effects
+ * Throws synchronously â€” callers rely on this running before any side effects
  * (git commands, hook execution, chdir).
  */
 export function validateWorktreeSlug(slug: string): void {
@@ -248,14 +248,14 @@ const GIT_NO_PROMPT_ENV = {
 }
 
 function worktreesDir(repoRoot: string): string {
-  return join(repoRoot, '.openclaude', 'worktrees')
+  return join(repoRoot, '.RootClaude', 'worktrees')
 }
 
-// Flatten nested slugs (`user/feature` → `user+feature`) for both the branch
+// Flatten nested slugs (`user/feature` â†’ `user+feature`) for both the branch
 // name and the directory path. Nesting in either location is unsafe:
 //   - git refs: `worktree-user` (file) vs `worktree-user/feature` (needs dir)
 //     is a D/F conflict that git rejects.
-//   - directory: `.openclaude/worktrees/user/feature/` lives inside the `user`
+//   - directory: `.RootClaude/worktrees/user/feature/` lives inside the `user`
 //     worktree; `git worktree remove` on the parent deletes children with
 //     uncommitted work.
 // `+` is valid in git branch names and filesystem paths but NOT in the
@@ -272,7 +272,7 @@ export function worktreeBranchName(slug: string): string {
  * Builds a human-readable message for `git rev-parse <baseBranch>` failures
  * during worktree creation. Surfaces git's stderr so users can distinguish
  * empty repos ("unknown revision or path"), detached HEADs pointing at
- * missing objects, and a missing git binary — each previously surfaced as
+ * missing objects, and a missing git binary â€” each previously surfaced as
  * the same useless `git rev-parse failed`. See #690.
  */
 export function buildRevParseFailureMessage(
@@ -283,7 +283,7 @@ export function buildRevParseFailureMessage(
   const detail = stderr.trim() || `exit code ${exitCode}`
   const hint =
     baseBranch === 'HEAD'
-      ? ' (HEAD has no resolvable commit — make at least one commit, or check whether git is installed and on PATH)'
+      ? ' (HEAD has no resolvable commit â€” make at least one commit, or check whether git is installed and on PATH)'
       : ''
   return `Failed to resolve base branch "${baseBranch}": ${detail}${hint}`
 }
@@ -349,7 +349,7 @@ async function getOrCreateWorktree(
   const worktreeBranch = worktreeBranchName(slug)
 
   // Fast resume path: if the worktree already exists skip fetch and creation.
-  // Read the .git pointer file directly (no subprocess, no upward walk) — a
+  // Read the .git pointer file directly (no subprocess, no upward walk) â€” a
   // subprocess `rev-parse HEAD` burns ~15ms on spawn overhead even for a 2ms
   // task, and the await yield lets background spawnSyncs pile on (seen at 55ms).
   const existingHead = await _testDeps.readWorktreeHeadSha(worktreePath)
@@ -403,7 +403,7 @@ async function getOrCreateWorktree(
     } else {
       // If origin/<branch> already exists locally, skip fetch. In large repos
       // (210k files, 16M objects) fetch burns ~6-8s on a local commit-graph
-      // scan before even hitting the network. A slightly stale base is fine —
+      // scan before even hitting the network. A slightly stale base is fine â€”
       // the user can pull in the worktree if they want latest.
       // resolveRef reads the loose/packed ref directly; when it succeeds we
       // already have the SHA, so the later rev-parse is skipped entirely.
@@ -428,7 +428,7 @@ async function getOrCreateWorktree(
       }
     }
 
-    // For the fetch/PR-fetch paths we still need the SHA — the fs-only resolveRef
+    // For the fetch/PR-fetch paths we still need the SHA â€” the fs-only resolveRef
     // above only covers the "origin/<branch> already exists locally" case.
     if (!baseSha) {
       const { stdout, stderr, code: shaCode } = await _testDeps.execFileNoThrowWithCwd(
@@ -594,7 +594,7 @@ export async function copyWorktreeIncludeFiles(
         // Literal prefix match: pattern starts with the collapsed dir path
         if (normalized.startsWith(dir)) return true
         // Anchored glob: dir falls under the pattern's literal (non-glob) prefix
-        // e.g. `config/**/*.key` has literal prefix `config/` → expand `config/secrets/`
+        // e.g. `config/**/*.key` has literal prefix `config/` â†’ expand `config/secrets/`
         const globIdx = normalized.search(/[*?[]/)
         if (globIdx > 0) {
           const literalPrefix = normalized.slice(0, globIdx)
@@ -662,7 +662,7 @@ async function performPostCreationSetup(
   repoRoot: string,
   worktreePath: string,
 ): Promise<void> {
-  // Copy settings.local.json to the worktree's .openclaude directory
+  // Copy settings.local.json to the worktree's .RootClaude directory
   // This propagates local settings (which may contain secrets) to the worktree
   const localSettingsRelativePath =
     getRelativeSettingsFilePathForSource('localSettings')
@@ -703,7 +703,7 @@ async function performPostCreationSetup(
   if (hooksPath) {
     // `git config` (no --worktree flag) writes to the main repo's .git/config,
     // shared by all worktrees. Once set, every subsequent worktree create is a
-    // no-op — skip the subprocess (~14ms spawn) when the value already matches.
+    // no-op â€” skip the subprocess (~14ms spawn) when the value already matches.
     const gitDir = await resolveGitDir(repoRoot)
     const configDir = gitDir ? ((await getCommonDir(gitDir)) ?? gitDir) : null
     const existing = configDir
@@ -743,13 +743,13 @@ async function performPostCreationSetup(
   // resets the SHARED .git/config value back to relative, causing each
   // worktree to resolve to its OWN .husky/ again. The attribution hook
   // file isn't tracked (it's in .git/info/exclude), so fresh worktrees
-  // don't have it. Install it directly into the worktree's .husky/ —
+  // don't have it. Install it directly into the worktree's .husky/ â€”
   // husky won't delete it (husky install is additive-only), and for
   // non-husky repos this resolves to the shared .git/hooks/ (idempotent).
   //
   // Pass the worktree-local .husky explicitly: getHooksDir would return
   // the absolute core.hooksPath we just set above (main repo's .husky),
-  // not the worktree's — `git rev-parse --git-path hooks` echoes the config
+  // not the worktree's â€” `git rev-parse --git-path hooks` echoes the config
   // value verbatim when it's absolute.
   if (feature('COMMIT_ATTRIBUTION')) {
     const worktreeHooksDir =
@@ -766,7 +766,7 @@ async function performPostCreationSetup(
       )
       .catch(error => {
         // Dynamic import() itself rejected (module load failure). The inner
-        // .catch above only handles installPrepareCommitMsgHook rejection —
+        // .catch above only handles installPrepareCommitMsgHook rejection â€”
         // without this outer handler an import failure would surface as an
         // unhandled promise rejection.
         logForDebugging(`Failed to load postCommitAttribution module: ${error}`)
@@ -783,8 +783,8 @@ async function performPostCreationSetup(
  */
 export function parsePRReference(input: string): number | null {
   // GitHub-style PR URL: https://<host>/owner/repo/pull/123 (with optional trailing slash, query, hash)
-  // The /pull/N path shape is specific to GitHub — GitLab uses /-/merge_requests/N,
-  // Bitbucket uses /pull-requests/N — so matching any host here is safe.
+  // The /pull/N path shape is specific to GitHub â€” GitLab uses /-/merge_requests/N,
+  // Bitbucket uses /pull-requests/N â€” so matching any host here is safe.
   const urlMatch = input.match(
     /^https?:\/\/[^/]+\/[^/]+\/[^/]+\/pull\/(\d+)\/?(?:[?#].*)?$/i,
   )
@@ -856,7 +856,7 @@ export async function createWorktreeForSession(
   tmuxSessionName?: string,
   options?: { prNumber?: number },
 ): Promise<WorktreeSession> {
-  // Must run before the hook branch below — hooks receive the raw slug as an
+  // Must run before the hook branch below â€” hooks receive the raw slug as an
   // argument, and the git branch builds a path from it via path.join.
   validateWorktreeSlug(slug)
 
@@ -1079,8 +1079,8 @@ export async function createAgentWorktree(
 
   // Fall back to git worktree
   // findCanonicalGitRoot (not findGitRoot) so agent worktrees always land in
-  // the main repo's .openclaude/worktrees/ even when spawned from inside a session
-  // worktree — otherwise they nest at <worktree>/.openclaude/worktrees/ and the
+  // the main repo's .RootClaude/worktrees/ even when spawned from inside a session
+  // worktree â€” otherwise they nest at <worktree>/.RootClaude/worktrees/ and the
   // periodic cleanup (which scans the canonical root) never finds them.
   const gitRoot = findCanonicalGitRoot(sessionCwd)
   if (!gitRoot) {
@@ -1092,7 +1092,7 @@ export async function createAgentWorktree(
 
   // Base the agent worktree on the parent session's current HEAD so the
   // isolated agent sees the same committed project state the parent is working
-  // on — not origin/<defaultBranch>, which may be an older tree missing files
+  // on â€” not origin/<defaultBranch>, which may be an older tree missing files
   // that only exist on the active branch (#1586). Resolve from the session cwd
   // (not the canonical root) so a session on a feature branch is honored. Fall
   // back to the default origin-based behavior if HEAD can't be resolved (e.g. a
@@ -1118,7 +1118,7 @@ export async function createAgentWorktree(
     await performPostCreationSetup(gitRoot, worktreePath)
   } else {
     // Bump mtime so the periodic stale-worktree cleanup doesn't consider this
-    // worktree stale — the fast-resume path is read-only and leaves the original
+    // worktree stale â€” the fast-resume path is read-only and leaves the original
     // creation-time mtime intact, which can be past the 30-day cutoff.
     const now = new Date()
     await utimes(worktreePath, now, now)
@@ -1209,7 +1209,7 @@ export async function removeAgentWorktree(
 const EPHEMERAL_WORKTREE_PATTERNS = [
   /^agent-a[0-9a-f]{7}$/,
   /^wf_[0-9a-f]{8}-[0-9a-f]{3}-\d+$/,
-  // Legacy wf-<idx> slugs from before workflowRunId disambiguation — kept so
+  // Legacy wf-<idx> slugs from before workflowRunId disambiguation â€” kept so
   // the 30-day sweep still cleans up worktrees leaked by older builds.
   /^wf-\d+$/,
   // Real bridge slugs are `bridge-${safeFilenameId(sessionId)}`.
@@ -1227,12 +1227,12 @@ const EPHEMERAL_WORKTREE_PATTERNS = [
  * - Skips the current session's worktree
  * - Fail-closed: skips if git status fails or shows tracked changes
  *   (-uno: untracked files in a 30-day-old crashed agent worktree are build
- *   artifacts; skipping the untracked scan is 5-10× faster on large repos)
+ *   artifacts; skipping the untracked scan is 5-10Ã— faster on large repos)
  * - Fail-closed: skips if any commits aren't reachable from a remote
  *
  * `git worktree remove --force` handles both the directory and git's internal
  * worktree tracking. If git doesn't recognize the path as a worktree (orphaned
- * dir), it's left in place — a later readdir finding it stale again is harmless.
+ * dir), it's left in place â€” a later readdir finding it stale again is harmless.
  */
 export async function cleanupStaleAgentWorktrees(
   cutoffDate: Date,
@@ -1275,7 +1275,7 @@ export async function cleanupStaleAgentWorktrees(
     }
 
     // Both checks must succeed with empty output. Non-zero exit (corrupted
-    // worktree, git not recognizing it, etc.) means skip — we don't know
+    // worktree, git not recognizing it, etc.) means skip â€” we don't know
     // what's in there.
     const [status, unpushed] = await Promise.all([
       execFileNoThrowWithCwd(
@@ -1318,7 +1318,7 @@ export async function cleanupStaleAgentWorktrees(
  * Check whether a worktree has uncommitted changes or new commits since creation.
  * Returns true if there are uncommitted changes (dirty working tree), if commits
  * were made on the worktree branch since `headCommit`, or if git commands fail
- * — callers use this to decide whether to remove a worktree, so fail-closed.
+ * â€” callers use this to decide whether to remove a worktree, so fail-closed.
  */
 export async function hasWorktreeChanges(
   worktreePath: string,
@@ -1562,10 +1562,10 @@ export async function execIntoTmuxWorktree(args: string[]): Promise<{
     const y = chalk.yellow
     // biome-ignore lint/suspicious/noConsole: intentional user guidance
     console.log(
-      `\n${y('╭─ iTerm2 Tip ────────────────────────────────────────────────────────╮')}\n` +
-        `${y('│')} To open as a tab instead of a new window:                           ${y('│')}\n` +
-        `${y('│')} iTerm2 > Settings > General > tmux > "Tabs in attaching window"     ${y('│')}\n` +
-        `${y('╰─────────────────────────────────────────────────────────────────────╯')}\n`,
+      `\n${y('â•­â”€ iTerm2 Tip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•®')}\n` +
+        `${y('â”‚')} To open as a tab instead of a new window:                           ${y('â”‚')}\n` +
+        `${y('â”‚')} iTerm2 > Settings > General > tmux > "Tabs in attaching window"     ${y('â”‚')}\n` +
+        `${y('â•°â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•¯')}\n`,
     )
   }
 

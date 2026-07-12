@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Native Installer Implementation
  *
  * This module implements the file-based native installer system described in
@@ -115,7 +115,7 @@ export function getBinaryName(platform: string): string {
 
 export function getExecutableName(platform: string): string {
   const baseName =
-    MACRO.PACKAGE_URL === '@anthropic-ai/claude-code' ? 'claude' : 'openclaude'
+    MACRO.PACKAGE_URL === '@anthropic-ai/claude-code' ? 'claude' : 'RootClaude'
   return platform.startsWith('win32') ? `${baseName}.exe` : baseName
 }
 
@@ -661,7 +661,7 @@ export async function removeDirectoryIfEmpty(path: string): Promise<void> {
     logForDebugging(`Removed empty directory at ${path}`)
   } catch (error) {
     const code = getErrnoCode(error)
-    // Expected cases (not-a-dir, missing, not-empty) — silently skip.
+    // Expected cases (not-a-dir, missing, not-empty) â€” silently skip.
     // ENOTDIR is the normal path: executablePath is typically a symlink.
     if (code !== 'ENOTDIR' && code !== 'ENOENT' && code !== 'ENOTEMPTY') {
       logForDebugging(`Could not remove directory at ${path}: ${error}`)
@@ -838,9 +838,9 @@ export async function checkInstall(
     return []
   }
 
-  // npm-only builds have no native launcher to validate — a leftover
+  // npm-only builds have no native launcher to validate â€” a leftover
   // installMethod:'native' config from a previous build would otherwise
-  // produce "command not found at ~/.local/bin/…" warnings every session.
+  // produce "command not found at ~/.local/bin/â€¦" warnings every session.
   if (!hasNativeDistribution()) {
     return []
   }
@@ -886,12 +886,12 @@ export async function checkInstall(
   }
 
   // Check if the CLI executable exists and is valid.
-  // On non-Windows, call readlink directly and route errno — ENOENT means
+  // On non-Windows, call readlink directly and route errno â€” ENOENT means
   // the executable is missing, EINVAL means it exists but isn't a symlink.
-  // This avoids an access()→readlink() TOCTOU where deletion between the
+  // This avoids an access()â†’readlink() TOCTOU where deletion between the
   // two calls produces a misleading "Not a symlink" diagnostic.
   // isPossibleClaudeBinary stats the path internally, so we don't pre-check
-  // with access() — that would be a TOCTOU between access and the stat.
+  // with access() â€” that would be a TOCTOU between access and the stat.
   if (isWindows) {
     // On Windows it's a copied executable, not a symlink
     if (!(await isPossibleClaudeBinary(dirs.executable))) {
@@ -920,7 +920,7 @@ export async function checkInstall(
           type: 'error',
         })
       } else {
-        // EINVAL (not a symlink) or other — check as regular binary
+        // EINVAL (not a symlink) or other â€” check as regular binary
         if (!(await isPossibleClaudeBinary(dirs.executable))) {
           messages.push({
             message: `${dirs.executable} exists but is not a valid CLI binary`,
@@ -955,7 +955,7 @@ export async function checkInstall(
       // Windows-specific PATH instructions
       const windowsBinPath = localBinDir.replace(/\//g, '\\')
       messages.push({
-        message: `Native installation exists but ${windowsBinPath} is not in your PATH. Add it by opening: System Properties → Environment Variables → Edit User PATH → New → Add the path above. Then restart your terminal.`,
+        message: `Native installation exists but ${windowsBinPath} is not in your PATH. Add it by opening: System Properties â†’ Environment Variables â†’ Edit User PATH â†’ New â†’ Add the path above. Then restart your terminal.`,
         userActionRequired: true,
         type: 'path',
       })
@@ -1291,7 +1291,7 @@ export async function cleanupOldVersions(): Promise<void> {
       try {
         // stat() is load-bearing here (we need mtime). There is a theoretical
         // TOCTOU where a concurrent installer could freshen a stale staging
-        // dir between stat and rm — but the 1-hour threshold makes this
+        // dir between stat and rm â€” but the 1-hour threshold makes this
         // vanishingly unlikely, and rm({force:true}) tolerates concurrent
         // deletion.
         const stats = await stat(stagingPath)
@@ -1318,7 +1318,7 @@ export async function cleanupOldVersions(): Promise<void> {
     }
   }
 
-  // Clean up stale PID locks (crashed processes) — cleanupStaleLocks handles ENOENT
+  // Clean up stale PID locks (crashed processes) â€” cleanupStaleLocks handles ENOENT
   if (isPidBasedLockingEnabled()) {
     const staleLocksCleaned = cleanupStaleLocks(dirs.locks)
     if (staleLocksCleaned > 0) {
@@ -1353,7 +1353,7 @@ export async function cleanupOldVersions(): Promise<void> {
   for (const entry of versionEntries) {
     const entryPath = join(dirs.versions, entry)
     if (/\.tmp\.\d+\.\d+$/.test(entry)) {
-      // Orphaned temp install file — pattern: {version}.tmp.{pid}.{timestamp}
+      // Orphaned temp install file â€” pattern: {version}.tmp.{pid}.{timestamp}
       try {
         const stats = await stat(entryPath)
         if (stats.mtime.getTime() < oneHourAgo) {
@@ -1366,7 +1366,7 @@ export async function cleanupOldVersions(): Promise<void> {
       }
       continue
     }
-    // Candidate version binary — stat once, reuse for isFile/size/mtime/mode
+    // Candidate version binary â€” stat once, reuse for isFile/size/mtime/mode
     try {
       const stats = await stat(entryPath)
       if (!stats.isFile()) continue
@@ -1375,7 +1375,7 @@ export async function cleanupOldVersions(): Promise<void> {
         stats.size > 0 &&
         (stats.mode & 0o111) === 0
       ) {
-        // Check executability via mode bits from the existing stat result —
+        // Check executability via mode bits from the existing stat result â€”
         // avoids a second syscall (access(X_OK)) and the TOCTOU window between
         // stat and access. Skip on Windows: libuv only sets execute bits for
         // .exe/.com/.bat/.cmd, but version files are extensionless semver
@@ -1609,7 +1609,7 @@ async function manualRemoveNpmPackage(
     const globalPrefix = prefixResult.stdout.trim()
     let manuallyRemoved = false
 
-    // Helper to try removing a file. unlink alone is sufficient — it throws
+    // Helper to try removing a file. unlink alone is sufficient â€” it throws
     // ENOENT if the file is missing, which the catch handles identically.
     // A stat() pre-check would add a syscall and a TOCTOU window where
     // concurrent cleanup causes a false-negative return.
@@ -1624,7 +1624,7 @@ async function manualRemoveNpmPackage(
     }
 
     const binName =
-      packageName === '@anthropic-ai/claude-code' ? 'claude' : 'openclaude'
+      packageName === '@anthropic-ai/claude-code' ? 'claude' : 'RootClaude'
 
     if (getPlatform().startsWith('win32')) {
       // Windows - only remove executables, not the package directory
@@ -1729,7 +1729,7 @@ export async function cleanupNpmInstallations(): Promise<{
   warnings: string[]
 }> {
   if (!hasNativeDistribution()) {
-    // npm IS the distribution for this build — uninstalling it would remove
+    // npm IS the distribution for this build â€” uninstalling it would remove
     // the copy the user is running.
     logForDebugging(
       'Native installer: no native distribution; keeping npm installation in place',

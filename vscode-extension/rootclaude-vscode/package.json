@@ -1,0 +1,235 @@
+{
+  "name": "RootClaude-vscode",
+  "displayName": "RootClaude",
+  "description": "Practical VS Code companion for RootClaude with project-aware launch, Control Center, optional Microsoft Foundry / Azure OpenAI terminal env, and chat.",
+  "version": "0.2.0",
+  "publisher": "devnull-bootloader",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Themes",
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:RootClaude.start",
+    "onCommand:RootClaude.startInWorkspaceRoot",
+    "onCommand:RootClaude.openDocs",
+    "onCommand:RootClaude.openSetupDocs",
+    "onCommand:RootClaude.openWorkspaceProfile",
+    "onCommand:RootClaude.openControlCenter",
+    "onCommand:RootClaude.newChat",
+    "onCommand:RootClaude.openChat",
+    "onCommand:RootClaude.resumeSession",
+    "onCommand:RootClaude.abortChat",
+    "onCommand:RootClaude.setAzureApiKey",
+    "onCommand:RootClaude.clearAzureApiKey",
+    "onCommand:RootClaude.configureAzureChat",
+    "onCommand:RootClaude.openAzureSettings",
+    "onView:RootClaude.controlCenter",
+    "onView:RootClaude.chat"
+  ],
+  "main": "./src/extension.js",
+  "files": [
+    "README.md",
+    "media/**",
+    "src/extension.js",
+    "src/presentation.js",
+    "src/state.js",
+    "src/chat/**",
+    "themes/**"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "RootClaude.start",
+        "title": "RootClaude: Launch in Terminal",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.startInWorkspaceRoot",
+        "title": "RootClaude: Launch in Workspace Root",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.openDocs",
+        "title": "RootClaude: Open Repository",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.openSetupDocs",
+        "title": "RootClaude: Open Setup Guide",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.openWorkspaceProfile",
+        "title": "RootClaude: Open Workspace Profile",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.openControlCenter",
+        "title": "RootClaude: Open Control Center",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.newChat",
+        "title": "RootClaude: New Chat",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.openChat",
+        "title": "RootClaude: Open Chat Panel",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.resumeSession",
+        "title": "RootClaude: Resume Session",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.abortChat",
+        "title": "RootClaude: Abort Generation",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.setAzureApiKey",
+        "title": "RootClaude: Set Azure / Foundry API Key (Secret Storage)",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.clearAzureApiKey",
+        "title": "RootClaude: Clear Azure / Foundry API Key",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.configureAzureChat",
+        "title": "RootClaude: Configure Azure / Foundry Chat (wizard)",
+        "category": "RootClaude"
+      },
+      {
+        "command": "RootClaude.openAzureSettings",
+        "title": "RootClaude: Open Azure / Foundry Settings",
+        "category": "RootClaude"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "RootClaude",
+          "title": "RootClaude",
+          "icon": "media/RootClaude.svg"
+        }
+      ]
+    },
+    "views": {
+      "RootClaude": [
+        {
+          "id": "RootClaude.chat",
+          "name": "Chat",
+          "type": "webview"
+        },
+        {
+          "id": "RootClaude.controlCenter",
+          "name": "Control Center",
+          "type": "webview"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "RootClaude.openChat",
+        "key": "ctrl+shift+l",
+        "mac": "cmd+shift+l"
+      }
+    ],
+    "configuration": {
+      "title": "RootClaude",
+      "properties": {
+        "RootClaude.launchCommand": {
+          "type": "string",
+          "default": "RootClaude",
+          "description": "Command run in the integrated terminal when launching RootClaude."
+        },
+        "RootClaude.terminalName": {
+          "type": "string",
+          "default": "RootClaude",
+          "description": "Integrated terminal tab name for RootClaude sessions."
+        },
+        "RootClaude.useOpenAIShim": {
+          "type": "boolean",
+          "default": false,
+          "description": "Optionally set CLAUDE_CODE_USE_OPENAI=1 in launched RootClaude terminals when Azure injection is off or incomplete."
+        },
+        "RootClaude.azure.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, launch injects Microsoft Foundry / Azure OpenAI-compatible chat env (OPENAI_* + AZURE_OPENAI_API_VERSION) into the RootClaude terminal."
+        },
+        "RootClaude.azure.endpoint": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Azure resource base URL for OpenAI-compatible chat (example: `https://YOUR_RESOURCE.openai.azure.com`). Do not put `api-version` here; use **RootClaude: Azure API Version**."
+        },
+        "RootClaude.azure.apiVersion": {
+          "type": "string",
+          "default": "2024-12-01-preview",
+          "description": "Azure API version for chat completions (AZURE_OPENAI_API_VERSION)."
+        },
+        "RootClaude.azure.deployment": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Azure deployment name (maps to `OPENAI_MODEL` for the OpenAI shim)."
+        },
+        "RootClaude.azure.forceAzureUrlStyle": {
+          "type": "boolean",
+          "default": true,
+          "description": "Sets OPENAI_AZURE_STYLE=1 so deployment URLs and api-key header work on Foundry and non-standard Azure hosts."
+        },
+        "RootClaude.azure.apiKey": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Optional API key in settings (not recommended). Prefer **RootClaude: Set Azure / Foundry API Key**. Secret wins if both are set."
+        },
+        "RootClaude.permissionMode": {
+          "type": "string",
+          "default": "acceptEdits",
+          "enum": ["default", "acceptEdits", "bypassPermissions", "plan"],
+          "enumDescriptions": [
+            "Prompt for permission on each tool use (requires manual approval)",
+            "Auto-approve file edits, prompt for other operations (recommended)",
+            "Auto-approve all operations without prompting",
+            "Read-only mode — no file modifications allowed"
+          ],
+          "description": "Permission mode for chat sessions. Controls which tool operations are auto-approved."
+        }
+      }
+    },
+    "themes": [
+      {
+        "label": "RootClaude Terminal Black",
+        "uiTheme": "vs-dark",
+        "path": "./themes/RootClaude-Terminal-Black.json"
+      }
+    ]
+  },
+  "scripts": {
+    "test": "bun test src",
+    "lint": "node scripts/lint.js",
+    "package": "npx @vscode/vsce package --no-dependencies"
+  },
+  "keywords": [
+    "RootClaude",
+    "terminal",
+    "theme",
+    "cli",
+    "llm",
+    "azure",
+    "foundry"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gitlawb/RootClaude"
+  },
+  "license": "MIT"
+}

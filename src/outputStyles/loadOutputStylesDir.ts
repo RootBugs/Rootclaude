@@ -1,4 +1,4 @@
-import memoize from 'lodash-es/memoize.js'
+﻿import memoize from 'lodash-es/memoize.js'
 import { basename } from 'path'
 import type { OutputStyleConfig } from '../constants/outputStyles.js'
 import { logForDebugging } from '../utils/debug.js'
@@ -11,15 +11,15 @@ import {
 import { clearPluginOutputStyleCache } from '../utils/plugins/loadPluginOutputStyles.js'
 
 /**
- * Loads markdown files from .openclaude/output-styles directories throughout the project
- * and from ~/.openclaude/output-styles directory and converts them to output styles.
+ * Loads markdown files from .RootClaude/output-styles directories throughout the project
+ * and from ~/.RootClaude/output-styles directory and converts them to output styles.
  *
  * Each filename becomes a style name, and the file content becomes the style prompt.
  * The frontmatter provides name and description.
  *
  * Structure:
- * - Project .openclaude/output-styles/*.md -> project styles
- * - User ~/.openclaude/output-styles/*.md -> user styles (overridden by project styles)
+ * - Project .RootClaude/output-styles/*.md -> project styles
+ * - User ~/.RootClaude/output-styles/*.md -> user styles (overridden by project styles)
  *
  * @param cwd Current working directory for project directory traversal
  */

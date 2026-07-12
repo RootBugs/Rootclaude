@@ -1,4 +1,4 @@
-import chalk, { Chalk } from 'chalk'
+﻿import chalk, { Chalk } from 'chalk'
 import { env } from './env.js'
 
 export type Theme = {
@@ -6,8 +6,8 @@ export type Theme = {
   bashBorder: string
   claude: string
   claudeShimmer: string // Lighter version of claude color for shimmer effect
-  // OpenClaude brand accent (gitlawb orange). Values MUST be rgb() strings in
-  // truecolor themes — spinner shimmer/stall interpolation parses them with
+  // RootClaude brand accent (gitlawb orange). Values MUST be rgb() strings in
+  // truecolor themes â€” spinner shimmer/stall interpolation parses them with
   // parseRGB, which silently fails on hex.
   brand: string
   brandShimmer: string // Lighter version of brand color for shimmer effect
@@ -62,7 +62,7 @@ export type Theme = {
   /** Message-actions selection. Cool shift toward `suggestion` blue; distinct from default AND userMessageBackground. */
   messageActionsBackground: string
   /** Text-selection highlight background (alt-screen mouse selection). Solid
-   *  bg that REPLACES the cell's bg while preserving its fg — matches native
+   *  bg that REPLACES the cell's bg while preserving its fg â€” matches native
    *  terminal selection. Previously SGR-7 inverse (swapped fg/bg per cell),
    *  which fragmented badly over syntax highlighting. */
   selectionBg: string
@@ -168,8 +168,8 @@ const lightTheme: Theme = {
   clawd_body: 'rgb(209,87,0)', // Brand orange (light variant)
   clawd_background: 'rgb(0,0,0)',
   userMessageBackground: 'rgb(240, 240, 240)', // Slightly darker grey for optimal contrast
-  userMessageBackgroundHover: 'rgb(252, 252, 252)', // ≥250 to quantize distinct from base at 256-color level
-  messageActionsBackground: 'rgb(232, 236, 244)', // cool gray — darker than userMsg 240 (visible on white), slight blue toward `suggestion`
+  userMessageBackgroundHover: 'rgb(252, 252, 252)', // â‰¥250 to quantize distinct from base at 256-color level
+  messageActionsBackground: 'rgb(232, 236, 244)', // cool gray â€” darker than userMsg 240 (visible on white), slight blue toward `suggestion`
   selectionBg: 'rgb(180, 213, 255)', // classic light-mode selection blue (macOS/VS Code-ish); dark fgs stay readable
   bashMessageBackgroundColor: 'rgb(250, 245, 250)',
 
@@ -418,8 +418,8 @@ const lightDaltonizedTheme: Theme = {
   clawd_body: 'rgb(200,100,0)', // Brand orange (light daltonized variant)
   clawd_background: 'rgb(0,0,0)',
   userMessageBackground: 'rgb(220, 220, 220)', // Slightly darker grey for optimal contrast
-  userMessageBackgroundHover: 'rgb(232, 232, 232)', // ≥230 to quantize distinct from base at 256-color level
-  messageActionsBackground: 'rgb(210, 216, 226)', // cool gray — darker than userMsg 220, slight blue
+  userMessageBackgroundHover: 'rgb(232, 232, 232)', // â‰¥230 to quantize distinct from base at 256-color level
+  messageActionsBackground: 'rgb(210, 216, 226)', // cool gray â€” darker than userMsg 220, slight blue
   selectionBg: 'rgb(180, 213, 255)', // light selection blue; daltonized fgs are yellows/blues, both readable on light blue
   bashMessageBackgroundColor: 'rgb(250, 245, 250)',
 

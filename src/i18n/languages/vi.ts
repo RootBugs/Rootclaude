@@ -1,108 +1,108 @@
-export const vi = {
-  'commands.add-dir.description': 'Thêm thư mục làm việc mới',
-  'commands.agents.description': 'Quản lý cấu hình agent',
+﻿export const vi = {
+  'commands.add-dir.description': 'ThÃªm thÆ° má»¥c lÃ m viá»‡c má»›i',
+  'commands.agents.description': 'Quáº£n lÃ½ cáº¥u hÃ¬nh agent',
   'commands.auto-fix.description':
-    'Cấu hình tự động sửa: chạy lint/test sau khi AI chỉnh sửa',
+    'Cáº¥u hÃ¬nh tá»± Ä‘á»™ng sá»­a: cháº¡y lint/test sau khi AI chá»‰nh sá»­a',
   'commands.branch.description':
-    'Tạo nhánh của cuộc hội thoại tại điểm này',
+    'Táº¡o nhÃ¡nh cá»§a cuá»™c há»™i thoáº¡i táº¡i Ä‘iá»ƒm nÃ y',
   'commands.btw.description':
-    'Đặt câu hỏi nhanh bên lề mà không làm gián đoạn cuộc hội thoại chính',
+    'Äáº·t cÃ¢u há»i nhanh bÃªn lá» mÃ  khÃ´ng lÃ m giÃ¡n Ä‘oáº¡n cuá»™c há»™i thoáº¡i chÃ­nh',
   'commands.cache-stats.description':
-    'Hiển thị thống kê cache hit/miss theo lượt và phiên (hoạt động trên tất cả nhà cung cấp)',
+    'Hiá»ƒn thá»‹ thá»‘ng kÃª cache hit/miss theo lÆ°á»£t vÃ  phiÃªn (hoáº¡t Ä‘á»™ng trÃªn táº¥t cáº£ nhÃ  cung cáº¥p)',
   'commands.clear.description':
-    'Xóa lịch sử hội thoại và giải phóng ngữ cảnh',
-  'commands.color.description': 'Đặt màu thanh prompt cho phiên này',
+    'XÃ³a lá»‹ch sá»­ há»™i thoáº¡i vÃ  giáº£i phÃ³ng ngá»¯ cáº£nh',
+  'commands.color.description': 'Äáº·t mÃ u thanh prompt cho phiÃªn nÃ y',
   'commands.compact.description':
-    'Xóa lịch sử hội thoại nhưng giữ tóm tắt trong ngữ cảnh. Tùy chọn: /compact [hướng dẫn tóm tắt]',
+    'XÃ³a lá»‹ch sá»­ há»™i thoáº¡i nhÆ°ng giá»¯ tÃ³m táº¯t trong ngá»¯ cáº£nh. TÃ¹y chá»n: /compact [hÆ°á»›ng dáº«n tÃ³m táº¯t]',
   'commands.commit-message.description':
-    'Cấu hình văn bản ghi công commit',
-  'commands.config.description': 'Mở bảng cấu hình',
-  'commands.continue.description': 'Tiếp tục tác vụ hiện tại',
+    'Cáº¥u hÃ¬nh vÄƒn báº£n ghi cÃ´ng commit',
+  'commands.config.description': 'Má»Ÿ báº£ng cáº¥u hÃ¬nh',
+  'commands.continue.description': 'Tiáº¿p tá»¥c tÃ¡c vá»¥ hiá»‡n táº¡i',
   'commands.copy.description':
-    'Sao chép phản hồi gần nhất của Claude vào clipboard (hoặc /copy N cho phản hồi thứ N gần nhất)',
-  'commands.context.description': 'Hiện mức sử dụng ngữ cảnh',
+    'Sao chÃ©p pháº£n há»“i gáº§n nháº¥t cá»§a Claude vÃ o clipboard (hoáº·c /copy N cho pháº£n há»“i thá»© N gáº§n nháº¥t)',
+  'commands.context.description': 'Hiá»‡n má»©c sá»­ dá»¥ng ngá»¯ cáº£nh',
   'commands.cost.description':
-    'Hiện tổng chi phí và thời lượng phiên hiện tại',
-  'commands.diff.description': 'Xem thay đổi chưa commit và diff từng lượt',
+    'Hiá»‡n tá»•ng chi phÃ­ vÃ  thá»i lÆ°á»£ng phiÃªn hiá»‡n táº¡i',
+  'commands.diff.description': 'Xem thay Ä‘á»•i chÆ°a commit vÃ  diff tá»«ng lÆ°á»£t',
   'commands.doctor.description':
-    'Chẩn đoán và xác minh cài đặt OpenClaude',
+    'Cháº©n Ä‘oÃ¡n vÃ  xÃ¡c minh cÃ i Ä‘áº·t RootClaude',
   'commands.dream.description':
-    'Chạy hợp nhất bộ nhớ — tổng hợp các phiên gần đây thành bộ nhớ lâu dài',
-  'commands.effort.description': 'Đặt mức độ nỗ lực cho mô hình',
-  'commands.exit.description': 'Thoát REPL',
+    'Cháº¡y há»£p nháº¥t bá»™ nhá»› â€” tá»•ng há»£p cÃ¡c phiÃªn gáº§n Ä‘Ã¢y thÃ nh bá»™ nhá»› lÃ¢u dÃ i',
+  'commands.effort.description': 'Äáº·t má»©c Ä‘á»™ ná»— lá»±c cho mÃ´ hÃ¬nh',
+  'commands.exit.description': 'ThoÃ¡t REPL',
   'commands.export.description':
-    'Xuất cuộc hội thoại ra file hoặc clipboard',
-  'commands.heapdump.description': 'Xuất JS heap ra ~/Desktop',
-  'commands.help.description': 'Hiện trợ giúp và các lệnh có sẵn',
-  'commands.hooks.description': 'Xem cấu hình hook cho sự kiện tool',
-  'commands.ide.description': 'Quản lý tích hợp IDE và hiện trạng thái',
+    'Xuáº¥t cuá»™c há»™i thoáº¡i ra file hoáº·c clipboard',
+  'commands.heapdump.description': 'Xuáº¥t JS heap ra ~/Desktop',
+  'commands.help.description': 'Hiá»‡n trá»£ giÃºp vÃ  cÃ¡c lá»‡nh cÃ³ sáºµn',
+  'commands.hooks.description': 'Xem cáº¥u hÃ¬nh hook cho sá»± kiá»‡n tool',
+  'commands.ide.description': 'Quáº£n lÃ½ tÃ­ch há»£p IDE vÃ  hiá»‡n tráº¡ng thÃ¡i',
   'commands.init.description':
-    'Khởi tạo file hướng dẫn dự án mới với tài liệu codebase',
+    'Khá»Ÿi táº¡o file hÆ°á»›ng dáº«n dá»± Ã¡n má»›i vá»›i tÃ i liá»‡u codebase',
   'commands.insights.description':
-    'Tạo báo cáo phân tích các phiên OpenClaude',
+    'Táº¡o bÃ¡o cÃ¡o phÃ¢n tÃ­ch cÃ¡c phiÃªn RootClaude',
   'commands.install-github-app.description':
-    'Thiết lập Claude GitHub Actions cho kho lưu trữ',
-  'commands.knowledge.description': 'Quản lý Knowledge Graph',
-  'commands.login.description': 'Đăng nhập bằng tài khoản Anthropic',
-  'commands.logout.description': 'Đăng xuất khỏi tài khoản Anthropic',
+    'Thiáº¿t láº­p Claude GitHub Actions cho kho lÆ°u trá»¯',
+  'commands.knowledge.description': 'Quáº£n lÃ½ Knowledge Graph',
+  'commands.login.description': 'ÄÄƒng nháº­p báº±ng tÃ i khoáº£n Anthropic',
+  'commands.logout.description': 'ÄÄƒng xuáº¥t khá»i tÃ i khoáº£n Anthropic',
   'commands.lsp.description':
-    'Kiểm tra và thiết lập LSP code intelligence',
-  'commands.mcp.description': 'Quản lý máy chủ MCP',
-  'commands.memory.description': 'Chỉnh sửa file bộ nhớ Claude',
+    'Kiá»ƒm tra vÃ  thiáº¿t láº­p LSP code intelligence',
+  'commands.mcp.description': 'Quáº£n lÃ½ mÃ¡y chá»§ MCP',
+  'commands.memory.description': 'Chá»‰nh sá»­a file bá»™ nhá»› Claude',
   'commands.onboard-github.description':
-    'Thiết lập tương tác cho GitHub Copilot: đăng nhập OAuth lưu trong secure storage',
+    'Thiáº¿t láº­p tÆ°Æ¡ng tÃ¡c cho GitHub Copilot: Ä‘Äƒng nháº­p OAuth lÆ°u trong secure storage',
   'commands.output-style.description':
-    'Đã ngừng sử dụng: dùng /config để đổi kiểu output',
+    'ÄÃ£ ngá»«ng sá»­ dá»¥ng: dÃ¹ng /config Ä‘á»ƒ Ä‘á»•i kiá»ƒu output',
   'commands.permissions.description':
-    'Quản lý quy tắc cho phép & từ chối tool',
+    'Quáº£n lÃ½ quy táº¯c cho phÃ©p & tá»« chá»‘i tool',
   'commands.plan.description':
-    'Bật chế độ kế hoạch hoặc xem kế hoạch phiên hiện tại',
-  'commands.plugin.description': 'Quản lý plugin OpenClaude',
-  'commands.provider.description': 'Quản lý hồ sơ nhà cung cấp API',
+    'Báº­t cháº¿ Ä‘á»™ káº¿ hoáº¡ch hoáº·c xem káº¿ hoáº¡ch phiÃªn hiá»‡n táº¡i',
+  'commands.plugin.description': 'Quáº£n lÃ½ plugin RootClaude',
+  'commands.provider.description': 'Quáº£n lÃ½ há»“ sÆ¡ nhÃ  cung cáº¥p API',
   'commands.pr-comments.description':
-    'Lấy bình luận từ pull request GitHub',
-  'commands.release-notes.description': 'Xem ghi chú phát hành',
+    'Láº¥y bÃ¬nh luáº­n tá»« pull request GitHub',
+  'commands.release-notes.description': 'Xem ghi chÃº phÃ¡t hÃ nh',
   'commands.reload-plugins.description':
-    'Kích hoạt thay đổi plugin đang chờ trong phiên hiện tại',
-  'commands.rename.description': 'Đổi tên cuộc hội thoại hiện tại',
+    'KÃ­ch hoáº¡t thay Ä‘á»•i plugin Ä‘ang chá» trong phiÃªn hiá»‡n táº¡i',
+  'commands.rename.description': 'Äá»•i tÃªn cuá»™c há»™i thoáº¡i hiá»‡n táº¡i',
   'commands.request-size.description':
-    'Hiện tải ngữ cảnh ước tính và các thành phần chính',
-  'commands.resume.description': 'Tiếp tục cuộc hội thoại trước',
-  'commands.review.description': 'Đánh giá pull request',
+    'Hiá»‡n táº£i ngá»¯ cáº£nh Æ°á»›c tÃ­nh vÃ  cÃ¡c thÃ nh pháº§n chÃ­nh',
+  'commands.resume.description': 'Tiáº¿p tá»¥c cuá»™c há»™i thoáº¡i trÆ°á»›c',
+  'commands.review.description': 'ÄÃ¡nh giÃ¡ pull request',
   'commands.rewind.description':
-    'Khôi phục mã và/hoặc cuộc hội thoại về điểm trước',
+    'KhÃ´i phá»¥c mÃ£ vÃ /hoáº·c cuá»™c há»™i thoáº¡i vá» Ä‘iá»ƒm trÆ°á»›c',
   'commands.security-review.description':
-    'Hoàn thành đánh giá bảo mật cho các thay đổi đang chờ trên nhánh hiện tại',
-  'commands.skills.description': 'Liệt kê các kỹ năng có sẵn',
+    'HoÃ n thÃ nh Ä‘Ã¡nh giÃ¡ báº£o máº­t cho cÃ¡c thay Ä‘á»•i Ä‘ang chá» trÃªn nhÃ¡nh hiá»‡n táº¡i',
+  'commands.skills.description': 'Liá»‡t kÃª cÃ¡c ká»¹ nÄƒng cÃ³ sáºµn',
   'commands.stats.description':
-    'Hiện thống kê sử dụng và hoạt động OpenClaude',
+    'Hiá»‡n thá»‘ng kÃª sá»­ dá»¥ng vÃ  hoáº¡t Ä‘á»™ng RootClaude',
   'commands.status.description':
-    'Hiển thị trạng thái OpenClaude bao gồm phiên bản, mô hình, tài khoản, kết nối API và trạng thái công cụ',
+    'Hiá»ƒn thá»‹ tráº¡ng thÃ¡i RootClaude bao gá»“m phiÃªn báº£n, mÃ´ hÃ¬nh, tÃ i khoáº£n, káº¿t ná»‘i API vÃ  tráº¡ng thÃ¡i cÃ´ng cá»¥',
   'commands.statusline.description':
-    'Thiết lập giao diện dòng trạng thái của OpenClaude',
-  'commands.stickers.description': 'Đặt mua sticker OpenClaude',
-  'commands.tasks.description': 'Liệt kê và quản lý tác vụ nền',
+    'Thiáº¿t láº­p giao diá»‡n dÃ²ng tráº¡ng thÃ¡i cá»§a RootClaude',
+  'commands.stickers.description': 'Äáº·t mua sticker RootClaude',
+  'commands.tasks.description': 'Liá»‡t kÃª vÃ  quáº£n lÃ½ tÃ¡c vá»¥ ná»n',
   'commands.terminal-setup.description':
-    'Cài đặt phím tắt Shift+Enter để xuống dòng',
-  'commands.theme.description': 'Đổi giao diện',
-  'commands.usage.description': 'Hiện giới hạn sử dụng gói',
-  'commands.vim.description': 'Chuyển đổi giữa chế độ Vim và Normal',
+    'CÃ i Ä‘áº·t phÃ­m táº¯t Shift+Enter Ä‘á»ƒ xuá»‘ng dÃ²ng',
+  'commands.theme.description': 'Äá»•i giao diá»‡n',
+  'commands.usage.description': 'Hiá»‡n giá»›i háº¡n sá»­ dá»¥ng gÃ³i',
+  'commands.vim.description': 'Chuyá»ƒn Ä‘á»•i giá»¯a cháº¿ Ä‘á»™ Vim vÃ  Normal',
   'commands.wiki.description':
-    'Khởi tạo và kiểm tra wiki dự án OpenClaude',
+    'Khá»Ÿi táº¡o vÃ  kiá»ƒm tra wiki dá»± Ã¡n RootClaude',
   'skills.batch.description':
-    'Nghiên cứu và lập kế hoạch cho một thay đổi quy mô lớn, rồi thực thi song song trên 5–30 agent worktree cô lập, mỗi agent mở một PR.',
+    'NghiÃªn cá»©u vÃ  láº­p káº¿ hoáº¡ch cho má»™t thay Ä‘á»•i quy mÃ´ lá»›n, rá»“i thá»±c thi song song trÃªn 5â€“30 agent worktree cÃ´ láº­p, má»—i agent má»Ÿ má»™t PR.',
   'skills.batch.whenToUse':
-    'Dùng khi người dùng muốn thực hiện một thay đổi bao quát, cơ học trên nhiều file (migration, refactor, đổi tên hàng loạt) có thể chia thành các đơn vị song song độc lập.',
+    'DÃ¹ng khi ngÆ°á»i dÃ¹ng muá»‘n thá»±c hiá»‡n má»™t thay Ä‘á»•i bao quÃ¡t, cÆ¡ há»c trÃªn nhiá»u file (migration, refactor, Ä‘á»•i tÃªn hÃ ng loáº¡t) cÃ³ thá»ƒ chia thÃ nh cÃ¡c Ä‘Æ¡n vá»‹ song song Ä‘á»™c láº­p.',
   'skills.debug.ant.description':
-    'Debug phiên Claude Code hiện tại bằng cách đọc debug log của phiên. Bao gồm toàn bộ event logging',
+    'Debug phiÃªn Claude Code hiá»‡n táº¡i báº±ng cÃ¡ch Ä‘á»c debug log cá»§a phiÃªn. Bao gá»“m toÃ n bá»™ event logging',
   'skills.debug.default.description':
-    'Bật debug logging cho phiên này và hỗ trợ chẩn đoán sự cố',
+    'Báº­t debug logging cho phiÃªn nÃ y vÃ  há»— trá»£ cháº©n Ä‘oÃ¡n sá»± cá»‘',
   'skills.loop.description':
-    'Chạy một prompt theo khoảng thời gian cố định hoặc lên lịch lại động, bao gồm cả chế độ bảo trì lặp lại.',
+    'Cháº¡y má»™t prompt theo khoáº£ng thá»i gian cá»‘ Ä‘á»‹nh hoáº·c lÃªn lá»‹ch láº¡i Ä‘á»™ng, bao gá»“m cáº£ cháº¿ Ä‘á»™ báº£o trÃ¬ láº·p láº¡i.',
   'skills.loop.whenToUse':
-    'Khi người dùng muốn kiểm tra trạng thái, giám sát quy trình, chạy bảo trì định kỳ, hoặc chạy lại một prompt trong phiên hiện tại.',
+    'Khi ngÆ°á»i dÃ¹ng muá»‘n kiá»ƒm tra tráº¡ng thÃ¡i, giÃ¡m sÃ¡t quy trÃ¬nh, cháº¡y báº£o trÃ¬ Ä‘á»‹nh ká»³, hoáº·c cháº¡y láº¡i má»™t prompt trong phiÃªn hiá»‡n táº¡i.',
   'skills.simplify.description':
-    'Đánh giá code đã thay đổi về mặt tái sử dụng, chất lượng và hiệu suất, sau đó sửa các vấn đề tìm được.',
+    'ÄÃ¡nh giÃ¡ code Ä‘Ã£ thay Ä‘á»•i vá» máº·t tÃ¡i sá»­ dá»¥ng, cháº¥t lÆ°á»£ng vÃ  hiá»‡u suáº¥t, sau Ä‘Ã³ sá»­a cÃ¡c váº¥n Ä‘á» tÃ¬m Ä‘Æ°á»£c.',
   'skills.update-config.description':
-    'Sử dụng skill này để cấu hình Claude Code qua settings.json. Các hành vi tự động ("từ giờ khi X", "mỗi lần X", "bất cứ khi nào X", "trước/sau X") yêu cầu hooks được cấu hình trong settings.json - hệ thống thực thi hooks, không phải Claude, nên memory/preferences không thể thực hiện được. Cũng dùng cho: phân quyền ("cho phép X", "thêm quyền", "chuyển quyền"), biến môi trường ("set X=Y"), khắc phục sự cố hooks, hoặc bất kỳ thay đổi nào với settings.json/settings.local.json. Ví dụ: "cho phép lệnh npm", "thêm quyền bq vào settings toàn cục", "chuyển quyền sang user settings", "set DEBUG=true", "khi claude dừng hiển thị X". Với cài đặt đơn giản như theme/model, dùng Config tool.',
+    'Sá»­ dá»¥ng skill nÃ y Ä‘á»ƒ cáº¥u hÃ¬nh Claude Code qua settings.json. CÃ¡c hÃ nh vi tá»± Ä‘á»™ng ("tá»« giá» khi X", "má»—i láº§n X", "báº¥t cá»© khi nÃ o X", "trÆ°á»›c/sau X") yÃªu cáº§u hooks Ä‘Æ°á»£c cáº¥u hÃ¬nh trong settings.json - há»‡ thá»‘ng thá»±c thi hooks, khÃ´ng pháº£i Claude, nÃªn memory/preferences khÃ´ng thá»ƒ thá»±c hiá»‡n Ä‘Æ°á»£c. CÅ©ng dÃ¹ng cho: phÃ¢n quyá»n ("cho phÃ©p X", "thÃªm quyá»n", "chuyá»ƒn quyá»n"), biáº¿n mÃ´i trÆ°á»ng ("set X=Y"), kháº¯c phá»¥c sá»± cá»‘ hooks, hoáº·c báº¥t ká»³ thay Ä‘á»•i nÃ o vá»›i settings.json/settings.local.json. VÃ­ dá»¥: "cho phÃ©p lá»‡nh npm", "thÃªm quyá»n bq vÃ o settings toÃ n cá»¥c", "chuyá»ƒn quyá»n sang user settings", "set DEBUG=true", "khi claude dá»«ng hiá»ƒn thá»‹ X". Vá»›i cÃ i Ä‘áº·t Ä‘Æ¡n giáº£n nhÆ° theme/model, dÃ¹ng Config tool.',
 } as const

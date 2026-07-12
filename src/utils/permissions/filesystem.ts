@@ -1,4 +1,4 @@
-import { feature } from 'bun:bundle'
+﻿import { feature } from 'bun:bundle'
 import { randomBytes } from 'crypto'
 import ignore from 'ignore'
 import memoize from 'lodash-es/memoize.js'
@@ -69,7 +69,7 @@ export const DANGEROUS_FILES = [
   '.profile',
   '.ripgreprc',
   '.mcp.json',
-  '.openclaude.json',
+  '.RootClaude.json',
   '.claude.json',
 ] as const
 
@@ -81,7 +81,7 @@ export const DANGEROUS_DIRECTORIES = [
   '.git',
   '.vscode',
   '.idea',
-  '.openclaude',
+  '.RootClaude',
   '.claude',
 ] as const
 
@@ -99,12 +99,12 @@ export function normalizeCaseForComparison(path: string): string {
 }
 
 /**
- * If filePath is inside a .openclaude/skills/{name}/ directory (project) or
- * .openclaude/skills/{name}/ directory (global), return the skill name and a session-allow pattern
+ * If filePath is inside a .RootClaude/skills/{name}/ directory (project) or
+ * .RootClaude/skills/{name}/ directory (global), return the skill name and a session-allow pattern
  * scoped to just that skill.
  * Used to offer a narrower "allow edits to this skill only" option in the
  * permission dialog and SDK suggestions, so iterating on one skill doesn't
- * require granting session access to all of .openclaude/ (settings.json, hooks/, etc.).
+ * require granting session access to all of .RootClaude/ (settings.json, hooks/, etc.).
  */
 export function getClaudeSkillScope(
   filePath: string,
@@ -114,12 +114,12 @@ export function getClaudeSkillScope(
 
   const bases = [
     {
-      dir: expandPath(join(getOriginalCwd(), '.openclaude', 'skills')),
-      prefix: '/.openclaude/skills/',
+      dir: expandPath(join(getOriginalCwd(), '.RootClaude', 'skills')),
+      prefix: '/.RootClaude/skills/',
     },
     {
-      dir: expandPath(join(homedir(), '.openclaude', 'skills')),
-      prefix: '~/.openclaude/skills/',
+      dir: expandPath(join(homedir(), '.RootClaude', 'skills')),
+      prefix: '~/.RootClaude/skills/',
     },
   ]
 
@@ -216,12 +216,12 @@ export function isClaudeSettingsPath(filePath: string): boolean {
 
   // Use platform separator so endsWith checks work on both Unix (/) and Windows (\)
   if (
-    normalizedPath.endsWith(`${sep}.openclaude${sep}settings.json`) ||
-    normalizedPath.endsWith(`${sep}.openclaude${sep}settings.local.json`) ||
+    normalizedPath.endsWith(`${sep}.RootClaude${sep}settings.json`) ||
+    normalizedPath.endsWith(`${sep}.RootClaude${sep}settings.local.json`) ||
     normalizedPath.endsWith(`${sep}.claude${sep}settings.json`) ||
     normalizedPath.endsWith(`${sep}.claude${sep}settings.local.json`)
   ) {
-    // Include .openclaude and legacy .claude settings even for other projects.
+    // Include .RootClaude and legacy .claude settings even for other projects.
     // This is write-safety classification only; config loading does not read
     // or migrate from .claude.
     return true
@@ -239,12 +239,12 @@ function isClaudeConfigFilePath(filePath: string): boolean {
     return true
   }
 
-  // Check if file is within .openclaude/commands or .openclaude/agents directories
+  // Check if file is within .RootClaude/commands or .RootClaude/agents directories
   // using proper path segment validation (not string matching with includes())
   // pathInWorkingPath now handles case-insensitive comparison to prevent bypasses
-  const commandsDir = join(getOriginalCwd(), '.openclaude', 'commands')
-  const agentsDir = join(getOriginalCwd(), '.openclaude', 'agents')
-  const skillsDir = join(getOriginalCwd(), '.openclaude', 'skills')
+  const commandsDir = join(getOriginalCwd(), '.RootClaude', 'commands')
+  const agentsDir = join(getOriginalCwd(), '.RootClaude', 'agents')
+  const skillsDir = join(getOriginalCwd(), '.RootClaude', 'skills')
 
   return (
     pathInWorkingPath(filePath, commandsDir) ||
@@ -408,7 +408,7 @@ export const getClaudeTempDir = memoize(function getClaudeTempDir(): string {
  * SECURITY: The per-process random nonce is the load-bearing defense here.
  * Every other path component (uid, VERSION, skill name, file keys) is public
  * knowledge, so without it a local attacker can pre-create the tree on a
- * shared /tmp — sticky bit prevents deletion, not creation — and either
+ * shared /tmp Ã¢â‚¬â€ sticky bit prevents deletion, not creation Ã¢â‚¬â€ and either
  * symlink an intermediate directory (O_NOFOLLOW only checks the final
  * component) or own a parent dir and swap file contents post-write for prompt
  * injection via the read allowlist. diskOutput.ts gets the same property from
@@ -484,8 +484,8 @@ function pathsEqualForPermission(a: string, b: string): boolean {
     normalizeCaseForComparison(normalize(b))
 }
 
-export function isOpenClaudeCommitMessagePath(absolutePath: string): boolean {
-  const expectedPath = join(getOriginalCwd(), '.git', 'OPENCLAUDE_COMMIT_MSG')
+export function isRootClaudeCommitMessagePath(absolutePath: string): boolean {
+  const expectedPath = join(getOriginalCwd(), '.git', 'RootClaude_COMMIT_MSG')
   const expectedForms = getPathsForPermissionCheck(expectedPath)
   const targetForms = getPathsForPermissionCheck(absolutePath)
 
@@ -530,17 +530,17 @@ function isDangerousFilePathToAutoEdit(
         continue
       }
 
-      // Special case: .openclaude/worktrees/ is a structural path (where OpenClaude stores
-      // git worktrees), not a user-created dangerous directory. Skip the .openclaude
-      // segment when it's followed by 'worktrees'. Any nested .openclaude directories
+      // Special case: .RootClaude/worktrees/ is a structural path (where RootClaude stores
+      // git worktrees), not a user-created dangerous directory. Skip the .RootClaude
+      // segment when it's followed by 'worktrees'. Any nested .RootClaude directories
       // within the worktree (not followed by 'worktrees') are still blocked.
-      if (dir === '.openclaude') {
+      if (dir === '.RootClaude') {
         const nextSegment = pathSegments[i + 1]
         if (
           nextSegment &&
           normalizeCaseForComparison(nextSegment) === 'worktrees'
         ) {
-          break // Skip this .openclaude, continue checking other segments
+          break // Skip this .RootClaude, continue checking other segments
         }
       }
 
@@ -727,7 +727,7 @@ export function checkPathSafetyForAutoEdit(
   }
 
   // Check for dangerous files on all paths. In permissive safety mode
-  // (OPENCLAUDE_SAFETY_LEVEL=permissive) we skip only the filename list that
+  // (RootClaude_SAFETY_LEVEL=permissive) we skip only the filename list that
   // can prompt on routine edits like .gitmodules, shell rc files, or .mcp.json.
   // Directory, UNC, symlink-resolved, and Windows path guards remain active.
   const skipConfigFileList = isPermissiveSafety()
@@ -756,7 +756,7 @@ export function allWorkingDirectories(
 
 // Working directories are session-stable; memoize their resolved forms to
 // avoid repeated existsSync/lstatSync/realpathSync syscalls on every
-// permission check. Keyed by path string — getPathsForPermissionCheck is
+// permission check. Keyed by path string Ã¢â‚¬â€ getPathsForPermissionCheck is
 // deterministic for existing directories within a session.
 // Exported for test/preload.ts cache clearing (shard-isolation).
 export const getResolvedWorkingDirPaths = memoize(getPathsForPermissionCheck)
@@ -1122,10 +1122,10 @@ export function checkReadPermissionForTool(
   const path = tool.getPath(input)
 
   // Get paths to check (includes both original and resolved symlinks).
-  // Computed once here and threaded through checkWritePermissionForTool →
-  // checkPathSafetyForAutoEdit → pathInAllowedWorkingPath to avoid redundant
+  // Computed once here and threaded through checkWritePermissionForTool Ã¢â€ â€™
+  // checkPathSafetyForAutoEdit Ã¢â€ â€™ pathInAllowedWorkingPath to avoid redundant
   // existsSync/lstatSync/realpathSync syscalls on the same path (previously
-  // 6× = 30 syscalls per Read permission check).
+  // 6Ãƒâ€” = 30 syscalls per Read permission check).
   const pathsToCheck = getPathsForPermissionCheck(path)
 
   // 1. Defense-in-depth: Block UNC paths early (before other checks)
@@ -1279,7 +1279,7 @@ export function checkReadPermissionForTool(
  *
  * @param precomputedPathsToCheck - Optional cached result of
  *   `getPathsForPermissionCheck(tool.getPath(input))`. Callers MUST derive this
- *   from the same `tool` and `input` in the same synchronous frame — `path` is
+ *   from the same `tool` and `input` in the same synchronous frame Ã¢â‚¬â€ `path` is
  *   re-derived internally for error messages and internal-path checks, so a
  *   stale value would silently check deny rules for the wrong path.
  */
@@ -1354,13 +1354,13 @@ export function checkWritePermissionForTool<Input extends AnyObject>(
   )
   if (claudeFolderAllowRule) {
     // Check if this rule is scoped under a Claude config folder.
-    // Accepts broad project/global patterns ('/.openclaude/**',
-    // '~/.openclaude/**') plus narrowed skill
-    // patterns like '~/.openclaude/skills/my-skill/**' so users can grant
+    // Accepts broad project/global patterns ('/.RootClaude/**',
+    // '~/.RootClaude/**') plus narrowed skill
+    // patterns like '~/.RootClaude/skills/my-skill/**' so users can grant
     // session access to a single skill without also exposing settings.json
     // or hooks/. The rule already matched the path via matchingRuleForInput;
     // this is an additional scope check. Reject '..' to prevent a rule like
-    // '/.openclaude/../**' from leaking this bypass outside the config folder.
+    // '/.RootClaude/../**' from leaking this bypass outside the config folder.
     const ruleContent = claudeFolderAllowRule.ruleValue.ruleContent
     if (
       ruleContent &&
@@ -1390,7 +1390,7 @@ export function checkWritePermissionForTool<Input extends AnyObject>(
     // SDK suggestion: if under .claude/skills/{name}/, emit the narrowed
     // session-scoped addRules that step 1.6 will honor on the next call.
     // Everything else (.claude/settings.json, .git/, .vscode/, .idea/) falls
-    // back to generateSuggestions — its setMode suggestion doesn't bypass
+    // back to generateSuggestions Ã¢â‚¬â€ its setMode suggestion doesn't bypass
     // this check, but preserving it avoids a surprising empty array.
     const skillScope = getClaudeSkillScope(path)
     const safetySuggestions: PermissionUpdate[] = skillScope
@@ -1523,7 +1523,7 @@ export function generateSuggestions(
   // mode the classifier already auto-approves edits; in bypassPermissions
   // everything is allowed; in acceptEdits it's a no-op. Suggesting it
   // anyway and having the SDK host apply it on "Always allow" silently
-  // downgrades auto → acceptEdits, which then prompts for MCP/Bash.
+  // downgrades auto Ã¢â€ â€™ acceptEdits, which then prompts for MCP/Bash.
   const shouldSuggestAcceptEdits =
     toolPermissionContext.mode === 'default' ||
     toolPermissionContext.mode === 'plan'
@@ -1594,12 +1594,12 @@ export function checkEditableInternalPath(
 
   // Template job's own directory. Env key hardcoded (vs importing JOB_ENV_KEY
   // from jobs/state) so tree-shaking eliminates the string from external
-  // builds — spawn.test.ts asserts the string matches. Hijack guard: the env
+  // builds Ã¢â‚¬â€ spawn.test.ts asserts the string matches. Hijack guard: the env
   // var value must itself resolve under ~/.claude/jobs/. Symlink guard: every
   // resolved form of the target (lexical + symlink chain) must fall under some
   // resolved form of the job dir, so a symlink inside the job dir pointing at
   // e.g. ~/.ssh/authorized_keys does not get a free write. Resolving both
-  // sides handles the macOS /tmp → /private/tmp case where the config dir
+  // sides handles the macOS /tmp Ã¢â€ â€™ /private/tmp case where the config dir
   // lives under a symlinked root.
   if (feature('TEMPLATES')) {
     const jobDir = process.env.CLAUDE_JOB_DIR
@@ -1674,16 +1674,16 @@ export function checkEditableInternalPath(
     }
   }
 
-  // .openclaude/launch.json — desktop preview config (dev server command + port).
+  // .RootClaude/launch.json Ã¢â‚¬â€ desktop preview config (dev server command + port).
   // The desktop's preview_start MCP tool instructs Claude to create/update
   // this file as part of the preview workflow. Without this carve-out the
-  // .openclaude/ DANGEROUS_DIRECTORIES check prompts for it, which in SDK mode
-  // cascades: user clicks "Always allow" → setMode:acceptEdits suggestion
-  // applied → silent downgrade from auto mode. Matches the project-level
-  // .openclaude/ only (not ~/.openclaude/) since launch.json is per-project.
+  // .RootClaude/ DANGEROUS_DIRECTORIES check prompts for it, which in SDK mode
+  // cascades: user clicks "Always allow" Ã¢â€ â€™ setMode:acceptEdits suggestion
+  // applied Ã¢â€ â€™ silent downgrade from auto mode. Matches the project-level
+  // .RootClaude/ only (not ~/.RootClaude/) since launch.json is per-project.
   if (
     normalizeCaseForComparison(normalizedPath) ===
-    normalizeCaseForComparison(join(getOriginalCwd(), '.openclaude', 'launch.json'))
+    normalizeCaseForComparison(join(getOriginalCwd(), '.RootClaude', 'launch.json'))
   ) {
     return {
       behavior: 'allow',
@@ -1701,14 +1701,14 @@ export function checkEditableInternalPath(
   if (
     (toolPermissionContext?.mode === 'bypassPermissions' ||
       toolPermissionContext?.mode === 'fullAccess') &&
-    isOpenClaudeCommitMessagePath(normalizedPath)
+    isRootClaudeCommitMessagePath(normalizedPath)
   ) {
     return {
       behavior: 'allow',
       updatedInput: input,
       decisionReason: {
         type: 'other',
-        reason: 'OpenClaude commit message file is allowed for writing',
+        reason: 'RootClaude commit message file is allowed for writing',
       },
     }
   }
@@ -1869,7 +1869,7 @@ export function checkReadableInternalPath(
   }
 
   // Bundled skill reference files extracted on first invocation.
-  // SECURITY: See getBundledSkillsRoot() — the per-process nonce in the path
+  // SECURITY: See getBundledSkillsRoot() Ã¢â‚¬â€ the per-process nonce in the path
   // is the load-bearing defense; uid/VERSION alone are public knowledge and
   // squattable. We always write-before-read on invocation, so content under
   // this subtree is harness-controlled.

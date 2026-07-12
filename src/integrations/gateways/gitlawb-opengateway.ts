@@ -1,8 +1,8 @@
-import { defineGateway } from '../define.js'
+﻿import { defineGateway } from '../define.js'
 import { ZAI_GLM_OPENAI_SHIM } from '../transport/zaiGlmShim.js'
 
 export default defineGateway({
-  id: 'gitlawb-opengateway',
+  id: 'rootbugs-opengateway',
   label: 'Gitlawb Opengateway',
   category: 'aggregating',
   defaultBaseUrl: 'https://opengateway.gitlawb.com/v1',
@@ -18,7 +18,7 @@ export default defineGateway({
     kind: 'credential-env',
     // OPENGATEWAY_API_KEY first so users who set both don't get their generic
     // OpenAI key sent to opengateway by accident. OPENAI_API_KEYS / OPENAI_API_KEY kept as
-    // fallbacks because existing openclaude configs may already hold generic credentials there.
+    // fallbacks because existing rootclaude configs may already hold generic credentials there.
     credentialEnvVars: ['OPENGATEWAY_API_KEY', 'OPENAI_API_KEYS', 'OPENAI_API_KEY'],
     missingCredentialMessage:
       'OPENGATEWAY_API_KEY is required to use Gitlawb Opengateway.\n' +
@@ -46,7 +46,7 @@ export default defineGateway({
     },
   },
   preset: {
-    id: 'gitlawb-opengateway',
+    id: 'rootbugs-opengateway',
     description: 'Gitlawb Opengateway - (API key required, signup at https://gitlawb.com/opengateway/keys)',
     apiKeyEnvVars: ['OPENGATEWAY_API_KEY'],
     label: 'Gitlawb Opengateway',
@@ -71,7 +71,7 @@ export default defineGateway({
       {
         id: 'opengateway-auto',
         apiName: 'auto',
-        label: 'Auto — Smart Routing (via Opengateway)',
+        label: 'Auto Ã¢â‚¬â€ Smart Routing (via Opengateway)',
         notes: 'Gateway picks the cheapest capable model and escalates on failure',
       },
       {
@@ -127,7 +127,7 @@ export default defineGateway({
           },
         },
       },
-      // OpenRouter :free endpoint — bills $0 and bypasses the gateway credit
+      // OpenRouter :free endpoint Ã¢â‚¬â€ bills $0 and bypasses the gateway credit
       // gate, so it works even with an empty credit balance.
       {
         id: 'opengateway-nemotron-3-ultra-free',

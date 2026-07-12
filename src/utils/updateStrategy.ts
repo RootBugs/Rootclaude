@@ -1,41 +1,38 @@
-import type { DiagnosticInfo, InstallationType } from './doctorDiagnostic.js'
+﻿import type { DiagnosticInfo, InstallationType } from './doctorDiagnostic.js'
 import { getDoctorDiagnostic } from './doctorDiagnostic.js'
 import { localInstallationExists } from './localInstaller.js'
 import { type LegacyAPIProvider, getAPIProvider } from './model/providers.js'
 import { hasNativeDistribution } from './nativeDistribution.js'
 import type { PackageManager } from './nativeInstaller/packageManagers.js'
 import { getPackageManager } from './nativeInstaller/packageManagers.js'
-
 /**
- * How the *currently running* OpenClaude installation should be updated.
+ * How the *currently running* RootClaude installation should be updated.
  *
- *  - `blocked`         — must not self-update (third-party upstream build, or a
+ *  - `blocked`         â€” must not self-update (third-party upstream build, or a
  *                        development build); the caller should show guidance.
- *  - `package-manager` — owned by a system package manager (homebrew/winget/…);
+ *  - `package-manager` â€” owned by a system package manager (homebrew/winget/â€¦);
  *                        the user must update through that manager.
- *  - `native`          — update via the native installer.
- *  - `npm`             — update the npm install (`local` or `global`).
+ *  - `native`          â€” update via the native installer.
+ *  - `npm`             â€” update the npm install (`local` or `global`).
  */
 export type UpdateStrategy =
   | { action: 'blocked'; reason: 'third-party-build' | 'development' }
   | { action: 'package-manager'; manager: PackageManager }
   | { action: 'native' }
   | { action: 'npm'; method: 'local' | 'global' }
-
 /**
  * True when this build must NOT self-update: a third-party provider session
  * running on the upstream `@anthropic-ai/claude-code` package. Self-updating
  * there pulls from the first-party distribution and would silently replace the
- * build the user is running. Custom-PACKAGE_URL builds (OpenClaude's
- * `@gitlawb/openclaude`) are safe to self-update.
+ * build the user is running. Custom-PACKAGE_URL builds (RootClaude's
+ * `@gitlawb/RootClaude`) are safe to self-update.
  *
- * Shared by the `openclaude update` CLI and the `/update` slash command so both
+ * Shared by the `rootclaude update` CLI and the `/update` slash command so both
  * honour the same guard.
  */
 export function isThirdPartyBuildBlocked(): boolean {
   return isThirdPartyBuildBlockedFor(getAPIProvider(), MACRO.PACKAGE_URL)
 }
-
 /**
  * Pure form of {@link isThirdPartyBuildBlocked}, taking the provider and build
  * package URL as inputs so the guard logic can be regression-tested without
@@ -47,9 +44,8 @@ export function isThirdPartyBuildBlockedFor(
 ): boolean {
   return apiProvider !== 'firstParty' && packageUrl === '@anthropic-ai/claude-code'
 }
-
 /**
- * Injectable dependencies — lets callers (and tests) substitute the
+ * Injectable dependencies â€” lets callers (and tests) substitute the
  * environment probes without module mocking.
  */
 export type UpdateStrategyDeps = {
@@ -59,7 +55,6 @@ export type UpdateStrategyDeps = {
   localInstallationExists: () => Promise<boolean>
   hasNativeDistribution: () => boolean
 }
-
 const defaultDeps: UpdateStrategyDeps = {
   isThirdPartyBlocked: isThirdPartyBuildBlocked,
   getDiagnostic: getDoctorDiagnostic,
@@ -67,7 +62,6 @@ const defaultDeps: UpdateStrategyDeps = {
   localInstallationExists,
   hasNativeDistribution,
 }
-
 /**
  * Pure routing decision from a known installation type. Kept separate so the
  * branch logic can be unit-tested without spawning the diagnostic probes.
@@ -90,7 +84,7 @@ export function planUpdate(input: {
     case 'package-manager':
       return { action: 'package-manager', manager: input.packageManager }
     case 'native':
-      // npm-only builds must never route to the native installer — it would
+      // npm-only builds must never route to the native installer â€” it would
       // download the first-party binary this build does not ship.
       return input.nativeDistributionAvailable
         ? { action: 'native' }
@@ -104,7 +98,6 @@ export function planUpdate(input: {
       return { action: 'npm', method: input.localInstallExists ? 'local' : 'global' }
   }
 }
-
 /**
  * Decide how to update the currently running installation. Mirrors the routing
  * in `src/cli/update.ts` so the CLI and the `/update` slash command update the
@@ -120,7 +113,6 @@ export async function resolveUpdateStrategy(
   if (deps.isThirdPartyBlocked()) {
     return { action: 'blocked', reason: 'third-party-build' }
   }
-
   const { installationType } = await deps.getDiagnostic()
   return planUpdate({
     thirdPartyBlocked: false,

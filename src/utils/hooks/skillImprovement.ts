@@ -1,4 +1,4 @@
-import { feature } from 'bun:bundle'
+﻿import { feature } from 'bun:bundle'
 import { getInvokedSkillsForAgent } from '../../bootstrap/state.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../../services/analytics/growthbook.js'
 import {
@@ -93,7 +93,7 @@ function createSkillImprovementHook() {
 
     buildMessages(context) {
       const projectSkill = findProjectSkill()!
-      // Only analyze messages since the last check — the skill definition
+      // Only analyze messages since the last check â€” the skill definition
       // provides enough context for the classifier to understand corrections
       const newMessages = context.messages.slice(lastAnalyzedIndex)
       lastAnalyzedIndex = context.messages.length
@@ -183,7 +183,7 @@ export function initSkillImprovement(): void {
 
 /**
  * Apply skill improvements by calling a side-channel LLM to rewrite the skill file.
- * Fire-and-forget — does not block the main conversation.
+ * Fire-and-forget â€” does not block the main conversation.
  */
 export async function applySkillImprovement(
   skillName: string,
@@ -194,8 +194,8 @@ export async function applySkillImprovement(
   const { join } = await import('path')
   const fs = await import('fs/promises')
 
-  // Skills live at .openclaude/skills/<name>/SKILL.md relative to CWD
-  const filePath = join(getCwd(), '.openclaude', 'skills', skillName, 'SKILL.md')
+  // Skills live at .RootClaude/skills/<name>/SKILL.md relative to CWD
+  const filePath = join(getCwd(), '.RootClaude', 'skills', skillName, 'SKILL.md')
 
   let currentContent: string
   try {

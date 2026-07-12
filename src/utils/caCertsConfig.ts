@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Config/settings-backed NODE_EXTRA_CA_CERTS population for `caCerts.ts`.
  *
- * Split from `caCerts.ts` because `config.ts` → `file.ts` →
- * `permissions/filesystem.ts` → `commands.ts` transitively pulls in ~5300
+ * Split from `caCerts.ts` because `config.ts` â†’ `file.ts` â†’
+ * `permissions/filesystem.ts` â†’ `commands.ts` transitively pulls in ~5300
  * modules (REPL, React, every slash command). `proxy.ts`/`mtls.ts` (and
- * therefore anything using HTTPS through our proxy agent — WebSocketTransport,
+ * therefore anything using HTTPS through our proxy agent â€” WebSocketTransport,
  * CCRClient, telemetry) must NOT depend on that graph, or the Agent SDK
  * bundle (`connectRemoteControl` path) bloats from ~0.4 MB to ~10.8 MB.
  *
@@ -28,7 +28,7 @@ import { getSettingsForSource } from './settings/settings.js'
  * is lazy-initialized) and ensure Node.js compatibility.
  *
  * This is safe to call before the trust dialog because we only read from
- * user-controlled files (~/.claude/settings.json and ~/.openclaude.json),
+ * user-controlled files (~/.claude/settings.json and ~/.RootClaude.json),
  * not from project-level settings.
  */
 export function applyExtraCACertsFromConfig(): void {
@@ -52,7 +52,7 @@ export function applyExtraCACertsFromConfig(): void {
  * after the trust dialog. But we need the CA cert early to establish the TLS
  * connection to an HTTPS proxy during init().
  *
- * We read from global config (~/.openclaude.json) and user settings
+ * We read from global config (~/.RootClaude.json) and user settings
  * (~/.claude/settings.json). These are user-controlled files that don't
  * require trust approval.
  */

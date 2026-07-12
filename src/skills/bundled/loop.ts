@@ -1,4 +1,4 @@
-import {
+﻿import {
   CRON_CREATE_TOOL_NAME,
   CRON_DELETE_TOOL_NAME,
   DEFAULT_MAX_AGE_DAYS,
@@ -23,8 +23,8 @@ const DYNAMIC_MAX_DELAY = '1 hour'
 
 const MAINTENANCE_PROMPT = `Scheduled maintenance loop iteration.
 
-If .openclaude/loop.md exists, read it and follow it.
-Otherwise, if ~/.openclaude/loop.md exists, read it and follow it.
+If .RootClaude/loop.md exists, read it and follow it.
+Otherwise, if ~/.RootClaude/loop.md exists, read it and follow it.
 Otherwise:
 - continue any unfinished work from the conversation
 - tend to the current branch's pull request: review comments, failed CI runs, merge conflicts
@@ -125,7 +125,7 @@ ${MAINTENANCE_PROMPT}
 --- END MAINTENANCE PROMPT ---
 `
 
-  return `# /loop — fixed recurring interval
+  return `# /loop â€” fixed recurring interval
 
 The user invoked /loop with a fixed interval.
 
@@ -144,7 +144,7 @@ ${targetInstructions}
    - recurring: true
    - durable: false
 3. Briefly confirm what was scheduled, the cron expression, the human cadence, that recurring tasks auto-expire after ${DEFAULT_MAX_AGE_DAYS} days, and that the user can cancel sooner with ${CRON_DELETE_TOOL_NAME} using the returned job ID.
-4. Immediately execute the effective prompt now — do not wait for the first cron fire.
+4. Immediately execute the effective prompt now â€” do not wait for the first cron fire.
    - If the effective prompt starts with a slash command, invoke it via the Skill tool.
    - Otherwise, act on it directly.
 `
@@ -161,8 +161,8 @@ ${parsed.prompt}
     : `This is a maintenance loop with no explicit prompt.
 
 Determine the effective prompt in this order:
-1. If .openclaude/loop.md exists, read it and use it.
-2. Otherwise, if ~/.openclaude/loop.md exists, read it and use it.
+1. If .RootClaude/loop.md exists, read it and use it.
+2. Otherwise, if ~/.RootClaude/loop.md exists, read it and use it.
 3. Otherwise, use this built-in maintenance prompt:
 
 --- BEGIN MAINTENANCE PROMPT ---
@@ -172,7 +172,7 @@ ${MAINTENANCE_PROMPT}
 
   const reschedulePrompt = parsed.prompt ? `/loop ${parsed.prompt}` : '/loop'
 
-  return `# /loop — dynamic rescheduling
+  return `# /loop â€” dynamic rescheduling
 
 The user invoked /loop without a fixed interval.
 

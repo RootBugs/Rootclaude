@@ -1,5 +1,5 @@
 /**
- * OpenClaude build script — bundles the TypeScript source into a single
+ * RootClaude build script — bundles the TypeScript source into a single
  * distributable JS file using Bun's bundler.
  *
  * Handles:
@@ -201,10 +201,10 @@ result = await Bun.build({
     'MACRO.DISPLAY_VERSION': JSON.stringify(version),
     'MACRO.BUILD_TIME': JSON.stringify(new Date().toISOString()),
     'MACRO.ISSUES_EXPLAINER':
-      JSON.stringify('report the issue at https://github.com/Gitlawb/openclaude/issues'),
+      JSON.stringify('report the issue at https://github.com/RootBugs/rootclaude/issues'),
     'MACRO.FEEDBACK_CHANNEL':
-      JSON.stringify('https://github.com/Gitlawb/openclaude/issues'),
-    'MACRO.PACKAGE_URL': JSON.stringify('@gitlawb/openclaude'),
+      JSON.stringify('https://github.com/RootBugs/rootclaude/issues'),
+    'MACRO.PACKAGE_URL': JSON.stringify('@rootbugs/rootclaude'),
     'MACRO.NATIVE_PACKAGE_URL': 'undefined',
     'MACRO.VERSION_CHANGELOG': 'undefined',
   },
@@ -502,7 +502,7 @@ export const createClaudeForChromeMcpServer = noop;
             return {
               contents: `
 const noop = () => null;
-;(globalThis.__openclaudeStubMarkers ??= []).push(${marker});
+;(globalThis.__rootclaudeStubMarkers ??= []).push(${marker});
 export default noop;
 ${exports}
 `,
@@ -523,7 +523,7 @@ if (!result.success) {
   }
   process.exitCode = 1
 } else {
-  console.log(`✓ Built openclaude v${version} → dist/cli.mjs`)
+  console.log(`✓ Built rootclaude v${version} → dist/cli.mjs`)
 }
 
 // ── SDK Bundle Build ──────────────────────────────────────────────────────
@@ -544,10 +544,10 @@ sdkResult = await Bun.build({
     'MACRO.DISPLAY_VERSION': JSON.stringify(version),
     'MACRO.BUILD_TIME': JSON.stringify(new Date().toISOString()),
     'MACRO.ISSUES_EXPLAINER':
-      JSON.stringify('report the issue at https://github.com/Gitlawb/openclaude/issues'),
+      JSON.stringify('report the issue at https://github.com/RootBugs/rootclaude/issues'),
     'MACRO.FEEDBACK_CHANNEL':
-      JSON.stringify('https://github.com/Gitlawb/openclaude/issues'),
-    'MACRO.PACKAGE_URL': JSON.stringify('@gitlawb/openclaude'),
+      JSON.stringify('https://github.com/RootBugs/rootclaude/issues'),
+    'MACRO.PACKAGE_URL': JSON.stringify('@rootbugs/rootclaude'),
     'MACRO.NATIVE_PACKAGE_URL': 'undefined',
     'MACRO.VERSION_CHANGELOG': 'undefined',
   },
@@ -1033,8 +1033,8 @@ if (result?.success) {
 
   // Stub markers are not byte-stable across build hosts: the per-importer
   // scanner records each stub as the resolved absolute source path, which
-  // differs only by the repo-root prefix (`/home/ubuntu/.../openclaude` locally
-  // vs `/home/runner/work/openclaude/openclaude` on CI). canonicalStub() keys
+  // differs only by the repo-root prefix (`/home/ubuntu/.../rootclaude` locally
+  // vs `/home/runner/work/rootclaude/rootclaude` on CI). canonicalStub() keys
   // on the repo-relative path from `src/` onward (see scripts/stubMarkerGuard.ts).
   const acceptableCanonical = new Set(
     [...ACCEPTABLE_RUNTIME_STUBS].map(canonicalStub),

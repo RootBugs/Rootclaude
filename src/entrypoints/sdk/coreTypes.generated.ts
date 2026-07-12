@@ -1,4 +1,4 @@
-// AUTO-GENERATED — do not edit manually.
+﻿// AUTO-GENERATED â€” do not edit manually.
 // Regenerate with: bun scripts/generate-sdk-types.ts
 //
 // Generated from Zod schemas in coreSchemas.ts
@@ -1539,7 +1539,7 @@ export type AgentDefinition = {
   permissionMode?: "default" | "acceptEdits" | "bypassPermissions" | "fullAccess" | "plan" | "dontAsk"
 }
 
-/** Source for loading filesystem-based settings. 'user' - Global user settings (~/.openclaude/settings.json). 'project' - Project settings (.openclaude/settings.json). 'local' - Local settings (.openclaude/settings.local.json). */
+/** Source for loading filesystem-based settings. 'user' - Global user settings (~/.RootClaude/settings.json). 'project' - Project settings (.RootClaude/settings.json). 'local' - Local settings (.RootClaude/settings.local.json). */
 export type SettingSource = "user" | "project" | "local"
 
 /** Configuration for loading a plugin. */
@@ -1993,7 +1993,7 @@ export type SDKTaskProgressMessage = {
   session_id: string
 }
 
-/** Mirrors notifySessionStateChanged. 'idle' fires after heldBackResult flushes and the bg-agent do-while exits — authoritative turn-over signal. */
+/** Mirrors notifySessionStateChanged. 'idle' fires after heldBackResult flushes and the bg-agent do-while exits â€” authoritative turn-over signal. */
 export type SDKSessionStateChangedMessage = {
   type: "system"
   subtype: "session_state_changed"

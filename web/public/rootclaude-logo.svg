@@ -13,7 +13,7 @@
   <polyline points="424,420 482,460 424,500" fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="square"/>
   <line x1="520" y1="500" x2="600" y2="500" stroke="#ffffff" stroke-width="30" stroke-linecap="square"/>
 
-  <!-- git-fork trace descending from the terminal: openclaude on the gitlawb network -->
+  <!-- git-fork trace descending from the terminal: rootclaude on the gitlawb network -->
   <polyline points="512,598 512,688 416,784" fill="none" stroke="#ff7a1a" stroke-width="36" stroke-linejoin="miter"/>
   <line x1="512" y1="688" x2="608" y2="784" stroke="#ff7a1a" stroke-width="36" stroke-linecap="butt"/>
   <circle cx="384" cy="816" r="46" fill="none" stroke="#ff7a1a" stroke-width="36"/>

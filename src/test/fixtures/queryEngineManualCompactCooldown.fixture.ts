@@ -1,4 +1,4 @@
-import { mock } from 'bun:test'
+﻿import { mock } from 'bun:test'
 import assert from 'node:assert/strict'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -36,7 +36,7 @@ async function drain(generator: AsyncGenerator<unknown>): Promise<void> {
 
 const savedSessionPersistenceDisabled = isSessionPersistenceDisabled()
 const fixtureCwd = mkdtempSync(
-  join(tmpdir(), 'openclaude-query-engine-cooldown-'),
+  join(tmpdir(), 'RootClaude-query-engine-cooldown-'),
 )
 
 try {

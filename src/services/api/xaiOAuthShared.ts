@@ -1,4 +1,4 @@
-/**
+﻿/**
  * xAI OAuth shared constants and helpers.
  *
  * Mirrors the OAuth flow shipped by openclaw (`extensions/xai/xai-oauth.ts`),
@@ -20,7 +20,7 @@ export const DEFAULT_XAI_OAUTH_CALLBACK_HOST = '127.0.0.1'
 export const XAI_OAUTH_CALLBACK_PATH = '/callback'
 export const XAI_OAUTH_SCOPE =
   'openid profile email offline_access grok-cli:access api:access'
-export const XAI_OAUTH_REFERRER = 'openclaude'
+export const XAI_OAUTH_REFERRER = 'RootClaude'
 export const XAI_DEVICE_CODE_GRANT_TYPE =
   'urn:ietf:params:oauth:grant-type:device_code'
 
@@ -154,7 +154,7 @@ export async function fetchXaiOAuthDiscovery(options?: {
 }): Promise<XaiOAuthDiscovery> {
   const fetchImpl = options?.fetchImpl ?? fetch
   // Use the cleanup-safe helper instead of `AbortSignal.timeout(...)` so the
-  // underlying timer is cleared on success — raw timeout signals leak
+  // underlying timer is cleared on success â€” raw timeout signals leak
   // timers in Bun and are forbidden by the repo guard.
   const { signal, cleanup } = createCombinedAbortSignal(options?.signal, {
     timeoutMs: options?.timeoutMs ?? 15_000,

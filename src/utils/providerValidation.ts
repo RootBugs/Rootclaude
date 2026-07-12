@@ -1,4 +1,4 @@
-import { resolve } from 'node:path'
+﻿import { resolve } from 'node:path'
 import '../integrations/index.js'
 import {
   ensureIntegrationsLoaded,
@@ -430,7 +430,7 @@ async function getDescriptorValidationError(
           }
         }
       }
-      // 3. Stored OAuth credentials — covers the gap where a user has
+      // 3. Stored OAuth credentials â€” covers the gap where a user has
       // signed in (secure storage populated) but the profile env hasn't
       // been applied yet (e.g. fresh process before applySavedProfile).
       // Bare mode short-circuits inside readXaiCredentialsAsync, so this
@@ -667,6 +667,6 @@ export async function validateProviderEnvForStartupOrExit(
   }
 
   console.error(
-    `Warning: provider configuration is incomplete.\n${error}\nOpenClaude will continue starting so you can run /provider and repair the saved provider settings.`,
+    `Warning: provider configuration is incomplete.\n${error}\nRootClaude will continue starting so you can run /provider and repair the saved provider settings.`,
   )
 }

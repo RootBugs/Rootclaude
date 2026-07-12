@@ -88,10 +88,10 @@ const ENV_KEYS = [
   'OPENCODE_API_KEY',
   'DISABLE_COMPACT',
   'DISABLE_AUTO_COMPACT',
-  'OPENCLAUDE_MAX_ACTIVE_MESSAGES',
-  'OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP',
-  'OPENCLAUDE_MAX_MEMORY_MB',
-  'OPENCLAUDE_CONFIG_DIR',
+  'ROOTCLAUDE_MAX_ACTIVE_MESSAGES',
+  'ROOTCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP',
+  'ROOTCLAUDE_MAX_MEMORY_MB',
+  'ROOTCLAUDE_CONFIG_DIR',
   'WEB_SEARCH_PROVIDER',
   'WEB_SEARCH_TIMEOUT_SEC',
   'WEB_SEARCH_API',
@@ -119,8 +119,8 @@ beforeEach(() => {
     originalEnv[key] = process.env[key]
     delete process.env[key]
   }
-  tempConfigDir = mkdtempSync(join(tmpdir(), 'openclaude-system-check-'))
-  process.env.OPENCLAUDE_CONFIG_DIR = tempConfigDir
+  tempConfigDir = mkdtempSync(join(tmpdir(), 'rootclaude-system-check-'))
+  process.env.ROOTCLAUDE_CONFIG_DIR = tempConfigDir
   resetSettingsCache()
 })
 
@@ -684,7 +684,7 @@ describe('system-check memory guard diagnostics', () => {
       autoCompactEnabled: true,
       maxMessagesCompactionThreshold: undefined,
       env: {
-        OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP: 'not-a-number',
+        ROOTCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP: 'not-a-number',
       },
     })
 
@@ -700,7 +700,7 @@ describe('system-check memory guard diagnostics', () => {
       autoCompactEnabled: true,
       maxMessagesCompactionThreshold: undefined,
       env: {
-        OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP: '500',
+        ROOTCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP: '500',
       },
     })
 
@@ -734,8 +734,8 @@ describe('system-check memory guard diagnostics', () => {
       autoCompactEnabled: true,
       maxMessagesCompactionThreshold: '100',
       env: {
-        OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP: '0',
-        OPENCLAUDE_MAX_MEMORY_MB: '4096',
+        ROOTCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP: '0',
+        ROOTCLAUDE_MAX_MEMORY_MB: '4096',
       },
     })
 
@@ -743,7 +743,7 @@ describe('system-check memory guard diagnostics', () => {
       ok: false,
       label: 'Active-message hard cap',
       detail:
-        'Disabled by OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP=0; long sessions can grow without the active-message safety cap.',
+        'Disabled by ROOTCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP=0; long sessions can grow without the active-message safety cap.',
     })
     expect(results).toContainEqual({
       ok: true,
@@ -774,7 +774,7 @@ describe('checkNodeVersion', () => {
       ok: false,
       label: 'Node.js version',
       detail:
-        'Detected 20.11.1. OpenClaude requires Node.js >=22.0.0. Install Node 22 LTS or newer, then reinstall/re-run OpenClaude.',
+        'Detected 20.11.1. RootClaude requires Node.js >=22.0.0. Install Node 22 LTS or newer, then reinstall/re-run RootClaude.',
     })
   })
 
@@ -790,7 +790,7 @@ describe('checkNodeVersion', () => {
       ok: false,
       label: 'Node.js version',
       detail:
-        'Unable to run `node --version`: spawn node ENOENT. OpenClaude requires Node.js >=22.0.0 on PATH.',
+        'Unable to run `node --version`: spawn node ENOENT. RootClaude requires Node.js >=22.0.0 on PATH.',
     })
   })
 
@@ -799,7 +799,7 @@ describe('checkNodeVersion', () => {
       ok: false,
       label: 'Node.js version',
       detail:
-        'Detected 20.11.1. OpenClaude requires Node.js >=22.0.0. Install Node 22 LTS or newer, then reinstall/re-run OpenClaude.',
+        'Detected 20.11.1. RootClaude requires Node.js >=22.0.0. Install Node 22 LTS or newer, then reinstall/re-run RootClaude.',
     })
   })
 

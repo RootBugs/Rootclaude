@@ -1,15 +1,15 @@
-import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/index.mjs';
+﻿import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/index.mjs';
 import type { Command } from '../commands.js';
 import { AGENT_TOOL_NAME } from '../tools/AgentTool/constants.js';
 import { getSettingsFilePathForSource } from '../utils/settings/settings.js';
 
 function getUserSettingsPath(): string {
-  return getSettingsFilePathForSource('userSettings') ?? '~/.openclaude/settings.json';
+  return getSettingsFilePathForSource('userSettings') ?? '~/.RootClaude/settings.json';
 }
 
 const statusline = {
   type: 'prompt',
-  description: "Set up OpenClaude's status line UI",
+  description: "Set up RootClaude's status line UI",
   contentLength: 0,
   // Dynamic content
   aliases: [],

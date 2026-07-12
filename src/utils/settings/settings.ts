@@ -1,4 +1,4 @@
-import { feature } from 'bun:bundle'
+﻿import { feature } from 'bun:bundle'
 import mergeWith from 'lodash-es/mergeWith.js'
 import { dirname, join, resolve } from 'path'
 import { z } from 'zod/v4'
@@ -190,7 +190,7 @@ export function parseSettingsFile(path: string): {
   }
   const result = parseSettingsFileUncached(path)
   setCachedParsedFile(path, result)
-  // Clone the first return too — the caller may mutate before
+  // Clone the first return too â€” the caller may mutate before
   // another caller reads the same cache entry.
   return {
     settings: result.settings ? clone(result.settings) : null,
@@ -232,7 +232,7 @@ function parseSettingsFileUncached(path: string): {
 
 /**
  * Get the absolute path to the associated file root for a given settings source
- * (e.g. for $PROJ_DIR/.openclaude/settings.json, returns $PROJ_DIR)
+ * (e.g. for $PROJ_DIR/.RootClaude/settings.json, returns $PROJ_DIR)
  * @param source The source of the settings
  * @returns The root path of the settings file
  */
@@ -300,9 +300,9 @@ export function getRelativeSettingsFilePathForSource(
 ): string {
   switch (source) {
     case 'projectSettings':
-      return '.openclaude/settings.json'
+      return '.RootClaude/settings.json'
     case 'localSettings':
-      return '.openclaude/settings.local.json'
+      return '.RootClaude/settings.local.json'
   }
 }
 
@@ -369,7 +369,7 @@ function getSettingsForSourceUncached(
 
 /**
  * Get the origin of the highest-priority active policy settings source.
- * Uses "first source wins" — returns the first source that has content.
+ * Uses "first source wins" â€” returns the first source that has content.
  * Priority: remote > plist/hklm > file (managed-settings.json) > hkcu
  */
 export function getPolicySettingsOrigin():
@@ -397,7 +397,7 @@ export function getPolicySettingsOrigin():
     return 'file'
   }
 
-  // 4. HKCU (lowest — user-writable)
+  // 4. HKCU (lowest â€” user-writable)
   const hkcu = getHkcuSettings()
   if (Object.keys(hkcu.settings).length > 0) {
     return 'hkcu'
@@ -410,7 +410,7 @@ export function getPolicySettingsOrigin():
  * Merges `settings` into the existing settings for `source` using lodash mergeWith.
  *
  * To delete a key from a record field (e.g. enabledPlugins, extraKnownMarketplaces),
- * set it to `undefined` — do NOT use `delete`. mergeWith only detects deletion when
+ * set it to `undefined` â€” do NOT use `delete`. mergeWith only detects deletion when
  * the key is present with an explicit `undefined` value.
  */
 export function updateSettingsForSource(
@@ -434,7 +434,7 @@ export function updateSettingsForSource(
     getFsImplementation().mkdirSync(dirname(filePath))
 
     // Try to get existing settings with validation. Bypass the per-source
-    // cache — mergeWith below mutates its target (including nested refs),
+    // cache â€” mergeWith below mutates its target (including nested refs),
     // and mutating the cached object would leak unpersisted state if the
     // write fails before resetSettingsCache().
     let existingSettings = getSettingsForSourceUncached(source)
@@ -448,7 +448,7 @@ export function updateSettingsForSource(
         if (!isENOENT(e)) {
           throw e
         }
-        // File doesn't exist — fall through to merge with empty settings
+        // File doesn't exist â€” fall through to merge with empty settings
       }
       if (content !== null) {
         const rawData = safeParseJSON(content)
@@ -639,14 +639,14 @@ export function getManagedSettingsKeysForLogging(
 function isSettingsLoadInProgress(): boolean {
   return (
     (globalThis as Record<string, unknown>)[
-      '__openclaudeSettingsLoadInProgress'
+      '__RootClaudeSettingsLoadInProgress'
     ] === true
   )
 }
 
 function setSettingsLoadInProgress(value: boolean): void {
   ;(globalThis as Record<string, unknown>)[
-    '__openclaudeSettingsLoadInProgress'
+    '__RootClaudeSettingsLoadInProgress'
   ] = value
 }
 
@@ -684,7 +684,7 @@ function loadSettingsFromDisk(): SettingsWithErrors {
 
     // Merge settings from each source in priority order with deep merging
     for (const source of getEnabledSettingSources()) {
-      // policySettings: "first source wins" — use the highest-priority source
+      // policySettings: "first source wins" â€” use the highest-priority source
       // that has content. Priority: remote > HKLM/plist > managed-settings.json > HKCU
       if (source === 'policySettings') {
         let policySettings: SettingsJson | null = null
@@ -697,7 +697,7 @@ function loadSettingsFromDisk(): SettingsWithErrors {
           if (result.success) {
             policySettings = result.data
           } else {
-            // Remote exists but is invalid — surface errors even as we fall through
+            // Remote exists but is invalid â€” surface errors even as we fall through
             policyErrors.push(
               ...formatZodError(result.error, 'remote managed settings'),
             )
@@ -722,7 +722,7 @@ function loadSettingsFromDisk(): SettingsWithErrors {
           policyErrors.push(...errors)
         }
 
-        // 4. HKCU (lowest — user-writable, only if nothing above exists)
+        // 4. HKCU (lowest â€” user-writable, only if nothing above exists)
         if (!policySettings) {
           const hkcu = getHkcuSettings()
           if (Object.keys(hkcu.settings).length > 0) {
@@ -836,7 +836,7 @@ export function getSettings_DEPRECATED(): SettingsJson {
 
 export type SettingsWithSources = {
   effective: SettingsJson
-  /** Ordered low-to-high priority — later entries override earlier ones. */
+  /** Ordered low-to-high priority â€” later entries override earlier ones. */
   sources: Array<{ source: SettingSource; settings: SettingsJson }>
 }
 
@@ -845,7 +845,7 @@ export type SettingsWithSources = {
  * in merge-priority order. Only includes sources that are enabled and have
  * non-empty content.
  *
- * Always reads fresh from disk — resets the session cache so that `effective`
+ * Always reads fresh from disk â€” resets the session cache so that `effective`
  * and `sources` are consistent even if the change detector hasn't fired yet.
  */
 export function getSettingsWithSources(): SettingsWithSources {
@@ -891,7 +891,7 @@ export function getSettingsWithErrors(): SettingsWithErrors {
  */
 /**
  * Returns true if any trusted settings source has accepted the bypass
- * permissions mode dialog. projectSettings is intentionally excluded —
+ * permissions mode dialog. projectSettings is intentionally excluded â€”
  * a malicious project could otherwise auto-bypass the dialog (RCE risk).
  */
 export function hasSkipDangerousModePermissionPrompt(): boolean {
@@ -923,7 +923,7 @@ export function hasSkipFullAccessModePermissionPrompt(): boolean {
 
 /**
  * Returns true if any trusted settings source has enabled bypass permissions
- * mode availability. projectSettings is intentionally excluded — a malicious
+ * mode availability. projectSettings is intentionally excluded â€” a malicious
  * project could otherwise enable bypass mode (security risk).
  */
 export function hasAllowBypassPermissionsMode(): boolean {
@@ -941,7 +941,7 @@ export function hasAllowBypassPermissionsMode(): boolean {
 
 /**
  * Returns true if any trusted settings source has accepted the auto
- * mode opt-in dialog. projectSettings is intentionally excluded —
+ * mode opt-in dialog. projectSettings is intentionally excluded â€”
  * a malicious project could otherwise auto-bypass the dialog (RCE risk).
  */
 export function hasAutoModeOptIn(): boolean {
@@ -981,7 +981,7 @@ export function getUseAutoModeDuringPlan(): boolean {
 /**
  * Returns the merged autoMode config from trusted settings sources.
  * Only available when TRANSCRIPT_CLASSIFIER is active; returns undefined otherwise.
- * projectSettings is intentionally excluded — a malicious project could
+ * projectSettings is intentionally excluded â€” a malicious project could
  * otherwise inject classifier allow/deny rules (RCE risk).
  */
 export function getAutoModeConfig():

@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto'
+﻿import { randomUUID } from 'crypto'
 import { copyFile, writeFile } from 'fs/promises'
 import memoize from 'lodash-es/memoize.js'
 import { homedir } from 'os'
@@ -27,7 +27,7 @@ const MAX_SLUG_RETRIES = 10
 
 export function getDefaultPlansDirectory({
   configDirEnv = resolveConfigDirEnv({
-    openClaudeConfigDir: process.env.OPENCLAUDE_CONFIG_DIR,
+    RootClaudeConfigDir: process.env.RootClaude_CONFIG_DIR,
     legacyConfigDir: process.env.CLAUDE_CONFIG_DIR,
   }),
   homeDir = homedir(),
@@ -38,7 +38,7 @@ export function getDefaultPlansDirectory({
   if (configDirEnv) {
     return join(configDirEnv.normalize('NFC'), 'plans')
   }
-  return join(homeDir, '.openclaude', 'plans').normalize('NFC')
+  return join(homeDir, '.RootClaude', 'plans').normalize('NFC')
 }
 
 /**
@@ -191,14 +191,14 @@ export async function copyPlanForResume(
   const sessionId = targetSessionId ?? getSessionId()
   setPlanSlug(sessionId, slug)
 
-  // Attempt to read the plan file directly — recovery triggers on ENOENT.
+  // Attempt to read the plan file directly â€” recovery triggers on ENOENT.
   const planPath = join(getPlansDirectory(), `${slug}.md`)
   try {
     await getFsImplementation().readFile(planPath, { encoding: 'utf-8' })
     return true
   } catch (e: unknown) {
     if (!isENOENT(e)) {
-      // Don't throw — called fire-and-forget (void copyPlanForResume(...)) with no .catch()
+      // Don't throw â€” called fire-and-forget (void copyPlanForResume(...)) with no .catch()
       logError(e)
       return false
     }
@@ -284,13 +284,13 @@ export async function copyPlanForFork(
  * Recover plan content from the message history. Plan content can appear in
  * three forms depending on what happened during the session:
  *
- * 1. ExitPlanMode tool_use input — normalizeToolInput injects the plan content
+ * 1. ExitPlanMode tool_use input â€” normalizeToolInput injects the plan content
  *    into the tool_use input, which persists in the transcript.
  *
- * 2. planContent field on user messages — set during the "clear context and
+ * 2. planContent field on user messages â€” set during the "clear context and
  *    implement" flow when ExitPlanMode is approved.
  *
- * 3. plan_file_reference attachment — created by auto-compact to preserve the
+ * 3. plan_file_reference attachment â€” created by auto-compact to preserve the
  *    plan across compaction boundaries.
  */
 function recoverPlanFromMessages(log: LogOption): string | null {

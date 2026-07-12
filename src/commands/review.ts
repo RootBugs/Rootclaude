@@ -1,4 +1,4 @@
-import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/messages.js'
+﻿import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/messages.js'
 import type { Command } from '../commands.js'
 import { isUltrareviewEnabled } from './review/ultrareviewEnabled.js'
 
@@ -42,13 +42,13 @@ const review: Command = {
   },
 }
 
-// /ultrareview is the ONLY entry point to the remote bughunter path —
+// /ultrareview is the ONLY entry point to the remote bughunter path â€”
 // /review stays purely local. local-jsx type renders the overage permission
 // dialog when free reviews are exhausted.
 const ultrareview: Command = {
   type: 'local-jsx',
   name: 'ultrareview',
-  description: `~10–20 min · Finds and verifies bugs in your branch. Runs in OpenClaude on the web. See ${CCR_TERMS_URL}`,
+  description: `~10â€“20 min Â· Finds and verifies bugs in your branch. Runs in RootClaude on the web. See ${CCR_TERMS_URL}`,
   isEnabled: () => isUltrareviewEnabled(),
   load: () => import('./review/ultrareviewCommand.js'),
 }

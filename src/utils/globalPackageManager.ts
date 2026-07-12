@@ -1,4 +1,4 @@
-import memoize from 'lodash-es/memoize.js'
+﻿import memoize from 'lodash-es/memoize.js'
 import { realpath } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join, resolve, sep } from 'node:path'
@@ -22,7 +22,7 @@ const FALLBACK_PRIORITY: GlobalPackageManager[] = ['npm', 'bun', 'pnpm', 'yarn']
 
 /**
  * Build the argv (after the binary name) to globally install `spec`
- * (e.g. "@gitlawb/openclaude@latest") with the given package manager.
+ * (e.g. "@gitlawb/RootClaude@latest") with the given package manager.
  */
 export function getGlobalInstallArgs(
   pm: GlobalPackageManager,
@@ -37,7 +37,7 @@ export function getGlobalInstallArgs(
       return ['add', '-g', spec]
     case 'yarn':
       // Classic yarn syntax; yarn berry aliases `global add` to the same effect
-      // for the documented openclaude install path.
+      // for the documented rootclaude install path.
       return ['global', 'add', spec]
   }
 }
@@ -53,7 +53,7 @@ function isUnder(child: string, parent: string): boolean {
 /**
  * Pure decision: given the running binary's path and each candidate package
  * manager's global root, return the PM whose root contains the binary. When
- * several roots match (one nested inside another) the most specific — longest —
+ * several roots match (one nested inside another) the most specific Ã¢â‚¬â€ longest Ã¢â‚¬â€
  * root wins, so npm's broad global dir never shadows pnpm/bun/yarn. Returns null
  * when no root contains the path.
  */
@@ -121,7 +121,7 @@ async function getGlobalRoot(
       case 'yarn': {
         // Classic yarn only; Yarn Berry (v2+) removed `yarn global`, so this
         // returns null for Berry installs and detection falls back via
-        // pickFallbackPackageManager — acceptable degradation, as Berry has no
+        // pickFallbackPackageManager Ã¢â‚¬â€ acceptable degradation, as Berry has no
         // classic global install for us to own anyway.
         const r = await execFileNoThrowWithCwd('yarn', ['global', 'dir'], opts)
         return r.code === 0 && r.stdout.trim()
@@ -149,7 +149,7 @@ async function resolveRealPath(target: string): Promise<string> {
 }
 
 /**
- * Detect which package manager owns the currently running OpenClaude install.
+ * Detect which package manager owns the currently running RootClaude install.
  *
  * Strategy:
  *  1. Resolve the real path of the running binary (following the bin symlink
@@ -158,14 +158,14 @@ async function resolveRealPath(target: string): Promise<string> {
  *     {@link selectOwningPackageManager}.
  *  3. If nothing matches, fall back via {@link pickFallbackPackageManager}.
  *
- * Memoized — detection spawns several subprocesses and the answer is stable for
+ * Memoized Ã¢â‚¬â€ detection spawns several subprocesses and the answer is stable for
  * the life of the process. Returns null only when none of npm/yarn/pnpm/bun are
  * installed.
  */
 export const detectGlobalPackageManager = memoize(
   async (): Promise<GlobalPackageManager | null> => {
     // Availability probes and the self-path lookup are independent subprocess
-    // calls — run them concurrently so detection cost is bounded by the slowest
+    // calls Ã¢â‚¬â€ run them concurrently so detection cost is bounded by the slowest
     // probe rather than the sum of all of them.
     const [availabilityFlags, selfPath] = await Promise.all([
       Promise.all(ALL_PACKAGE_MANAGERS.map(isAvailable)),

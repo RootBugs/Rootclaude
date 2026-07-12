@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Color palettes for the startup splash logo.
  * Selected via /logo, persisted in GlobalConfig.logoColor.
  */
@@ -6,13 +6,14 @@
 export type RGB = readonly [number, number, number]
 
 export type LogoPalette = {
-  /** Gradient stops painted top→bottom across the ASCII logo rows. */
+  /** Gradient stops painted topâ†’bottom across the ASCII logo rows. */
   gradient: readonly RGB[]
-  /** Highlight color for tagline, version label, and the ✦ marker. */
+  /** Highlight color for tagline, version label, and the âœ¦ marker. */
   accent: RGB
   /** Soft body text color (tagline value, label values). */
   cream: RGB
-  /** Dim color for label names and the openclaude prefix. */
+  /** Dim color for label names and the
+   rootclaude prefix. */
   dim: RGB
   /** Box-drawing border color. */
   border: RGB

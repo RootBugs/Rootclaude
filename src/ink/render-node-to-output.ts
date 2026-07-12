@@ -1,4 +1,4 @@
-import indentString from 'indent-string'
+﻿import indentString from 'indent-string'
 import { applyTextStyles } from './colorize.js'
 import type { DOMElement, DOMNode } from './dom.js'
 import getMaxWidth from './get-max-width.js'
@@ -17,7 +17,7 @@ import { isXtermJs } from './terminal.js'
 import { widestLine } from './widest-line.js'
 import wrapText from './wrap-text.js'
 
-// Matches detectXtermJsWheel() in ScrollKeybindingHandler.tsx — the curve
+// Matches detectXtermJsWheel() in ScrollKeybindingHandler.tsx â€” the curve
 // and drain must agree on terminal detection. TERM_PROGRAM check is the sync
 // fallback; isXtermJs() is the authoritative XTVERSION-probe result.
 function isXtermJsHost(): boolean {
@@ -29,8 +29,8 @@ function isXtermJsHost(): boolean {
 // whether the full-damage sledgehammer (PR #20120) is needed this frame.
 // Applies on both alt-screen and main-screen. Steady-state frames
 // (spinner tick, clock tick, text append into a fixed-height box) don't
-// shift layout → narrow damage bounds → O(changed cells) diff instead of
-// O(rows×cols).
+// shift layout â†’ narrow damage bounds â†’ O(changed cells) diff instead of
+// O(rowsÃ—cols).
 let layoutShifted = false
 
 export function resetLayoutShifted(): void {
@@ -51,7 +51,7 @@ let scrollHint: ScrollHint | null = null
 
 function shouldDisableScrollFastPath(): boolean {
   if (!process.env.TMUX) return false
-  if (process.env.OPENCLAUDE_KONSOLE_TMUX_FAST_SCROLL) return false
+  if (process.env.RootClaude_KONSOLE_TMUX_FAST_SCROLL) return false
   return (
     process.env.TERM_PROGRAM === 'konsole' ||
     process.env.KONSOLE_VERSION !== undefined ||
@@ -63,8 +63,8 @@ const DISABLE_SCROLL_FAST_PATH = shouldDisableScrollFastPath()
 
 // Rects of position:absolute nodes from the PREVIOUS frame, used by
 // ScrollBox's blit+shift third-pass repair (see usage site). Recorded at
-// three paths — full-render nodeCache.set, node-level blit early-return,
-// blitEscapingAbsoluteDescendants — so clean-overlay consecutive scrolls
+// three paths â€” full-render nodeCache.set, node-level blit early-return,
+// blitEscapingAbsoluteDescendants â€” so clean-overlay consecutive scrolls
 // still have the rect.
 let absoluteRectsPrev: Rectangle[] = []
 let absoluteRectsCur: Rectangle[] = []
@@ -83,7 +83,7 @@ export function getScrollHint(): ScrollHint | null {
 // frame's drain. renderer.ts calls markDirty(it) post-render so the NEXT
 // frame's root blit check fails and we descend to continue draining.
 // Without this, after the scrollbox's dirty flag is cleared (line ~721),
-// the next frame blits root and never reaches the scrollbox — drain stalls.
+// the next frame blits root and never reaches the scrollbox â€” drain stalls.
 let scrollDrainNode: DOMElement | null = null
 
 export function resetScrollDrainNode(): void {
@@ -98,9 +98,9 @@ export function getScrollDrainNode(): DOMElement | null {
 // triggers scrollTop = maxScroll, the ScrollBox records the delta +
 // viewport bounds here. ink.tsx consumes it post-render to translate any active
 // text selection by -delta so the highlight stays anchored to the TEXT
-// (native terminal behavior — the selection walks up the screen as content
+// (native terminal behavior â€” the selection walks up the screen as content
 // scrolls, eventually clipping at the top). The frontFrame screen buffer
-// still holds the old content at that point — captureScrolledRows reads
+// still holds the old content at that point â€” captureScrolledRows reads
 // from it before the front/back swap to preserve the text for copy.
 export type FollowScroll = {
   delta: number
@@ -115,21 +115,21 @@ export function consumeFollowScroll(): FollowScroll | null {
   return f
 }
 
-// ── Native terminal drain (iTerm2/Ghostty/etc. — proportional events) ──
+// â”€â”€ Native terminal drain (iTerm2/Ghostty/etc. â€” proportional events) â”€â”€
 // Minimum rows applied per frame. Above this, drain is proportional (~3/4
-// of remaining) so big bursts catch up in log₄ frames while the tail
+// of remaining) so big bursts catch up in logâ‚„ frames while the tail
 // decelerates smoothly. Hard cap is innerHeight-1 so DECSTBM hint fires.
 const SCROLL_MIN_PER_FRAME = 4
 
-// ── xterm.js (VS Code) smooth drain ──
-// Low pending (≤5) drains ALL in one frame — slow wheel clicks should be
-// instant (click → visible jump → done), not micro-stutter 1-row frames.
+// â”€â”€ xterm.js (VS Code) smooth drain â”€â”€
+// Low pending (â‰¤5) drains ALL in one frame â€” slow wheel clicks should be
+// instant (click â†’ visible jump â†’ done), not micro-stutter 1-row frames.
 // Higher pending drains at a small fixed step so fast-scroll animation
 // stays smooth (no big jumps). Pending >MAX snaps excess.
-const SCROLL_INSTANT_THRESHOLD = 5 // ≤ this: drain all at once
+const SCROLL_INSTANT_THRESHOLD = 5 // â‰¤ this: drain all at once
 const SCROLL_HIGH_PENDING = 12 // threshold for HIGH step
 const SCROLL_STEP_MED = 2 // pending (INSTANT, HIGH): catch-up
-const SCROLL_STEP_HIGH = 3 // pending ≥ HIGH: fast flick
+const SCROLL_STEP_HIGH = 3 // pending â‰¥ HIGH: fast flick
 const SCROLL_MAX_PENDING = 30 // snap excess beyond this
 
 // xterm.js adaptive drain. Returns rows applied; mutates pendingScrollDelta.
@@ -146,7 +146,7 @@ function drainAdaptive(
     applied += sign * (abs - SCROLL_MAX_PENDING)
     abs = SCROLL_MAX_PENDING
   }
-  // ≤5: drain all (slow click = instant). Above: small fixed step.
+  // â‰¤5: drain all (slow click = instant). Above: small fixed step.
   const step =
     abs <= SCROLL_INSTANT_THRESHOLD
       ? abs
@@ -187,7 +187,7 @@ function drainProportional(
   return applied
 }
 
-// OSC 8 hyperlink escape sequences. Empty params (;;) — ansi-tokenize only
+// OSC 8 hyperlink escape sequences. Empty params (;;) â€” ansi-tokenize only
 // recognizes this exact prefix. The id= param (for grouping wrapped lines)
 // is added at terminal-output time in termio/osc.ts link().
 const OSC = '\u001B]'
@@ -341,7 +341,7 @@ function applyStylesToWrappedText(
  * wrapping per-input-line here gives identical output to a single
  * whole-string wrap while letting us mark per-piece provenance.
  * Truncate modes never add newlines (cli-truncate is whole-string) so
- * they fall through with softWrap undefined — no tracking, no behavior
+ * they fall through with softWrap undefined â€” no tracking, no behavior
  * change from the pre-softWrap path.
  */
 function wrapWithSoftWrap(
@@ -387,7 +387,7 @@ function applyPaddingToText(
     text = '\n'.repeat(offsetY) + indentString(text, offsetX)
     if (softWrap && offsetY > 0) {
       // Prepend `false` for each padding line so indices stay aligned
-      // with text.split('\n'). Mutate in place — caller owns the array.
+      // with text.split('\n'). Mutate in place â€” caller owns the array.
       softWrap.unshift(...Array<boolean>(offsetY).fill(false))
     }
   }
@@ -403,7 +403,7 @@ function isRenderableElementNode(node: unknown): node is DOMElement {
   if (!node || typeof node !== 'object') return false
   // Omit nodeName before re-adding it as `string`: a plain intersection
   // (`Partial<DOMElement> & { nodeName?: string }`) collapses to ElementNames,
-  // which makes the '#text' check below (TextNodes are real at runtime —
+  // which makes the '#text' check below (TextNodes are real at runtime â€”
   // see createTextNode in dom.ts) a no-overlap comparison.
   const candidate = node as Omit<Partial<DOMElement>, 'nodeName'> & {
     nodeName?: string
@@ -455,11 +455,11 @@ function renderNodeToOutput(
             width: Math.floor(cached.width),
             height: Math.floor(cached.height),
           })
-          // Drop descendants' cache too — hideInstance's markDirty walks UP
+          // Drop descendants' cache too â€” hideInstance's markDirty walks UP
           // only, so descendants' .dirty stays false. Their nodeCache entries
           // survive with pre-hide rects. On unhide, if position didn't shift,
           // the blit check at line ~432 passes and copies EMPTY cells from
-          // prevScreen (cleared here) → content vanishes.
+          // prevScreen (cleared here) â†’ content vanishes.
           dropSubtreeCache(node)
           layoutShifted = true
         }
@@ -478,7 +478,7 @@ function renderNodeToOutput(
     // can compute negative screen y when they extend above the viewport. Without
     // clamping, setCellAt drops cells at y<0, clipping the TOP of the content
     // (best matches in an autocomplete). By clamping to 0, we shift the element
-    // down so the top rows are visible and the bottom overflows below — the
+    // down so the top rows are visible and the bottom overflows below â€” the
     // opaque prop ensures it paints over whatever is underneath.
     if (y < 0 && node.style.position === 'absolute') {
       y = 0
@@ -509,7 +509,7 @@ function renderNodeToOutput(
       // Absolute descendants can paint outside this node's layout bounds
       // (e.g. a slash menu with position='absolute' bottom='100%' floats
       // above). If a dirty clipped sibling re-rendered and overwrote those
-      // cells, the blit above only restored this node's own rect — the
+      // cells, the blit above only restored this node's own rect â€” the
       // absolute descendants' cells are lost. Re-blit them from prevScreen
       // so the overlays survive.
       blitEscapingAbsoluteDescendants(node, output, prevScreen, fx, fy, fw, fh)
@@ -540,7 +540,7 @@ function renderNodeToOutput(
       )
     }
 
-    // Read before deleting — hasRemovedChild disables prevScreen blitting
+    // Read before deleting â€” hasRemovedChild disables prevScreen blitting
     // for siblings to prevent stale overflow content from being restored.
     const clears = pendingClears.get(node)
     const hasRemovedChild = clears !== undefined
@@ -558,14 +558,14 @@ function renderNodeToOutput(
     }
 
     // Yoga squeezed this node to zero height (overflow in a height-constrained
-    // parent) AND a sibling lands at the same y. Skip rendering — both would
+    // parent) AND a sibling lands at the same y. Skip rendering â€” both would
     // write to the same row; if the sibling's content is shorter, this node's
     // tail chars ghost (e.g. "false" + "true" = "truee"). The clear above
-    // already handled the visible→squeezed transition.
+    // already handled the visibleâ†’squeezed transition.
     //
     // The sibling-overlap check is load-bearing: Yoga's pixel-grid rounding
     // can give a box h=0 while still leaving a row for it (next sibling at
-    // y+1, not y). HelpV2's third shortcuts column hits this — skipping
+    // y+1, not y). HelpV2's third shortcuts column hits this â€” skipping
     // unconditionally drops "ctrl + z to suspend" from /help output.
     if (height === 0 && siblingSharesY(node, yogaNode)) {
       nodeCache.set(node, { x, y, width, height, top: yogaTop })
@@ -576,7 +576,7 @@ function renderNodeToOutput(
     if (node.nodeName === 'ink-raw-ansi') {
       // Pre-rendered ANSI content. The producer already wrapped to width and
       // emitted terminal-ready escape codes. Skip squash, measure, wrap, and
-      // style re-application — output.write() parses ANSI directly into cells.
+      // style re-application â€” output.write() parses ANSI directly into cells.
       const text = node.attributes['rawText'] as string
       if (text) {
         output.write(x, y, text)
@@ -667,15 +667,15 @@ function renderNodeToOutput(
       // Mark this box's region as non-selectable (fullscreen text
       // selection). noSelect ops are applied AFTER blits/writes in
       // output.get(), so this wins regardless of what's rendered into
-      // the region — including blits from prevScreen when the box is
+      // the region â€” including blits from prevScreen when the box is
       // clean (the op is emitted on both the dirty-render path here
       // AND on the blit fast-path at line ~235 since blitRegion copies
       // the noSelect bitmap alongside cells).
       //
       // 'from-left-edge' extends the exclusion from col 0 so any
       // upstream indentation (tool prefix, tree lines) is covered too
-      // — a multi-row drag over a diff gutter shouldn't pick up the
-      // `  └  ` prefix on row 0 or the blank cells under it on row 1+.
+      // â€” a multi-row drag over a diff gutter shouldn't pick up the
+      // `  â””  ` prefix on row 0 or the blank cells under it on row 1+.
       if (node.style.noSelect) {
         const boxX = Math.floor(x)
         const fromEdge = node.style.noSelect === 'from-left-edge'
@@ -741,12 +741,12 @@ function renderNodeToOutput(
         )
         const contentYoga = content?.yogaNode
         // scrollHeight is the intrinsic height of the content wrapper.
-        // Do NOT add getComputedTop() — that's the wrapper's offset
+        // Do NOT add getComputedTop() â€” that's the wrapper's offset
         // within the viewport (equal to the scroll container's
         // paddingTop), and innerHeight already subtracts padding, so
         // including it double-counts padding and inflates maxScroll.
         const scrollHeight = contentYoga?.getComputedHeight() ?? 0
-        // Capture previous scroll bounds BEFORE overwriting — the at-bottom
+        // Capture previous scroll bounds BEFORE overwriting â€” the at-bottom
         // follow check compares against last frame's max.
         const prevScrollHeight = node.scrollHeight ?? scrollHeight
         const prevInnerHeight = node.scrollViewportHeight ?? innerHeight
@@ -759,14 +759,14 @@ function renderNodeToOutput(
 
         const maxScroll = Math.max(0, scrollHeight - innerHeight)
         // scrollAnchor: scroll so the anchored element's top is at the
-        // viewport top (plus offset). Yoga is FRESH — same calculateLayout
+        // viewport top (plus offset). Yoga is FRESH â€” same calculateLayout
         // pass that just produced scrollHeight. Deterministic alternative
         // to scrollTo(N) which bakes a number that's stale by the throttled
         // render; the element ref defers the read to now. One-shot snap.
         // A prior eased-seek version (proportional drain over ~5 frames)
-        // moved scrollTop without firing React's notify → parent's quantized
-        // store snapshot never updated → StickyTracker got stale range props
-        // → firstVisible wrong. Also: SCROLL_MIN_PER_FRAME=4 with snap-at-1
+        // moved scrollTop without firing React's notify â†’ parent's quantized
+        // store snapshot never updated â†’ StickyTracker got stale range props
+        // â†’ firstVisible wrong. Also: SCROLL_MIN_PER_FRAME=4 with snap-at-1
         // ping-ponged forever at delta=2. Smooth needs drain-end notify
         // plumbing; shipping instant first. stickyScroll overrides.
         if (node.scrollAnchor) {
@@ -778,11 +778,11 @@ function renderNodeToOutput(
           node.scrollAnchor = undefined
         }
         // At-bottom follow. Positional: if scrollTop was at (or past) the
-        // previous max, pin to the new max. Scroll away → stop following;
-        // scroll back (or scrollToBottom/sticky attr) → resume. The sticky
+        // previous max, pin to the new max. Scroll away â†’ stop following;
+        // scroll back (or scrollToBottom/sticky attr) â†’ resume. The sticky
         // flag is OR'd in for cold start (scrollTop=0 before first layout)
         // and scrollToBottom-from-far-away (flag set before scrollTop moves)
-        // — the imperative field takes precedence over the attribute so
+        // â€” the imperative field takes precedence over the attribute so
         // scrollTo/scrollBy can break stickiness. pendingDelta<0 guard:
         // don't cancel an in-flight scroll-up when content races in.
         // Capture scrollTop before follow so ink.tsx can translate any
@@ -806,13 +806,13 @@ function renderNodeToOutput(
           node.scrollTop = maxScroll
           node.pendingScrollDelta = undefined
           // Sync flag so useVirtualScroll's isSticky() agrees with positional
-          // state — sticky-broken-but-at-bottom (wheel tremor, click-select
+          // state â€” sticky-broken-but-at-bottom (wheel tremor, click-select
           // at max) otherwise leaves useVirtualScroll's clamp holding the
           // viewport short of new streaming content. scrollTo/scrollBy set
           // false; this restores true, same as scrollToBottom() would.
           // Only restore when (a) positionally at bottom and (b) the flag
           // was explicitly broken (===false) by scrollTo/scrollBy. When
-          // undefined (never set by user action) leave it alone — setting it
+          // undefined (never set by user action) leave it alone â€” setting it
           // would make the sticky flag sticky-by-default and lock out
           // direct scrollTop writes (e.g. the alt-screen-perf test).
           if (
@@ -836,7 +836,7 @@ function renderNodeToOutput(
         // app-side accel curve) uses adaptive small-step drain. isXtermJs()
         // depends on the async XTVERSION probe, but by the time this runs
         // (pendingScrollDelta is only set by wheel events, >>50ms after
-        // startup) the probe has resolved — same timing guarantee the
+        // startup) the probe has resolved â€” same timing guarantee the
         // wheel-accel curve relies on.
         let cur = node.scrollTop ?? 0
         const pending = node.pendingScrollDelta
@@ -844,10 +844,10 @@ function renderNodeToOutput(
         const cMax = node.scrollClampMax
         const haveClamp = cMin !== undefined && cMax !== undefined
         if (pending !== undefined && pending !== 0) {
-          // Drain continues even past the clamp — the render-clamp below
+          // Drain continues even past the clamp â€” the render-clamp below
           // holds the VISUAL at the mounted edge regardless. Hard-stopping
-          // here caused stop-start jutter: drain hits edge → pause → React
-          // commits → clamp widens → drain resumes → edge again. Letting
+          // here caused stop-start jutter: drain hits edge â†’ pause â†’ React
+          // commits â†’ clamp widens â†’ drain resumes â†’ edge again. Letting
           // scrollTop advance smoothly while the clamp lags gives continuous
           // visual scroll at React's commit rate (the clamp catches up each
           // commit). But THROTTLE the drain when already past the clamp so
@@ -864,7 +864,7 @@ function renderNodeToOutput(
             ? drainAdaptive(node, pending, eff)
             : drainProportional(node, pending, eff)
         } else if (pending === 0) {
-          // Opposite scrollBy calls cancelled to zero — clear so we don't
+          // Opposite scrollBy calls cancelled to zero â€” clear so we don't
           // schedule an infinite loop of no-op drain frames.
           node.pendingScrollDelta = undefined
         }
@@ -872,10 +872,10 @@ function renderNodeToOutput(
         // Virtual-scroll clamp: if scrollTop raced past the currently-mounted
         // range (burst PageUp before React re-renders), render at the EDGE of
         // the mounted children instead of blank spacer. Do NOT write back to
-        // node.scrollTop — the clamped value is for this paint only; the real
+        // node.scrollTop â€” the clamped value is for this paint only; the real
         // scrollTop stays so React's next commit sees the target and mounts
         // the right range. Not scheduling scrollDrainNode here keeps the
-        // clamp passive — React's commit → resetAfterCommit → onRender will
+        // clamp passive â€” React's commit â†’ resetAfterCommit â†’ onRender will
         // paint again with fresh bounds.
         const clamped = haveClamp
           ? Math.max(cMin, Math.min(scrollTop, cMax))
@@ -895,7 +895,7 @@ function renderNodeToOutput(
           // layoutShifted detection gap: when scrollTop moves by >= viewport
           // height (batched PageUps, fast wheel), every visible child gets
           // culled (cache dropped) and every newly-visible child has no
-          // cache — so the children's positionChanged check can't fire.
+          // cache â€” so the children's positionChanged check can't fire.
           // The content wrapper's cached y (which encodes -scrollTop) is
           // the only node that survives to witness the scroll.
           const contentCached = nodeCache.get(content)
@@ -903,7 +903,7 @@ function renderNodeToOutput(
           if (contentCached && contentCached.y !== contentY) {
             // delta = newScrollTop - oldScrollTop (positive = scrolled down).
             // Capture a DECSTBM hint if the container itself didn't move
-            // and the shift fits within the viewport — otherwise the full
+            // and the shift fits within the viewport â€” otherwise the full
             // rewrite is needed anyway, and layoutShifted stays the fallback.
             const delta = contentCached.y - contentY
             const regionTop = Math.floor(y + contentYoga.getComputedTop())
@@ -923,13 +923,13 @@ function renderNodeToOutput(
           // Fast path: scroll (hint captured) with usable prevScreen.
           // Blit prevScreen's scroll region into next.screen, shift in-place
           // by delta (mirrors DECSTBM), then render ONLY the edge rows. The
-          // nested clip keeps child writes out of stable rows — a tall child
+          // nested clip keeps child writes out of stable rows â€” a tall child
           // that spans edge+stable still renders but stable cells are
           // clipped, preserving the blit. Avoids re-rendering every visible
           // child (expensive for long syntax-highlighted transcripts).
           //
           // When content.dirty (e.g. streaming text at the bottom of the
-          // scroll), we still use the fast path — the dirty child is almost
+          // scroll), we still use the fast path â€” the dirty child is almost
           // always in the edge rows (the bottom, where new content appears).
           // After edge rendering, any dirty children in stable rows are
           // re-rendered in a second pass to avoid showing stale blitted
@@ -937,7 +937,7 @@ function renderNodeToOutput(
           //
           // Guard: the fast path only handles pure scroll or bottom-append.
           // Child removal/insertion changes the content height in a way that
-          // doesn't match the scroll delta — fall back to the full path so
+          // doesn't match the scroll delta â€” fall back to the full path so
           // removed children don't leave stale cells and shifted siblings
           // render at their new positions.
           const scrollHeight = contentYoga.getComputedHeight()
@@ -950,7 +950,7 @@ function renderNodeToOutput(
                 (hint.delta > 0 && heightDelta === hint.delta)))
           // scrollHint is set above when hint is captured. If safeForFastPath
           // is false the full path renders a next.screen that doesn't match
-          // the DECSTBM shift — emitting DECSTBM leaves stale rows (seen as
+          // the DECSTBM shift â€” emitting DECSTBM leaves stale rows (seen as
           // content bleeding through during scroll-up + streaming). Clear it.
           if (!safeForFastPath) scrollHint = null
           if (hint && prevScreen && safeForFastPath) {
@@ -973,7 +973,7 @@ function renderNodeToOutput(
               y1: edgeTop,
               y2: edgeBottom + 1,
             })
-            // Snapshot dirty children before the first pass — the first
+            // Snapshot dirty children before the first pass â€” the first
             // pass clears dirty flags, and edge-spanning children would be
             // missed by the second pass without this snapshot.
             const dirtyChildren =
@@ -1002,9 +1002,9 @@ function renderNodeToOutput(
             // Second pass: re-render children in stable rows whose screen
             // position doesn't match where the shift put their old pixels.
             // Covers TWO cases:
-            //   1. Dirty children — their content changed, blitted pixels are
+            //   1. Dirty children â€” their content changed, blitted pixels are
             //      stale regardless of position.
-            //   2. Clean children BELOW a middle-growth point — when a dirty
+            //   2. Clean children BELOW a middle-growth point â€” when a dirty
             //      sibling above them grows, their yogaTop increases but
             //      scrollTop increases by the same amount (sticky), so their
             //      screenY is CONSTANT. The shift moved their old pixels to
@@ -1013,7 +1013,7 @@ function renderNodeToOutput(
             //      during streaming (e.g. triple spinner, pill duplication).
             //   For bottom-append (the common case), all clean children are
             //   ABOVE the growth point; their screenY decreased by delta and
-            //   the shift put them at the right place — skipped here, fast
+            //   the shift put them at the right place â€” skipped here, fast
             //   path preserved.
             if (dirtyChildren) {
               const edgeTopLocal = edgeTop - contentY
@@ -1022,13 +1022,13 @@ function renderNodeToOutput(
               // Track cumulative height change of children iterated so far.
               // A clean child's yogaTop is unchanged iff this is zero (no
               // sibling above it grew/shrank/mounted). When zero, the skip
-              // check cached.y−delta === screenY reduces to delta === delta
-              // (tautology) → skip without yoga reads. Restores O(dirty)
+              // check cached.yâˆ’delta === screenY reduces to delta === delta
+              // (tautology) â†’ skip without yoga reads. Restores O(dirty)
               // that #24536 traded away: for bottom-append the dirty child
               // is last (all clean children skip); for virtual-scroll range
               // shift the topSpacer shrink + new-item heights self-balance
               // to zero before reaching the clean block. Middle-growth
-              // leaves shift non-zero → clean children after the growth
+              // leaves shift non-zero â†’ clean children after the growth
               // point fall through to yoga + the fine-grained check below,
               // preserving the ghost-box fix.
               let cumHeightShift = 0
@@ -1039,7 +1039,7 @@ function renderNodeToOutput(
                 if (!isDirty && cumHeightShift === 0) {
                   if (nodeCache.has(childElem)) continue
                   // Uncached = culled last frame, now re-entering. blit
-                  // never painted it → fall through to yoga + render.
+                  // never painted it â†’ fall through to yoga + render.
                   // Height unchanged (clean), so cumHeightShift stays 0.
                 }
                 const cy = childElem.yogaNode
@@ -1061,12 +1061,12 @@ function renderNodeToOutput(
                 if (childTop >= edgeTopLocal && childBottom <= edgeBottomLocal)
                   continue
                 const screenY = Math.floor(contentY + childTop)
-                // Clean children reaching here have cumHeightShift ≠ 0 OR
-                // no cache. Re-check precisely: cached.y − delta is where
+                // Clean children reaching here have cumHeightShift â‰  0 OR
+                // no cache. Re-check precisely: cached.y âˆ’ delta is where
                 // the shift left old pixels; if it equals new screenY the
                 // blit is correct (shift re-balanced at this child, or
-                // yogaTop happens to net out). No cache → blit never
-                // painted it → render.
+                // yogaTop happens to net out). No cache â†’ blit never
+                // painted it â†’ render.
                 if (!isDirty) {
                   const childCached = nodeCache.get(childElem)
                   if (
@@ -1077,7 +1077,7 @@ function renderNodeToOutput(
                   }
                 }
                 // Wipe this child's region with spaces to overwrite stale
-                // blitted content — output.clear() only expands damage and
+                // blitted content â€” output.clear() only expands damage and
                 // cannot zero cells that the blit already wrote.
                 const screenBottom = Math.min(
                   Math.floor(contentY + childBottom),
@@ -1109,7 +1109,7 @@ function renderNodeToOutput(
             // overlays landed. The blit copied prevScreen cells INCLUDING
             // overlay pixels (overlays render AFTER this ScrollBox so they
             // painted into prevScreen's scroll region). After shift, those
-            // pixels sit at (rect.y - delta) — neither edge render nor the
+            // pixels sit at (rect.y - delta) â€” neither edge render nor the
             // overlay's own re-render covers them. Wipe and re-render
             // ScrollBox content so the diff writes correct cells.
             const spaces = absoluteRectsPrev.length ? ' '.repeat(w) : ''
@@ -1160,7 +1160,7 @@ function renderNodeToOutput(
             // prevScreen so unchanged children blit. Dirty children already
             // self-clear via their own cached-rect clear. Without this, a
             // spinner inside ScrollBox forces a full-content rewrite every
-            // frame — on wide terminals over tmux (no BSU/ESU) the
+            // frame â€” on wide terminals over tmux (no BSU/ESU) the
             // bandwidth crosses the chunk boundary and the frame tears.
             const scrolled = contentCached && contentCached.y !== contentY
             if (scrolled && y1 !== undefined && y2 !== undefined) {
@@ -1171,7 +1171,7 @@ function renderNodeToOutput(
                 height: Math.floor(y2 - y1),
               })
             }
-            // positionChanged (ScrollBox height shrunk — pill mount) means a
+            // positionChanged (ScrollBox height shrunk â€” pill mount) means a
             // child spanning the old bottom edge would blit its full cached
             // rect past the new clip. output.ts clips blits now, but also
             // disable prevScreen here so the partial-row child re-renders at
@@ -1235,7 +1235,7 @@ function renderNodeToOutput(
           // on top of the fresh fill. Previously opaque kept blit enabled
           // on the assumption that plain-space fill + unchanged children =
           // valid composite, but children CAN reposition (ScrollBox remeasure
-          // on re-render → /permissions body blanked on Down arrow, #25436).
+          // on re-render â†’ /permissions body blanked on Down arrow, #25436).
           ownBackgroundColor || node.style.opaque ? undefined : prevScreen,
           boxBackgroundColor,
         )
@@ -1273,7 +1273,7 @@ function renderNodeToOutput(
 
 // Overflow contamination: content overflows right/down, so clean siblings
 // AFTER a dirty/removed sibling can contain stale overflow in prevScreen.
-// Disable blit for siblings after a dirty child — but still pass prevScreen
+// Disable blit for siblings after a dirty child â€” but still pass prevScreen
 // TO the dirty child itself so its clean descendants can blit. The dirty
 // child's own blit check already fails (node.dirty=true at line 216), so
 // passing prevScreen only benefits its subtree.
@@ -1281,24 +1281,24 @@ function renderNodeToOutput(
 // conservatively disable blit for all.
 //
 // Clipped children (overflow hidden/scroll on both axes) cannot overflow
-// onto later siblings — their content is confined to their layout bounds.
+// onto later siblings â€” their content is confined to their layout bounds.
 // Skip the contamination guard for them so later siblings can still blit.
 // Without this, a spinner inside a ScrollBox dirties the wrapper on every
-// tick and the bottom prompt section never blits → 100% writes every frame.
+// tick and the bottom prompt section never blits â†’ 100% writes every frame.
 //
 // Exception: absolute-positioned clipped children may have layout bounds
 // that overlap arbitrary siblings, so the clipping does not help.
 //
 // Overlap contamination (seenDirtyClipped): a later ABSOLUTE sibling whose
 // rect sits inside a dirty clipped child's bounds would blit stale cells
-// from prevScreen — the clipped child just rewrote those cells this frame.
+// from prevScreen â€” the clipped child just rewrote those cells this frame.
 // The clipsBothAxes skip only protects against OVERFLOW (clipped child
 // painting outside its bounds), not overlap (absolute sibling painting
 // inside them). For non-opaque absolute siblings, skipSelfBlit forces
-// descent (the full-width rect has transparent gaps → stale blit) while
+// descent (the full-width rect has transparent gaps â†’ stale blit) while
 // still passing prevScreen so opaque descendants can blit their narrower
 // rects (NewMessagesPill's inner Text with backgroundColor). Opaque
-// absolute siblings fill their entire rect — direct blit is safe.
+// absolute siblings fill their entire rect â€” direct blit is safe.
 function renderChildren(
   node: DOMElement,
   output: Output,
@@ -1315,7 +1315,7 @@ function renderChildren(
       continue
     }
     const childElem = childNode
-    // Capture dirty before rendering — renderNodeToOutput clears the flag
+    // Capture dirty before rendering â€” renderNodeToOutput clears the flag
     const wasDirty = childElem.dirty
     const isAbsolute = childElem.style.position === 'absolute'
     renderNodeToOutput(childElem, output, {
@@ -1350,7 +1350,7 @@ function clipsBothAxes(node: DOMElement): boolean {
 }
 
 // When Yoga squeezes a box to h=0, the ghost only happens if a sibling
-// lands at the same computed top — then both write to that row and the
+// lands at the same computed top â€” then both write to that row and the
 // shorter content leaves the longer's tail visible. Yoga's pixel-grid
 // rounding can give h=0 while still advancing the next sibling's top
 // (HelpV2's third shortcuts column), so h=0 alone isn't sufficient.
@@ -1367,7 +1367,7 @@ function siblingSharesY(node: DOMElement, yogaNode: LayoutNode): boolean {
     if (!sib) continue
     return sib.getComputedTop() === myTop
   }
-  // No next sibling with a yoga node — check previous. A run of h=0 boxes
+  // No next sibling with a yoga node â€” check previous. A run of h=0 boxes
   // at the tail would all share y with each other.
   for (let i = idx - 1; i >= 0; i--) {
     const sibling = siblings[i]
@@ -1408,14 +1408,14 @@ function blitEscapingAbsoluteDescendants(
         const cy = Math.floor(cached.y)
         const cw = Math.floor(cached.width)
         const ch = Math.floor(cached.height)
-        // Only blit rects that extend outside the parent's layout bounds —
+        // Only blit rects that extend outside the parent's layout bounds â€”
         // cells within the parent rect are already covered by the parent blit.
         if (cx < px || cy < py || cx + cw > pr || cy + ch > pb) {
           output.blit(prevScreen, cx, cy, cw, ch)
         }
       }
     }
-    // Recurse — absolute descendants can be nested arbitrarily deep
+    // Recurse â€” absolute descendants can be nested arbitrarily deep
     blitEscapingAbsoluteDescendants(elem, output, prevScreen, px, py, pw, ph)
   }
 }
@@ -1436,7 +1436,7 @@ function renderScrolledChildren(
   scrollTopY: number,
   scrollBottomY: number,
   inheritedBackgroundColor: Color | undefined,
-  // When true (DECSTBM fast path), culled children keep their cache —
+  // When true (DECSTBM fast path), culled children keep their cache â€”
   // the blit+shift put stable rows in next.screen so stale cache is
   // never read. Avoids walking O(total_children * subtree_depth) per frame.
   preserveCulledCache = false,
@@ -1445,9 +1445,9 @@ function renderScrolledChildren(
   // Track cumulative height shift of dirty children iterated so far. When
   // zero, a clean child's yogaTop is unchanged (no sibling above it grew),
   // so cached.top is fresh and the cull check skips yoga. Bottom-append
-  // has the dirty child last → all prior clean children hit cache →
+  // has the dirty child last â†’ all prior clean children hit cache â†’
   // O(dirty) not O(mounted). Middle-growth leaves shift non-zero after
-  // the dirty child → subsequent children yoga-read (needed for correct
+  // the dirty child â†’ subsequent children yoga-read (needed for correct
   // culling since their yogaTop shifted).
   let cumHeightShift = 0
   for (const childNode of node.childNodes) {
@@ -1475,13 +1475,13 @@ function renderScrolledChildren(
         }
         // Refresh cached top so next frame's cumShift===0 path stays
         // correct. For culled children with preserveCulledCache=true this
-        // is the ONLY refresh point — without it, a middle-growth frame
+        // is the ONLY refresh point â€” without it, a middle-growth frame
         // leaves stale tops that misfire next frame.
         if (cached) cached.top = top
       }
       const bottom = top + height
       if (bottom <= scrollTopY || top >= scrollBottomY) {
-        // Culled — outside visible window. Drop stale cache entries from
+        // Culled â€” outside visible window. Drop stale cache entries from
         // the subtree so when this child re-enters it doesn't fire clears
         // at positions now occupied by siblings. The viewport-clear on
         // scroll-change handles the visible-area repaint.

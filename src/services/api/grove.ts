@@ -1,4 +1,4 @@
-import axios from 'axios'
+﻿import axios from 'axios'
 import memoize from 'lodash-es/memoize.js'
 import {
   type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
@@ -74,7 +74,7 @@ export const getGroveSettings = memoize(
       return { success: true, data: response.data }
     } catch (err) {
       logError(err)
-      // Don't cache failures — transient network issues would lock the user
+      // Don't cache failures â€” transient network issues would lock the user
       // out of privacy settings for the entire session (deadlock: dialog needs
       // success to render the toggle, toggle calls updateGroveSettings which
       // is the only other place the cache is cleared).
@@ -105,7 +105,7 @@ export async function markGroveNoticeViewed(): Promise<void> {
         },
       )
     })
-    // This mutates grove_notice_viewed_at server-side — Grove.tsx:87 reads it
+    // This mutates grove_notice_viewed_at server-side â€” Grove.tsx:87 reads it
     // to decide whether to show the dialog. Without invalidation a same-session
     // remount would read stale viewed_at:null and re-show the dialog.
     getGroveSettings.cache.clear?.()
@@ -344,13 +344,13 @@ export async function checkGroveForNonInteractive(): Promise<void> {
     if (config === null || config.notice_is_grace_period) {
       // Grace period is still active - show informational message and continue
       writeToStderr(
-        '\nAn update to our Consumer Terms and Privacy Policy will take effect on October 8, 2025. Run `openclaude` to review the updated terms.\n\n',
+        '\nAn update to our Consumer Terms and Privacy Policy will take effect on October 8, 2025. Run `RootClaude` to review the updated terms.\n\n',
       )
       await markGroveNoticeViewed()
     } else {
       // Grace period has ended - show error message and exit
       writeToStderr(
-        '\n[ACTION REQUIRED] An update to our Consumer Terms and Privacy Policy has taken effect on October 8, 2025. You must run `openclaude` to review the updated terms.\n\n',
+        '\n[ACTION REQUIRED] An update to our Consumer Terms and Privacy Policy has taken effect on October 8, 2025. You must run `RootClaude` to review the updated terms.\n\n',
       )
       await gracefulShutdown(1)
     }

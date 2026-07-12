@@ -1,26 +1,26 @@
-import memoize from 'lodash-es/memoize.js'
+﻿import memoize from 'lodash-es/memoize.js'
 import { homedir } from 'os'
 import { join } from 'path'
 
 /**
  * Resolves the override env value for the config home directory.
- * Resolves the OpenClaude config home override.
+ * Resolves the RootClaude config home override.
  *
- * Intentionally does not read `CLAUDE_CONFIG_DIR`: OpenClaude config must stay
+ * Intentionally does not read `CLAUDE_CONFIG_DIR`: RootClaude config must stay
  * independent from Claude Code config and credentials.
  */
 export function resolveConfigDirEnv(options?: {
-  openClaudeConfigDir?: string
+  RootClaudeConfigDir?: string
   legacyConfigDir?: string
   warn?: (message: string) => void
 }): string | undefined {
   void options?.legacyConfigDir
   void options?.warn
-  return options?.openClaudeConfigDir || undefined
+  return options?.RootClaudeConfigDir || undefined
 }
 
 /**
- * Test-only escape hatch — resets the once-per-process conflict warning so
+ * Test-only escape hatch Ã¢â‚¬â€ resets the once-per-process conflict warning so
  * unit tests can re-trigger it.
  */
 export function __resetConfigDirEnvWarningForTesting(): void {
@@ -36,9 +36,9 @@ export function resolveClaudeConfigHomeDir(options?: {
   }
 
   const homeDir = options?.homeDir ?? homedir()
-  const openClaudeDir = join(homeDir, '.openclaude')
+  const RootClaudeDir = join(homeDir, '.RootClaude')
 
-  return openClaudeDir.normalize('NFC')
+  return RootClaudeDir.normalize('NFC')
 }
 
 let claudeConfigHomeDirOverride: string | undefined
@@ -73,7 +73,7 @@ export const getClaudeConfigHomeDir = Object.assign(
     }
 
     const configDirEnv = resolveConfigDirEnv({
-      openClaudeConfigDir: process.env.OPENCLAUDE_CONFIG_DIR,
+      RootClaudeConfigDir: process.env.RootClaude_CONFIG_DIR,
     })
     if (configDirEnv) {
       return resolveClaudeConfigHomeDir({ configDirEnv })
@@ -122,7 +122,7 @@ export function isEnvDefinedFalsy(
 }
 
 /**
- * --bare / CLAUDE_CODE_SIMPLE — skip hooks, LSP, plugin sync, skill dir-walk,
+ * --bare / CLAUDE_CODE_SIMPLE Ã¢â‚¬â€ skip hooks, LSP, plugin sync, skill dir-walk,
  * attribution, background prefetches, and ALL keychain/credential reads.
  * Auth is strictly ANTHROPIC_API_KEY env or apiKeyHelper from --settings.
  * Explicit CLI flags (--plugin-dir, --add-dir, --mcp-config) still honored.
@@ -130,7 +130,7 @@ export function isEnvDefinedFalsy(
  *
  * Checks argv directly (in addition to the env var) because several gates
  * run before main.tsx's action handler sets CLAUDE_CODE_SIMPLE=1 from --bare
- * — notably startKeychainPrefetch() at main.tsx top-level.
+ * Ã¢â‚¬â€ notably startKeychainPrefetch() at main.tsx top-level.
  */
 export function isBareMode(): boolean {
   return (
@@ -223,7 +223,7 @@ export function isInProtectedNamespace(): boolean {
 
 // @[MODEL LAUNCH]: Add a Vertex region override env var for the new model.
 /**
- * Model prefix → env var for Vertex region overrides.
+ * Model prefix Ã¢â€ â€™ env var for Vertex region overrides.
  * Order matters: more specific prefixes must come before less specific ones
  * (e.g., 'claude-opus-4-1' before 'claude-opus-4').
  */

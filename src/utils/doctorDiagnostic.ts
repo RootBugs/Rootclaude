@@ -1,4 +1,4 @@
-import { execa } from 'execa'
+﻿import { execa } from 'execa'
 import { readFile, realpath } from 'fs/promises'
 import { homedir } from 'os'
 import { delimiter, join, posix, win32 } from 'path'
@@ -48,7 +48,7 @@ import { which } from './which.js'
 function getCliBinaryName(): string {
   return MACRO.PACKAGE_URL === '@anthropic-ai/claude-code'
     ? 'claude'
-    : 'openclaude'
+    : 'RootClaude'
 }
 
 function getNativeDataDirName(): string {
@@ -82,7 +82,7 @@ export function getNativeInstallUnavailableFix(
     case 'local-config':
       return `Run ${getCliBinaryName()} update to refresh the install method, or update manually with: ${getNpmUpdateCommand()}`
     case 'local-overlap':
-      return `Use the local install at ~/.openclaude/local/${getCliBinaryName()}, remove it, or update the global npm package with: ${getNpmUpdateCommand()}`
+      return `Use the local install at ~/.RootClaude/local/${getCliBinaryName()}, remove it, or update the global npm package with: ${getNpmUpdateCommand()}`
     case 'global-permissions':
       return `Do one of: (1) Re-install node without sudo, or (2) Update manually with: ${getNpmUpdateCommand()}`
     case 'native-config':
@@ -273,7 +273,7 @@ async function detectMultipleInstallations(): Promise<
   }
 
   // Check for global npm installation
-  const packagesToCheck = [MACRO.PACKAGE_URL || '@gitlawb/openclaude']
+  const packagesToCheck = [MACRO.PACKAGE_URL || '@gitlawb/RootClaude']
   const npmResult = await execFileNoThrow('npm', [
     '-g',
     'config',
@@ -403,7 +403,7 @@ async function detectConfigurationIssues(
   // Managed-settings forwards-compat: the schema preprocess silently drops
   // unknown strictPluginOnlyCustomization surface names so one future enum
   // value doesn't null out the entire policy file (settings.ts:101). But
-  // admins should KNOW — read the raw file and diff. Runs before the
+  // admins should KNOW â€” read the raw file and diff. Runs before the
   // development-mode early return: this is config correctness, not an
   // install-path check, and it's useful to see during dev testing.
   try {
@@ -419,7 +419,7 @@ async function detectConfigurationIssues(
     if (field !== undefined && typeof field !== 'boolean') {
       if (!Array.isArray(field)) {
         // .catch(undefined) in the schema silently drops this, so the rest
-        // of managed settings survive — but the admin typed something
+        // of managed settings survive â€” but the admin typed something
         // wrong (an object, a string, etc.).
         warnings.push({
           issue: `managed-settings.json: strictPluginOnlyCustomization has an invalid value (expected true or an array, got ${typeof field})`,
@@ -440,7 +440,7 @@ async function detectConfigurationIssues(
       }
     }
   } catch {
-    // ENOENT (no managed settings) / parse error — not this check's concern.
+    // ENOENT (no managed settings) / parse error â€” not this check's concern.
     // Parse errors are surfaced by the settings loader itself.
   }
 
@@ -490,7 +490,7 @@ async function detectConfigurationIssues(
           .join(win32.sep)
         warnings.push({
           issue: `Native installation exists but ${windowsLocalBinPath} is not in your PATH`,
-          fix: `Add it by opening: System Properties → Environment Variables → Edit User PATH → New → Add the path above. Then restart your terminal.`,
+          fix: `Add it by opening: System Properties â†’ Environment Variables â†’ Edit User PATH â†’ New â†’ Add the path above. Then restart your terminal.`,
         })
       } else {
         // Unix-style PATH instructions
@@ -550,13 +550,13 @@ async function detectConfigurationIssues(
         // Alias exists but points to invalid target
         warnings.push({
           issue: 'Local installation not accessible',
-          fix: `Alias exists but points to invalid target: ${existingAlias}. Update alias: alias ${getCliBinaryName()}="~/.openclaude/local/${getCliBinaryName()}"`,
+          fix: `Alias exists but points to invalid target: ${existingAlias}. Update alias: alias ${getCliBinaryName()}="~/.RootClaude/local/${getCliBinaryName()}"`,
         })
       } else {
         // No alias exists and not in PATH
         warnings.push({
           issue: 'Local installation not accessible',
-          fix: `Create alias: alias ${getCliBinaryName()}="~/.openclaude/local/${getCliBinaryName()}"`,
+          fix: `Create alias: alias ${getCliBinaryName()}="~/.RootClaude/local/${getCliBinaryName()}"`,
         })
       }
     }
@@ -617,7 +617,7 @@ export async function getDoctorDiagnostic(): Promise<DiagnosticInfo> {
 
     for (const install of npmInstalls) {
       if (install.type === 'npm-global') {
-        const uninstallPackageName = MACRO.PACKAGE_URL || '@gitlawb/openclaude'
+        const uninstallPackageName = MACRO.PACKAGE_URL || '@gitlawb/RootClaude'
         const uninstallCmd = `npm -g uninstall ${uninstallPackageName}`
         warnings.push({
           issue: `Leftover npm global installation at ${install.path}`,

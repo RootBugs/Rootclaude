@@ -1,4 +1,4 @@
-import { z } from 'zod/v4'
+﻿import { z } from 'zod/v4'
 import { setScheduledTasksEnabled } from '../../bootstrap/state.js'
 import type { ValidationResult } from '../../Tool.js'
 import { buildTool, type ToolDef } from '../../Tool.js'
@@ -37,7 +37,7 @@ const inputSchema = lazySchema(() =>
       `true (default) = fire on every cron match until deleted or auto-expired after ${DEFAULT_MAX_AGE_DAYS} days. false = fire once at the next match, then auto-delete. Use false for "remind me at X" one-shot requests with pinned minute/hour/dom/month.`,
     ),
     durable: semanticBoolean(z.boolean().optional()).describe(
-      'true = persist to .openclaude/scheduled_tasks.json and survive restarts. false (default) = in-memory only, dies when this Claude session ends. Use true only when the user asks the task to survive across sessions.',
+      'true = persist to .RootClaude/scheduled_tasks.json and survive restarts. false (default) = in-memory only, dies when this Claude session ends. Use true only when the user asks the task to survive across sessions.',
     ),
   }),
 )
@@ -118,7 +118,7 @@ export const CronCreateTool = buildTool({
     // durable cron file or injects content that would execute at next startup
     // without re-authentication. Session-only (durable: false) jobs are never
     // persisted and don't need this guard. Also respect the durable kill
-    // switch — when isDurableCronEnabled() is false the call() path
+    // switch â€” when isDurableCronEnabled() is false the call() path
     // downgrades durable: true to session-only, so validation must not
     // reject prompts that would never be persisted.
     if (input.durable && isDurableCronEnabled() && input.prompt.length > MAX_CRON_PROMPT_CHARS) {
@@ -145,7 +145,7 @@ export const CronCreateTool = buildTool({
     // Enable the scheduler so the task fires in this session. The
     // useScheduledTasks hook polls this flag and will start watching
     // on the next tick. For durable: false tasks the file never changes
-    // — check() reads the session store directly — but the enable flag
+    // â€” check() reads the session store directly â€” but the enable flag
     // is still what starts the tick loop.
     setScheduledTasksEnabled(true)
     return {
@@ -159,7 +159,7 @@ export const CronCreateTool = buildTool({
   },
   mapToolResultToToolResultBlockParam(output, toolUseID) {
     const where = output.durable
-      ? 'Persisted to .openclaude/scheduled_tasks.json'
+      ? 'Persisted to .RootClaude/scheduled_tasks.json'
       : 'Session-only (not written to disk, dies when Claude exits)'
     return {
       tool_use_id: toolUseID,

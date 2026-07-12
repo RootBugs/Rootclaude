@@ -1,4 +1,4 @@
-import React, { PureComponent, type ReactNode } from 'react';
+﻿import React, { PureComponent, type ReactNode } from 'react';
 import { updateLastInteractionTime } from '../../bootstrap/state.js';
 import { stopCapturingEarlyInput } from '../../utils/earlyInput.js';
 import { isEnvTruthy } from '../../utils/envUtils.js';
@@ -28,8 +28,8 @@ import { TerminalSizeContext } from './TerminalSizeContext.js';
 const SUPPORTS_SUSPEND = process.platform !== 'win32';
 
 // After this many milliseconds of stdin silence, the next chunk triggers
-// a terminal mode re-assert (mouse tracking). Catches tmux detach→attach,
-// ssh reconnect, and laptop wake — the terminal resets DEC private modes
+// a terminal mode re-assert (mouse tracking). Catches tmux detachâ†’attach,
+// ssh reconnect, and laptop wake â€” the terminal resets DEC private modes
 // but no signal reaches us. 5s is well above normal inter-keystroke gaps
 // but short enough that the first scroll after reattach works.
 const STDIN_RESUME_GAP_MS = 5000;
@@ -48,7 +48,7 @@ type Props = {
   // so the handler is always wired but dormant until tracking is on.
   readonly selection: SelectionState;
   readonly onSelectionChange: () => void;
-  // Dispatch a click at (col, row) — hit-tests the DOM tree and bubbles
+  // Dispatch a click at (col, row) â€” hit-tests the DOM tree and bubbles
   // onClick handlers. Returns true if a DOM handler consumed the click.
   // No-op (returns false) outside fullscreen mode (Ink.dispatchClick
   // gates on altScreenActive).
@@ -119,7 +119,7 @@ export default class App extends PureComponent<Props, State> {
   // Default to readable-mode stdin (legacy Ink behavior). The data-mode path
   // is kept as an explicit opt-in because some terminals can enter a state
   // where startup input appears frozen when data mode is the default.
-  stdinMode: 'readable' | 'data' = process.env.OPENCLAUDE_USE_DATA_STDIN === '1' || process.env.OPENCLAUDE_USE_READABLE_STDIN === '0' ? 'data' : 'readable';
+  stdinMode: 'readable' | 'data' = process.env.RootClaude_USE_DATA_STDIN === '1' || process.env.RootClaude_USE_READABLE_STDIN === '0' ? 'data' : 'readable';
   // Timeout durations for incomplete sequences (ms)
   readonly NORMAL_TIMEOUT = 50; // Short timeout for regular esc sequences
   readonly PASTE_TIMEOUT = 500; // Longer timeout for paste operations
@@ -135,10 +135,10 @@ export default class App extends PureComponent<Props, State> {
   lastClickCol = -1;
   lastClickRow = -1;
   clickCount = 0;
-  // Deferred hyperlink-open timer — cancelled if a second click arrives
+  // Deferred hyperlink-open timer â€” cancelled if a second click arrives
   // within MULTI_CLICK_TIMEOUT_MS (so double-clicking a hyperlink selects
   // the word without also opening the browser). DOM onClick dispatch is
-  // NOT deferred — it returns true from onClickAt and skips this timer.
+  // NOT deferred â€” it returns true from onClickAt and skips this timer.
   pendingHyperlinkTimer: ReturnType<typeof setTimeout> | null = null;
   // Last mode-1003 motion position. Terminals already dedupe to cell
   // granularity but this also lets us skip dispatchHover entirely on
@@ -252,7 +252,7 @@ export default class App extends PureComponent<Props, State> {
         this.props.stdout.write(EFE);
         // Enable extended key reporting so ctrl+shift+<letter> is
         // distinguishable from ctrl+<letter>. We write both the kitty stack
-        // push (CSI >1u) and xterm modifyOtherKeys level 2 (CSI >4;2m) —
+        // push (CSI >1u) and xterm modifyOtherKeys level 2 (CSI >4;2m) â€”
         // terminals honor whichever they implement (tmux only accepts the
         // latter).
         if (supportsExtendedKeys()) {
@@ -265,7 +265,7 @@ export default class App extends PureComponent<Props, State> {
         // sentinel bounds the round-trip, and if the terminal ignores the
         // query, flush() still resolves and name stays undefined.
         // Deferred to next tick so it fires AFTER the current synchronous
-        // init sequence completes — avoids interleaving with alt-screen/mouse
+        // init sequence completes â€” avoids interleaving with alt-screen/mouse
         // tracking enable writes that may happen in the same render cycle.
         setImmediate(() => {
           void Promise.all([this.querier.send(xtversion()), this.querier.flush()]).then(([r]) => {
@@ -431,7 +431,7 @@ export default class App extends PureComponent<Props, State> {
   };
   handleTerminalFocus = (isFocused: boolean): void => {
     // setTerminalFocused notifies subscribers: TerminalFocusProvider (context)
-    // and Clock (interval speed) — no App setState needed.
+    // and Clock (interval speed) â€” no App setState needed.
     setTerminalFocused(isFocused);
   };
   handleSuspend = (): void => {
@@ -449,7 +449,7 @@ export default class App extends PureComponent<Props, State> {
 
     // Show cursor, disable focus reporting, and disable mouse tracking
     // before suspending. DISABLE_MOUSE_TRACKING is a no-op if tracking
-    // wasn't enabled, so it's safe to emit unconditionally — without
+    // wasn't enabled, so it's safe to emit unconditionally â€” without
     // it, SGR mouse sequences would appear as garbled text at the
     // shell prompt while suspended.
     if (this.props.stdout.isTTY) {
@@ -493,14 +493,14 @@ function processKeysInBatch(app: App, items: ParsedInput[], _unused1: undefined,
   // This is called from the central input handler to avoid having multiple
   // stdin listeners that can cause race conditions and dropped input.
   // Terminal responses (kind: 'response') are automated, not user input.
-  // Mode-1003 no-button motion is also excluded — passive cursor drift is
+  // Mode-1003 no-button motion is also excluded â€” passive cursor drift is
   // not engagement (would suppress idle notifications + defer housekeeping).
   if (items.some(i => i.kind === 'key' || i.kind === 'mouse' && !((i.button & 0x20) !== 0 && (i.button & 0x03) === 3))) {
     updateLastInteractionTime();
   }
   for (const item of items) {
     // Terminal responses (DECRPM, DA1, OSC replies, etc.) are not user
-    // input — route them to the querier to resolve pending promises.
+    // input â€” route them to the querier to resolve pending promises.
     if (item.kind === 'response') {
       app.querier.onResponse(item.response);
       continue;
@@ -525,7 +525,7 @@ function processKeysInBatch(app: App, items: ParsedInput[], _unused1: undefined,
     if (sequence === FOCUS_OUT) {
       app.handleTerminalFocus(false);
       // Defensive: if we lost the release event (mouse released outside
-      // terminal window — some emulators drop it rather than capturing the
+      // terminal window â€” some emulators drop it rather than capturing the
       // pointer), focus-out is the next observable signal that the drag is
       // over. Without this, drag-to-scroll's timer runs until the scroll
       // boundary is hit.
@@ -577,7 +577,7 @@ export function handleMouseEvent(app: App, m: ParsedMouse): void {
       // capture the pointer past window bounds, so the SGR 'm' never
       // arrives). Finish the selection here so copy-on-select fires. The
       // FOCUS_OUT handler covers the "switched apps" case but not "released
-      // past the edge, came back" — and tmux drops focus events unless
+      // past the edge, came back" â€” and tmux drops focus events unless
       // `focus-events on` is set, so this is the more reliable signal.
       if (sel.isDragging) {
         finishSelection(sel);
@@ -596,7 +596,7 @@ export function handleMouseEvent(app: App, m: ParsedMouse): void {
     }
     if ((m.button & 0x20) !== 0) {
       // Drag motion: mode-aware extension (char/word/line). onSelectionDrag
-      // calls notifySelectionChange internally — no extra onSelectionChange.
+      // calls notifySelectionChange internally â€” no extra onSelectionChange.
       app.props.onSelectionDrag(col, row);
       return;
     }
@@ -621,7 +621,7 @@ export function handleMouseEvent(app: App, m: ParsedMouse): void {
     app.lastClickCol = col;
     app.lastClickRow = row;
     if (app.clickCount >= 2) {
-      // Cancel any pending hyperlink-open from the first click — this is
+      // Cancel any pending hyperlink-open from the first click â€” this is
       // a double-click, not a single-click on a link.
       if (app.pendingHyperlinkTimer) {
         clearTimeout(app.pendingHyperlinkTimer);
@@ -633,7 +633,7 @@ export function handleMouseEvent(app: App, m: ParsedMouse): void {
       return;
     }
     startSelection(sel, col, row);
-    // SGR bit 0x08 = alt (xterm.js wires altKey here, not metaKey — see
+    // SGR bit 0x08 = alt (xterm.js wires altKey here, not metaKey â€” see
     // comment at the hyperlink-open guard below). On macOS xterm.js,
     // receiving alt means macOptionClickForcesSelection is OFF (otherwise
     // xterm.js would have consumed the event for native selection).
@@ -644,7 +644,7 @@ export function handleMouseEvent(app: App, m: ParsedMouse): void {
 
   // Release: end the drag even for non-zero button codes. Some terminals
   // encode release with the motion bit or button=3 "no button" (carried
-  // over from pre-SGR X10 encoding) — filtering those would orphan
+  // over from pre-SGR X10 encoding) â€” filtering those would orphan
   // isDragging=true and leave drag-to-scroll's timer running until the
   // scroll boundary. Only act on non-left releases when we ARE dragging
   // (so an unrelated middle/right click-release doesn't touch selection).
@@ -658,22 +658,22 @@ export function handleMouseEvent(app: App, m: ParsedMouse): void {
   // NOTE: unlike the old release-based detection we do NOT reset clickCount
   // on release-after-drag. This aligns with NSEvent.clickCount semantics:
   // an intervening drag doesn't break the click chain. Practical upside:
-  // trackpad jitter during an intended double-click (press→wobble→release
-  // →press) now correctly resolves to word-select instead of breaking to a
+  // trackpad jitter during an intended double-click (pressâ†’wobbleâ†’release
+  // â†’press) now correctly resolves to word-select instead of breaking to a
   // fresh single click. The nearLast window (500ms, 1 cell) bounds the
-  // effect — a deliberate drag past that just starts a fresh chain.
+  // effect â€” a deliberate drag past that just starts a fresh chain.
   // A press+release with no drag in char mode is a click: anchor set,
-  // focus null → hasSelection false. In word/line mode the press already
+  // focus null â†’ hasSelection false. In word/line mode the press already
   // set anchor+focus (hasSelection true), so release just keeps the
   // highlight. The anchor check guards against an orphaned release (no
-  // prior press — e.g. button was held when mouse tracking was enabled).
+  // prior press â€” e.g. button was held when mouse tracking was enabled).
   if (!hasSelection(sel) && sel.anchor) {
     // Single click: dispatch DOM click immediately (cursor repositioning
     // etc. are latency-sensitive). If no DOM handler consumed it, defer
     // the hyperlink check so a second click can cancel it.
     if (!app.props.onClickAt(col, row)) {
       // Resolve the hyperlink URL synchronously while the screen buffer
-      // still reflects what the user clicked — deferring only the
+      // still reflects what the user clicked â€” deferring only the
       // browser-open so double-click can cancel it.
       const url = app.props.getHyperlinkAt(col, row);
       // xterm.js (VS Code, Cursor, Windsurf, etc.) has its own OSC 8 link
@@ -681,14 +681,14 @@ export function handleMouseEvent(app: App, m: ParsedMouse): void {
       // (Linkifier._handleMouseUp calls link.activate() but never
       // preventDefault/stopPropagation). The click is also forwarded to the
       // pty as SGR, so both VS Code's terminalLinkManager AND our handler
-      // here would open the URL — twice. We can't filter on Cmd: xterm.js
+      // here would open the URL â€” twice. We can't filter on Cmd: xterm.js
       // drops metaKey before SGR encoding (ICoreMouseEvent has no meta
       // field; the SGR bit we call 'meta' is wired to alt). Let xterm.js
       // own link-opening; Cmd+click is the native UX there anyway.
       // TERM_PROGRAM is the sync fast-path; isXtermJs() is the XTVERSION
       // probe result (catches SSH + non-VS Code embedders like Hyper).
       if (url && process.env.TERM_PROGRAM !== 'vscode' && !isXtermJs()) {
-        // Clear any prior pending timer — clicking a second link
+        // Clear any prior pending timer â€” clicking a second link
         // supersedes the first (only the latest click opens).
         if (app.pendingHyperlinkTimer) {
           clearTimeout(app.pendingHyperlinkTimer);

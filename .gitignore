@@ -7,8 +7,8 @@ web/*.tsbuildinfo
 .env.*
 !.env.example
 auth.json
-.openclaude-profile.json
-.openclaude/
+.rootclaude-profile.json
+.rootclaude/
 reports/
 GEMINI.md
 CLAUDE.md

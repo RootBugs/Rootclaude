@@ -1,4 +1,4 @@
-import { type ChildProcess, spawn } from 'child_process'
+﻿import { type ChildProcess, spawn } from 'child_process'
 import { createWriteStream, type WriteStream } from 'fs'
 import { tmpdir } from 'os'
 import { dirname, join } from 'path'
@@ -19,7 +19,7 @@ const MAX_STDERR_LINES = 10
 /**
  * Safe OS and runtime variables that the child process needs to function.
  * Everything else (API keys, DB passwords, proxy secrets, etc.) must not
- * be inherited — the child authenticates via CLAUDE_CODE_SESSION_ACCESS_TOKEN.
+ * be inherited â€” the child authenticates via CLAUDE_CODE_SESSION_ACCESS_TOKEN.
  */
 const CHILD_ENV_ALLOWLIST = new Set([
   // System / shell
@@ -30,7 +30,7 @@ const CHILD_ENV_ALLOWLIST = new Set([
   'LANG', 'LC_ALL', 'LC_CTYPE',
   // Node.js runtime
   'NODE_OPTIONS', 'NODE_PATH', 'NODE_ENV',
-  // OpenClaude session / bridge (non-secret)
+  // RootClaude session / bridge (non-secret)
   'CLAUDE_CODE_ENVIRONMENT_KIND',
   'CLAUDE_CODE_FORCE_SANDBOX',
   'CLAUDE_CODE_BUBBLEWRAP',
@@ -97,7 +97,7 @@ export type PermissionRequest = {
   type: 'control_request'
   request_id: string
   request: {
-    /** Per-invocation permission check — "may I run this tool with these inputs?" */
+    /** Per-invocation permission check â€” "may I run this tool with these inputs?" */
     subtype: 'can_use_tool'
     tool_name: string
     input: Record<string, unknown>
@@ -271,7 +271,7 @@ function extractUserMessageText(
   msg: Record<string, unknown>,
 ): string | undefined {
   // Skip tool-result user messages (wrapped subagent results) and synthetic
-  // caveat messages — neither is human-authored.
+  // caveat messages â€” neither is human-authored.
   if (msg.parent_tool_use_id != null || msg.isSynthetic || msg.isReplay)
     return undefined
 
@@ -453,7 +453,7 @@ export function createSessionSpawner(deps: SessionSpawnerDeps): SessionSpawner {
 
           // Detect control_request and replayed user messages.
           // extractActivities parses the same line but swallows parse errors
-          // and skips 'user' type — re-parse here is cheap (NDJSON lines are
+          // and skips 'user' type â€” re-parse here is cheap (NDJSON lines are
           // small) and keeps each path self-contained.
           {
             let parsed: unknown

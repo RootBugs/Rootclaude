@@ -78,7 +78,7 @@ async function withTempFile<T>(
   name: string,
   run: (path: string) => Promise<T>,
 ): Promise<T> {
-  const dir = await mkdtemp(join(tmpdir(), 'openclaude-bg-test-'))
+  const dir = await mkdtemp(join(tmpdir(), 'RootClaude-bg-test-'))
   try {
     return await run(join(dir, name))
   } finally {
@@ -451,11 +451,11 @@ describe('background session CLI parsing', () => {
     const config = buildBackgroundChildProcessConfig({
       execPath: '/usr/bin/node',
       execArgv: ['--max-old-space-size=8192', '--expose-gc'],
-      entrypoint: '/repo/bin/openclaude',
+      entrypoint: '/repo/bin/RootClaude',
       childArgs: ['--print', 'fix failing tests'],
       processEnv: {
-        OPENCLAUDE_HEAP_RELAUNCHED: '1',
-        OPENCLAUDE_NODE_MAX_OLD_SPACE_SIZE_MB: '8192',
+        RootClaude_HEAP_RELAUNCHED: '1',
+        RootClaude_NODE_MAX_OLD_SPACE_SIZE_MB: '8192',
       },
       sessionName: 'tests',
       stdoutLogPath: '/tmp/bg.out.log',
@@ -465,12 +465,12 @@ describe('background session CLI parsing', () => {
     expect(config.args).toEqual([
       '--max-old-space-size=8192',
       '--expose-gc',
-      '/repo/bin/openclaude',
+      '/repo/bin/RootClaude',
       '--print',
       'fix failing tests',
     ])
-    expect(config.env.OPENCLAUDE_HEAP_RELAUNCHED).toBeUndefined()
-    expect(config.env.OPENCLAUDE_NODE_MAX_OLD_SPACE_SIZE_MB).toBe('8192')
+    expect(config.env.RootClaude_HEAP_RELAUNCHED).toBeUndefined()
+    expect(config.env.RootClaude_NODE_MAX_OLD_SPACE_SIZE_MB).toBe('8192')
     expect(config.env.CLAUDE_CODE_SESSION_KIND).toBe('bg')
     expect(config.env.CLAUDE_CODE_SESSION_LOG).toBe('/tmp/bg.out.log')
     expect(config.env.CLAUDE_CODE_SESSION_NAME).toBe('tests')

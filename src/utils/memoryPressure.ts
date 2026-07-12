@@ -1,8 +1,8 @@
-/**
+﻿/**
  * Memory Pressure Monitor
  *
  * Watches process RSS and triggers cleanup actions at configurable thresholds.
- * Designed to prevent OOM when running multiple OpenClaude sessions.
+ * Designed to prevent OOM when running multiple RootClaude sessions.
  */
 
 import { logForDebugging } from './debug.js'
@@ -21,7 +21,7 @@ const DEFAULT_CONFIG: MemoryPressureConfig = {
   criticalThresholdMB: 0,
   checkIntervalMs: 30_000,
   perSessionBudgetMB: Number.parseInt(
-    process.env.OPENCLAUDE_MAX_MEMORY_MB ?? '1536',
+    process.env.RootClaude_MAX_MEMORY_MB ?? '1536',
     10,
   ),
 }
@@ -56,7 +56,7 @@ export function pruneRegisteredCaches(): void {
     try {
       cache.clear()
     } catch {
-      // best-effort — cache may already be empty
+      // best-effort â€” cache may already be empty
     }
   }
 }
@@ -113,7 +113,7 @@ export function startMemoryPressureMonitor(
         `[MemoryPressure] Level changed: ${previousLevel} -> ${currentLevel} (RSS: ${rss.toFixed(0)}MB)`,
       )
       if (currentLevel === 'critical') {
-        logForDebugging('[MemoryPressure] Critical — pruning registered caches')
+        logForDebugging('[MemoryPressure] Critical â€” pruning registered caches')
         pruneRegisteredCaches()
       }
       for (const listener of pressureListeners) {

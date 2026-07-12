@@ -1,4 +1,4 @@
-import { stripVTControlCharacters } from 'node:util'
+﻿import { stripVTControlCharacters } from 'node:util'
 
 import type { Diagnostic } from '../../services/diagnosticTracking.js'
 import {
@@ -53,7 +53,7 @@ export async function runDiagnosticsCommand(
 
   if (status.status === 'not-started') {
     return text(
-      'LSP diagnostics unavailable: LSP is not initialized. OpenClaude initializes LSP only after workspace trust is established.',
+      'LSP diagnostics unavailable: LSP is not initialized. RootClaude initializes LSP only after workspace trust is established.',
     )
   }
   if (status.status === 'pending') {

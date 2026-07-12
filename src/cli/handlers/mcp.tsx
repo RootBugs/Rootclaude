@@ -1,8 +1,7 @@
-/**
- * MCP subcommand handlers — extracted from main.tsx for lazy loading.
+﻿/**
+ * MCP subcommand handlers Ã¢â‚¬â€ extracted from main.tsx for lazy loading.
  * These are dynamically imported only when the corresponding `claude mcp *` command runs.
  */
-
 import { stat } from 'fs/promises';
 import pMap from 'p-map';
 import { cwd } from 'process';
@@ -29,7 +28,6 @@ import { gracefulShutdown } from '../../utils/gracefulShutdown.js';
 import { safeParseJSON } from '../../utils/json.js';
 import { getPlatform } from '../../utils/platform.js';
 import { cliError, cliOk } from '../exit.js';
-
 function formatDoctorReport(report: McpDoctorReport): string {
   const lines: string[] = []
   lines.push('MCP Doctor')
@@ -39,21 +37,17 @@ function formatDoctorReport(report: McpDoctorReport): string {
   lines.push(`- ${report.summary.healthy} healthy`)
   lines.push(`- ${report.summary.warnings} warnings`)
   lines.push(`- ${report.summary.blocking} blocking issues`)
-
   if (report.targetName) {
     lines.push(`- target: ${report.targetName}`)
   }
-
   for (const server of report.servers) {
     lines.push('')
     lines.push(server.serverName)
-
     const activeDefinition = server.definitions.find(definition => definition.runtimeActive)
     if (activeDefinition) {
       lines.push(`- Active source: ${activeDefinition.sourceType}`)
       lines.push(`- Transport: ${activeDefinition.transport ?? 'unknown'}`)
     }
-
     if (server.definitions.length > 1) {
       const extraDefinitions = server.definitions
         .filter(definition => !definition.runtimeActive)
@@ -62,7 +56,6 @@ function formatDoctorReport(report: McpDoctorReport): string {
         lines.push(`- Additional definitions: ${extraDefinitions.join(', ')}`)
       }
     }
-
     if (server.liveCheck.result) {
       const stateLikeResults = new Set(['disabled', 'pending', 'skipped'])
       const label = stateLikeResults.has(server.liveCheck.result)
@@ -70,11 +63,9 @@ function formatDoctorReport(report: McpDoctorReport): string {
         : 'Live check'
       lines.push(`- ${label}: ${server.liveCheck.result}`)
     }
-
     if (server.liveCheck.error) {
       lines.push(`- Error: ${server.liveCheck.error}`)
     }
-
     for (const finding of server.findings) {
       lines.push(`- ${finding.message}`)
       if (finding.remediation) {
@@ -82,7 +73,6 @@ function formatDoctorReport(report: McpDoctorReport): string {
       }
     }
   }
-
   if (report.findings.length > 0) {
     lines.push('')
     lines.push('Global findings')
@@ -93,10 +83,8 @@ function formatDoctorReport(report: McpDoctorReport): string {
       }
     }
   }
-
   return lines.join('\n')
 }
-
 export async function mcpDoctorHandler(name: string | undefined, options: {
   scope?: string;
   configOnly?: boolean;
@@ -108,13 +96,11 @@ export async function mcpDoctorHandler(name: string | undefined, options: {
     const report = name
       ? await doctorServer(name, { configOnly, scopeFilter })
       : await doctorAllServers({ configOnly, scopeFilter })
-
     if (options.json) {
       process.stdout.write(`${JSON.stringify(report, null, 2)}\n`)
     } else {
       process.stdout.write(`${formatDoctorReport(report)}\n`)
     }
-
     // On Windows, exiting immediately after a single failed HTTP MCP health check
     // can trip a libuv assertion while async handle shutdown is still settling.
     // Let the event loop drain briefly before exiting this one-shot command.
@@ -129,18 +115,17 @@ async function checkMcpServerHealth(name: string, server: ScopedMcpServerConfig)
   try {
     const result = await connectToServer(name, server);
     if (result.type === 'connected') {
-      return '✓ Connected';
+      return 'Ã¢Å“â€œ Connected';
     } else if (result.type === 'needs-auth') {
       return '! Needs authentication';
     } else {
-      return '✗ Failed to connect';
+      return 'Ã¢Å“â€” Failed to connect';
     }
   } catch (_error) {
-    return '✗ Connection error';
+    return 'Ã¢Å“â€” Connection error';
   }
 }
-
-// mcp serve (lines 4512–4532)
+// mcp serve (lines 4512Ã¢â‚¬â€œ4532)
 export async function mcpServeHandler({
   debug,
   verbose
@@ -171,8 +156,7 @@ export async function mcpServeHandler({
     cliError(`Error: Failed to start MCP server: ${error}`);
   }
 }
-
-// mcp remove (lines 4545–4635)
+// mcp remove (lines 4545Ã¢â‚¬â€œ4635)
 export async function mcpRemoveHandler(name: string, options: {
   scope?: string;
 }): Promise<void> {
@@ -196,17 +180,14 @@ export async function mcpRemoveHandler(name: string, options: {
       process.stdout.write(`Removed MCP server ${name} from ${scope} config\n`);
       cliOk(`File modified: ${describeMcpConfigFilePath(scope)}`);
     }
-
     // If no scope specified, check where the server exists
     const projectConfig = getCurrentProjectConfig();
     const globalConfig = getGlobalConfig();
-
     // Check if server exists in project scope (.mcp.json)
     const {
       servers: projectServers
     } = getMcpConfigsByScope('project');
     const mcpJsonExists = !!projectServers[name];
-
     // Count how many scopes contain this server
     const scopes: Array<Exclude<ConfigScope, 'dynamic'>> = [];
     if (projectConfig.mcpServers?.[name]) scopes.push('local');
@@ -233,7 +214,7 @@ export async function mcpRemoveHandler(name: string, options: {
       });
       process.stderr.write('\nTo remove from a specific scope, use:\n');
       scopes.forEach(scope => {
-        process.stderr.write(`  openclaude mcp remove "${name}" -s ${scope}\n`);
+        process.stderr.write(`rootclaude mcp remove "${name}" -s ${scope}\n`);
       });
       cliError();
     }
@@ -241,8 +222,7 @@ export async function mcpRemoveHandler(name: string, options: {
     cliError((error as Error).message);
   }
 }
-
-// mcp list (lines 4641–4688)
+// mcp list (lines 4641Ã¢â‚¬â€œ4688)
 export async function mcpListHandler(): Promise<void> {
   logEvent('tengu_mcp_list', {});
   const {
@@ -250,11 +230,10 @@ export async function mcpListHandler(): Promise<void> {
   } = await getAllMcpConfigs();
   if (Object.keys(configs).length === 0) {
     // biome-ignore lint/suspicious/noConsole:: intentional console output
-    console.log('No MCP servers configured. Use `openclaude mcp add` to add a server.');
+    console.log('No MCP servers configured. Use `rootclaude mcp add` to add a server.');
   } else {
     // biome-ignore lint/suspicious/noConsole:: intentional console output
     console.log('Checking MCP server health...\n');
-
     // Check servers concurrently
     const entries = Object.entries(configs);
     const results = await pMap(entries, async ([name, server]) => ({
@@ -290,8 +269,7 @@ export async function mcpListHandler(): Promise<void> {
   // (process.exit bypasses cleanup handlers, leaving child processes orphaned)
   await gracefulShutdown(0);
 }
-
-// mcp get (lines 4694–4786)
+// mcp get (lines 4694Ã¢â‚¬â€œ4786)
 export async function mcpGetHandler(name: string): Promise<void> {
   logEvent('tengu_mcp_get', {
     name: name as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
@@ -300,17 +278,14 @@ export async function mcpGetHandler(name: string): Promise<void> {
   if (!server) {
     cliError(`No MCP server found with name: ${name}`);
   }
-
   // biome-ignore lint/suspicious/noConsole:: intentional console output
   console.log(`${name}:`);
   // biome-ignore lint/suspicious/noConsole:: intentional console output
   console.log(`  Scope: ${getScopeLabel(server.scope)}`);
-
   // Check server health
   const status = await checkMcpServerHealth(name, server);
   // biome-ignore lint/suspicious/noConsole:: intentional console output
   console.log(`  Status: ${status}`);
-
   // Intentionally excluding sse-ide servers here since they're internal
   if (server.type === 'sse') {
     // biome-ignore lint/suspicious/noConsole:: intentional console output
@@ -374,13 +349,12 @@ export async function mcpGetHandler(name: string): Promise<void> {
     }
   }
   // biome-ignore lint/suspicious/noConsole:: intentional console output
-  console.log(`\nTo remove this server, run: openclaude mcp remove "${name}" -s ${server.scope}`);
+  console.log(`\nTo remove this server, run:rootclaude mcp remove "${name}" -s ${server.scope}`);
   // Use gracefulShutdown to properly clean up MCP server connections
   // (process.exit bypasses cleanup handlers, leaving child processes orphaned)
   await gracefulShutdown(0);
 }
-
-// mcp add-json (lines 4801–4870)
+// mcp add-json (lines 4801Ã¢â‚¬â€œ4870)
 export async function mcpAddJsonHandler(name: string, json: string, options: {
   scope?: string;
   clientSecret?: true;
@@ -388,7 +362,6 @@ export async function mcpAddJsonHandler(name: string, json: string, options: {
   try {
     const scope = ensureConfigScope(options.scope);
     const parsedJson = safeParseJSON(json);
-
     // Read secret before writing config so cancellation doesn't leave partial state
     const needsSecret = options.clientSecret && parsedJson && typeof parsedJson === 'object' && 'type' in parsedJson && (parsedJson.type === 'sse' || parsedJson.type === 'http') && 'url' in parsedJson && typeof parsedJson.url === 'string' && 'oauth' in parsedJson && parsedJson.oauth && typeof parsedJson.oauth === 'object' && 'clientId' in parsedJson.oauth;
     const clientSecret = needsSecret ? await readClientSecret() : undefined;
@@ -410,8 +383,7 @@ export async function mcpAddJsonHandler(name: string, json: string, options: {
     cliError((error as Error).message);
   }
 }
-
-// mcp add-from-claude-desktop (lines 4881–4927)
+// mcp add-from-claude-desktop (lines 4881Ã¢â‚¬â€œ4927)
 export async function mcpAddFromDesktopHandler(options: {
   scope?: string;
 }): Promise<void> {
@@ -445,8 +417,7 @@ export async function mcpAddFromDesktopHandler(options: {
     cliError((error as Error).message);
   }
 }
-
-// mcp reset-project-choices (lines 4935–4952)
+// mcp reset-project-choices (lines 4935Ã¢â‚¬â€œ4952)
 export async function mcpResetChoicesHandler(): Promise<void> {
   logEvent('tengu_mcp_reset_mcpjson_choices', {});
   saveCurrentProjectConfig(current => ({
@@ -455,5 +426,5 @@ export async function mcpResetChoicesHandler(): Promise<void> {
     disabledMcpjsonServers: [],
     enableAllProjectMcpServers: false
   }));
-  cliOk('All project-scoped (.mcp.json) server approvals and rejections have been reset.\n' + 'You will be prompted for approval next time you start OpenClaude.');
+  cliOk('All project-scoped (.mcp.json) server approvals and rejections have been reset.\n' + 'You will be prompted for approval next time you start RootClaude.');
 }

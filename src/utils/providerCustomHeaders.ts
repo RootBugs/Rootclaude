@@ -1,4 +1,4 @@
-const HEADER_NAME_RE = /^[A-Za-z0-9!#$%&'*+.^_`|~-]+$/
+﻿const HEADER_NAME_RE = /^[A-Za-z0-9!#$%&'*+.^_`|~-]+$/
 
 const RESERVED_HEADER_NAMES = new Set([
   'authorization',
@@ -63,7 +63,7 @@ export function parseProfileCustomHeadersInput(input: string): {
     if (isReservedHeaderName(name)) {
       return {
         headers: {},
-        error: `Custom header "${name}" is managed by OpenClaude and cannot be set on a provider profile.`,
+        error: `Custom header "${name}" is managed by RootClaude and cannot be set on a provider profile.`,
       }
     }
     if (!value) {
@@ -96,7 +96,7 @@ export function parseCustomHeadersEnv(
   if (!value) {
     return undefined
   }
-  // Reject raw CR characters — these indicate a header value containing \r\n
+  // Reject raw CR characters â€” these indicate a header value containing \r\n
   // that would create an injected header entry after splitting.
   if (value.includes('\r')) {
     return undefined

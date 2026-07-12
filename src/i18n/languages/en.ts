@@ -1,4 +1,4 @@
-export const en = {
+﻿export const en = {
   'commands.add-dir.description': 'Add a new working directory',
   'commands.agents.description': 'Manage agent configurations',
   'commands.auto-fix.description':
@@ -25,9 +25,9 @@ export const en = {
     'Show the total cost and duration of the current session',
   'commands.diff.description': 'View uncommitted changes and per-turn diffs',
   'commands.doctor.description':
-    'Diagnose and verify your OpenClaude installation and settings',
+    'Diagnose and verify your RootClaude installation and settings',
   'commands.dream.description':
-    'Run memory consolidation — synthesize recent sessions into durable memories',
+    'Run memory consolidation â€” synthesize recent sessions into durable memories',
   'commands.effort.description': 'Set effort level for model usage',
   'commands.exit.description': 'Exit the REPL',
   'commands.export.description':
@@ -39,7 +39,7 @@ export const en = {
   'commands.init.description':
     'Initialize a new project instruction file with codebase documentation',
   'commands.insights.description':
-    'Generate a report analyzing your OpenClaude sessions',
+    'Generate a report analyzing your RootClaude sessions',
   'commands.install-github-app.description':
     'Set up Claude GitHub Actions for a repository',
   'commands.knowledge.description': 'Manage native Knowledge Graph',
@@ -57,7 +57,7 @@ export const en = {
     'Manage allow & deny tool permission rules',
   'commands.plan.description':
     'Enable plan mode or view the current session plan',
-  'commands.plugin.description': 'Manage OpenClaude plugins',
+  'commands.plugin.description': 'Manage RootClaude plugins',
   'commands.provider.description': 'Manage API provider profiles',
   'commands.pr-comments.description':
     'Get comments from a GitHub pull request',
@@ -75,11 +75,11 @@ export const en = {
     'Complete a security review of the pending changes on the current branch',
   'commands.skills.description': 'List available skills',
   'commands.stats.description':
-    'Show your OpenClaude usage statistics and activity',
+    'Show your RootClaude usage statistics and activity',
   'commands.status.description':
-    'Show OpenClaude status including version, model, account, API connectivity, and tool statuses',
-  'commands.statusline.description': "Set up OpenClaude's status line UI",
-  'commands.stickers.description': 'Order OpenClaude stickers',
+    'Show RootClaude status including version, model, account, API connectivity, and tool statuses',
+  'commands.statusline.description': "Set up RootClaude's status line UI",
+  'commands.stickers.description': 'Order RootClaude stickers',
   'commands.tasks.description': 'List and manage background tasks',
   'commands.terminal-setup.description':
     'Install Shift+Enter key binding for newlines',
@@ -87,9 +87,9 @@ export const en = {
   'commands.usage.description': 'Show plan usage limits',
   'commands.vim.description': 'Toggle between Vim and Normal editing modes',
   'commands.wiki.description':
-    'Initialize and inspect the OpenClaude project wiki',
+    'Initialize and inspect the RootClaude project wiki',
   'skills.batch.description':
-    'Research and plan a large-scale change, then execute it in parallel across 5–30 isolated worktree agents that each open a PR.',
+    'Research and plan a large-scale change, then execute it in parallel across 5â€“30 isolated worktree agents that each open a PR.',
   'skills.batch.whenToUse':
     'Use when the user wants to make a sweeping, mechanical change across many files (migrations, refactors, bulk renames) that can be decomposed into independent parallel units.',
   'skills.debug.ant.description':

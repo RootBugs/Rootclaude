@@ -1,4 +1,4 @@
-import { c as _c } from "react-compiler-runtime";
+﻿import { c as _c } from "react-compiler-runtime";
 import { toString as qrToString } from 'qrcode';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -57,7 +57,7 @@ function SessionInfo(t0) {
   if (!remoteSessionUrl) {
     let t4;
     if ($[4] === Symbol.for("react.memo_cache_sentinel")) {
-      t4 = <Pane><Text color="warning">Not in remote mode. Start with `openclaude --remote` to use this command.</Text><Text dimColor={true}>(press esc to close)</Text></Pane>;
+      t4 = <Pane><Text color="warning">Not in remote mode. Start with `rootclaude --remote` to use this command.</Text><Text dimColor={true}>(press esc to close)</Text></Pane>;
       $[4] = t4;
     } else {
       t4 = $[4];
@@ -77,7 +77,7 @@ function SessionInfo(t0) {
     } else {
       t4 = $[9];
     }
-    t5 = isLoading ? <Text dimColor={true}>Generating QR code…</Text> : lines.map(_temp4);
+    t5 = isLoading ? <Text dimColor={true}>Generating QR codeâ€¦</Text> : lines.map(_temp4);
     $[5] = qrCode;
     $[6] = T0;
     $[7] = t4;

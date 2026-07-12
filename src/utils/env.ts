@@ -1,4 +1,4 @@
-import memoize from 'lodash-es/memoize.js'
+﻿import memoize from 'lodash-es/memoize.js'
 import { homedir } from 'os'
 import { join } from 'path'
 import { fileSuffixForOauthConfig } from '../constants/oauth.js'
@@ -22,7 +22,7 @@ export function resolveGlobalClaudeFile(options: {
 }): string {
   const oauthSuffix = options.oauthSuffix ?? ''
   const configDir = options.configDirEnv || options.homeDir || homedir()
-  const newFilename = `.openclaude${oauthSuffix}.json`
+  const newFilename = `.RootClaude${oauthSuffix}.json`
 
   return join(configDir, newFilename)
 }
@@ -40,7 +40,7 @@ export const getGlobalClaudeFile = memoize((): string => {
 
   const oauthSuffix = fileSuffixForOauthConfig()
   const configDirEnv = resolveConfigDirEnv({
-    openClaudeConfigDir: process.env.OPENCLAUDE_CONFIG_DIR,
+    RootClaudeConfigDir: process.env.RootClaude_CONFIG_DIR,
   })
   const configDir = configDirEnv || homedir()
 

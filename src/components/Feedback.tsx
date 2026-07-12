@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 import { readFile, stat } from 'fs/promises';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
@@ -33,7 +33,7 @@ import TextInput from './TextInput.js';
 
 // This value was determined experimentally by testing the URL length limit
 const GITHUB_URL_LIMIT = 7250;
-const GITHUB_ISSUES_REPO_URL = 'https://github.com/Gitlawb/openclaude/issues';
+const GITHUB_ISSUES_REPO_URL = 'https://github.com/Gitlawb/RootClaude/issues';
 type Props = {
   abortSignal: AbortSignal;
   messages: Message[];
@@ -331,7 +331,7 @@ export function Feedback({
         </Box>}
 
       {step === 'submitting' && <Box flexDirection="row" gap={1}>
-          <Text>Submitting report…</Text>
+          <Text>Submitting reportâ€¦</Text>
         </Box>}
 
       {step === 'done' && <Box flexDirection="column">
@@ -370,7 +370,7 @@ export function createGitHubIssueUrl(feedbackId: string, title: string, descript
 
   // If description alone exceeds limit, truncate everything
   if (spaceForErrors <= 0) {
-    const ellipsis = encodeURIComponent('…');
+    const ellipsis = encodeURIComponent('â€¦');
     const buffer = 50; // Extra safety margin
     const maxEncodedLength = GITHUB_URL_LIMIT - baseUrl.length - ellipsis.length - encodedNote.length - buffer;
     const fullBody = bodyPrefix + errorsJson + errorSuffix;
@@ -393,7 +393,7 @@ export function createGitHubIssueUrl(feedbackId: string, title: string, descript
 
   // Truncate errors to fit (prioritize keeping description)
   // Slice encoded errors directly, then trim to avoid cutting %XX sequences
-  const ellipsis = encodeURIComponent('…');
+  const ellipsis = encodeURIComponent('â€¦');
   const buffer = 50; // Extra safety margin
   let truncatedEncodedErrors = encodedErrors.slice(0, spaceForErrors - ellipsis.length - buffer);
   // If we cut in middle of %XX, back up to before the %

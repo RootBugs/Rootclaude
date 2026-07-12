@@ -1,4 +1,4 @@
-import {
+﻿import {
   APIConnectionError,
   APIConnectionTimeoutError,
   APIError,
@@ -179,7 +179,7 @@ function mapOpenAICompatibilityFailureToAssistantMessage(options: {
 export function startsWithApiErrorPrefix(text: string): boolean {
   return (
     text.startsWith(API_ERROR_MESSAGE_PREFIX) ||
-    text.startsWith(`Please run /login · ${API_ERROR_MESSAGE_PREFIX}`)
+    text.startsWith(`Please run /login Â· ${API_ERROR_MESSAGE_PREFIX}`)
   )
 }
 export const PROMPT_TOO_LONG_ERROR_MESSAGE = 'Prompt is too long'
@@ -360,17 +360,17 @@ export function isMediaSizeErrorMessage(msg: AssistantMessage): boolean {
   )
 }
 export const CREDIT_BALANCE_TOO_LOW_ERROR_MESSAGE = 'Credit balance is too low'
-export const INVALID_API_KEY_ERROR_MESSAGE = 'Not logged in · Please run /login'
+export const INVALID_API_KEY_ERROR_MESSAGE = 'Not logged in Â· Please run /login'
 export const INVALID_API_KEY_ERROR_MESSAGE_EXTERNAL =
-  'Invalid API key · Fix external API key'
+  'Invalid API key Â· Fix external API key'
 export const ORG_DISABLED_ERROR_MESSAGE_ENV_KEY_WITH_OAUTH =
-  'Your ANTHROPIC_API_KEY belongs to a disabled organization · Unset the environment variable to use your subscription instead'
+  'Your ANTHROPIC_API_KEY belongs to a disabled organization Â· Unset the environment variable to use your subscription instead'
 export const ORG_DISABLED_ERROR_MESSAGE_ENV_KEY =
-  'Your ANTHROPIC_API_KEY belongs to a disabled organization · Update or unset the environment variable'
+  'Your ANTHROPIC_API_KEY belongs to a disabled organization Â· Update or unset the environment variable'
 export const TOKEN_REVOKED_ERROR_MESSAGE =
-  'OAuth token revoked · Please run /login'
+  'OAuth token revoked Â· Please run /login'
 export const CCR_AUTH_ERROR_MESSAGE =
-  'Authentication error · This may be a temporary network issue, please try again'
+  'Authentication error Â· This may be a temporary network issue, please try again'
 export const REPEATED_529_ERROR_MESSAGE = 'Repeated 529 Overloaded errors'
 export function getCustomOffSwitchMessage(): string {
   return getAPIProvider() === 'firstParty'
@@ -434,7 +434,7 @@ export function getVisionNotSupportedErrorMessage(): string {
     : interactiveMessage!
 }
 export const OAUTH_ORG_NOT_ALLOWED_ERROR_MESSAGE =
-  'Your account does not have access to OpenClaude. Please run /login.'
+  'Your account does not have access to RootClaude. Please run /login.'
 
 // OpenCode Go subscription quota exhaustion. The opencode.ai gateway returns
 // 429 with one of these error types in the response body:
@@ -444,9 +444,9 @@ export const OAUTH_ORG_NOT_ALLOWED_ERROR_MESSAGE =
 // See https://github.com/anomalyco/opencode packages/opencode/src/session/retry.ts
 // for the canonical implementation we're mirroring.
 export const OPENCODE_GO_FREE_LIMIT_ERROR_MESSAGE =
-  'OpenCode Go free usage exhausted · Subscribe at https://opencode.ai/go'
+  'OpenCode Go free usage exhausted Â· Subscribe at https://opencode.ai/go'
 export const OPENCODE_GO_USAGE_LIMIT_ERROR_MESSAGE =
-  'OpenCode Go subscription limit reached · See https://opencode.ai/workspace/go'
+  'OpenCode Go subscription limit reached Â· See https://opencode.ai/workspace/go'
 
 function getOpenCodeGoAssistantMessage(error: APIError): AssistantMessage | null {
   const goLimit = parseOpenCodeGoLimitError(error)
@@ -461,13 +461,13 @@ function getOpenCodeGoAssistantMessage(error: APIError): AssistantMessage | null
 
   const reset =
     goLimit.retryAfterSeconds !== undefined
-      ? ` · Resets in ${formatResetDuration(goLimit.retryAfterSeconds)}`
+      ? ` Â· Resets in ${formatResetDuration(goLimit.retryAfterSeconds)}`
       : ''
   const workspace =
     goLimit.workspace && goLimit.workspace !== 'default'
-      ? ` · Workspace: ${goLimit.workspace}`
+      ? ` Â· Workspace: ${goLimit.workspace}`
       : ''
-  const limit = goLimit.limitName ? ` · Limit: ${goLimit.limitName}` : ''
+  const limit = goLimit.limitName ? ` Â· Limit: ${goLimit.limitName}` : ''
   return createAssistantAPIErrorMessage({
     content: `${OPENCODE_GO_USAGE_LIMIT_ERROR_MESSAGE}${limit}${workspace}${reset}`,
     error: 'rate_limit',
@@ -905,7 +905,7 @@ export function getAssistantMessageFromError(
       })
     }
 
-    // No quota headers — this is NOT a quota limit. Surface what the API actually
+    // No quota headers â€” this is NOT a quota limit. Surface what the API actually
     // said instead of a generic "Rate limit reached". Entitlement rejections
     // (e.g. 1M context without Extra Usage) and infra capacity 429s land here.
     if (error.message.includes('Extra usage is required for long context')) {
@@ -913,12 +913,12 @@ export function getAssistantMessageFromError(
         ? 'enable extra usage at claude.ai/settings/usage, or use --model to switch to standard context'
         : 'run /extra-usage to enable, or /model to switch to standard context'
       return createAssistantAPIErrorMessage({
-        content: `${API_ERROR_MESSAGE_PREFIX}: Extra usage is required for 1M context · ${hint}`,
+        content: `${API_ERROR_MESSAGE_PREFIX}: Extra usage is required for 1M context Â· ${hint}`,
         error: 'rate_limit',
       })
     }
     // SDK's APIError.makeMessage prepends "429 " and JSON-stringifies the body
-    // when there's no top-level .message — extract the inner error.message.
+    // when there's no top-level .message â€” extract the inner error.message.
     const stripped = error.message.replace(/^429\s+/, '')
     const innerMessage = stripped.match(/"message"\s*:\s*"([^"]*)"/)?.[1]
     const detail = innerMessage || stripped
@@ -927,7 +927,7 @@ export function getAssistantMessageFromError(
       ? `Try again in ${retryAfter} seconds.`
       : 'Try again in a few seconds.'
     return createAssistantAPIErrorMessage({
-      content: `${API_ERROR_MESSAGE_PREFIX}: Request rejected (429) · ${detail || 'this may be a temporary capacity issue'} — ${retryHint}`,
+      content: `${API_ERROR_MESSAGE_PREFIX}: Request rejected (429) Â· ${detail || 'this may be a temporary capacity issue'} â€” ${retryHint}`,
       error: 'rate_limit',
     })
   }
@@ -951,7 +951,7 @@ export function getAssistantMessageFromError(
     error.message.toLowerCase().includes('prompt is too long')
   ) {
     // Content stays generic (UI matches on exact string). The raw error with
-    // token counts goes into errorDetails — reactive compact's retry loop
+    // token counts goes into errorDetails â€” reactive compact's retry loop
     // parses the gap from there via getPromptTooLongTokenGap.
     return createAssistantAPIErrorMessage({
       content: PROMPT_TOO_LONG_ERROR_MESSAGE,
@@ -1165,7 +1165,7 @@ export function getAssistantMessageFromError(
       error: 'billing_error',
     })
   }
-  // "Organization has been disabled" — commonly a stale ANTHROPIC_API_KEY
+  // "Organization has been disabled" â€” commonly a stale ANTHROPIC_API_KEY
   // from a previous employer/project overriding subscription auth. Only handle
   // the env-var case; apiKeyHelper and /login-managed keys mean the active
   // auth's org is genuinely disabled with no dormant fallback to point at.
@@ -1185,7 +1185,7 @@ export function getAssistantMessageFromError(
       !isClaudeAISubscriber()
     ) {
       const hasStoredOAuth = getClaudeAIOAuthTokens()?.accessToken != null
-      // Not 'authentication_failed' — that triggers VS Code's showLogin(), but
+      // Not 'authentication_failed' â€” that triggers VS Code's showLogin(), but
       // login can't fix this (approved env var keeps overriding OAuth). The fix
       // is configuration-based (unset the var), so invalid_request is correct.
       return createAssistantAPIErrorMessage({
@@ -1266,7 +1266,7 @@ export function getAssistantMessageFromError(
       error: 'authentication_failed',
       content: getIsNonInteractiveSession()
         ? `Failed to authenticate. ${API_ERROR_MESSAGE_PREFIX}: Authentication failed (status ${error.status}). Check your API key configuration.`
-        : `Please run /login · ${API_ERROR_MESSAGE_PREFIX}: Authentication failed (status ${error.status}). Check your API key configuration.`,
+        : `Please run /login Â· ${API_ERROR_MESSAGE_PREFIX}: Authentication failed (status ${error.status}). Check your API key configuration.`,
     })
   }
 
@@ -1287,7 +1287,7 @@ export function getAssistantMessageFromError(
     })
   }
 
-  // 404 Not Found — usually means the selected model doesn't exist or isn't
+  // 404 Not Found â€” usually means the selected model doesn't exist or isn't
   // available. Guide the user to /model so they can pick a valid one.
   // For 3P users, suggest a specific fallback model they can try.
   if (error instanceof APIError && error.status === 404) {
@@ -1301,7 +1301,7 @@ export function getAssistantMessageFromError(
     })
   }
 
-  // 500 errors caused by context overflow — the API returns 500 instead of 400
+  // 500 errors caused by context overflow â€” the API returns 500 instead of 400
   // when the request body (including conversation context) exceeds limits.
   // This happens when auto-compact fails or the token estimation undercounts.
   // Detect by checking for context-related keywords in 500 responses.
@@ -1326,7 +1326,7 @@ export function getAssistantMessageFromError(
     })
   }
 
-  // Connection errors (non-timeout) — use formatAPIError for detailed messages
+  // Connection errors (non-timeout) â€” use formatAPIError for detailed messages
   if (error instanceof APIConnectionError) {
     return createAssistantAPIErrorMessage({
       content: `${API_ERROR_MESSAGE_PREFIX}: ${formatAPIError(error)}`,
@@ -1354,7 +1354,7 @@ function get3PModelFallbackSuggestion(model: string): string | undefined {
   if (getAPIProvider() === 'firstParty') {
     return undefined
   }
-  // @[MODEL LAUNCH]: Add a fallback suggestion chain for the new model → previous version for 3P
+  // @[MODEL LAUNCH]: Add a fallback suggestion chain for the new model â†’ previous version for 3P
   const m = model.toLowerCase()
   // Mirror the validation-time fallback chain in validateModel.ts so the error
   // path suggests the previous Opus for the recent models too.
@@ -1623,8 +1623,8 @@ export function getErrorMessageIfRefusal(
       : "your provider's acceptable use policy"
 
   const baseMessage = getIsNonInteractiveSession()
-    ? `${API_ERROR_MESSAGE_PREFIX}: OpenClaude is unable to respond to this request, which appears to violate our Usage Policy (${usagePolicyUrl}). Try rephrasing the request or attempting a different approach.`
-    : `${API_ERROR_MESSAGE_PREFIX}: OpenClaude is unable to respond to this request, which appears to violate our Usage Policy (${usagePolicyUrl}). Please double press esc to edit your last message or start a new session for OpenClaude to assist with a different task.`
+    ? `${API_ERROR_MESSAGE_PREFIX}: RootClaude is unable to respond to this request, which appears to violate our Usage Policy (${usagePolicyUrl}). Try rephrasing the request or attempting a different approach.`
+    : `${API_ERROR_MESSAGE_PREFIX}: RootClaude is unable to respond to this request, which appears to violate our Usage Policy (${usagePolicyUrl}). Please double press esc to edit your last message or start a new session for RootClaude to assist with a different task.`
 
   const defaultModel = getDefaultMainLoopModel()
   const modelSuggestion =

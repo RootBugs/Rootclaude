@@ -1,4 +1,4 @@
-import { getMainThreadAgentType } from '../bootstrap/state.js'
+﻿import { getMainThreadAgentType } from '../bootstrap/state.js'
 import type { HookResultMessage } from '../types/message.js'
 import { createAttachmentMessage } from './attachments.js'
 import { logForDebugging } from './debug.js'
@@ -21,7 +21,7 @@ type SessionStartHooksOptions = {
 // consumed once by takeInitialUserMessage. This side channel avoids changing
 // the Promise<HookResultMessage[]> return type that main.tsx and print.ts
 // both already await on (sessionStartHooksPromise is kicked in main.tsx and
-// joined later — rippling a structural return-type change through that
+// joined later â€” rippling a structural return-type change through that
 // handoff would touch five callsites for what is a print-mode-only value).
 let pendingInitialUserMessage: string | undefined
 
@@ -42,7 +42,7 @@ export async function processSessionStartHooks(
   }: SessionStartHooksOptions = {},
 ): Promise<HookResultMessage[]> {
   // --bare skips all hooks. executeHooks already early-returns under --bare
-  // (hooks.ts:1861), but this skips the loadPluginHooks() await below too —
+  // (hooks.ts:1861), but this skips the loadPluginHooks() await below too â€”
   // no point loading plugin hooks that'll never run.
   if (isBareMode()) {
     return []
@@ -109,7 +109,7 @@ export async function processSessionStartHooks(
         errorMessage.includes('schema')
       ) {
         userGuidance =
-          'This appears to be a configuration issue. Check your plugin settings in .openclaude/settings.json'
+          'This appears to be a configuration issue. Check your plugin settings in .RootClaude/settings.json'
       } else {
         userGuidance =
           'Please fix the plugin configuration or remove problematic plugins from your settings.'

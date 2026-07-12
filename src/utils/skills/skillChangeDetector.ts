@@ -1,4 +1,4 @@
-import chokidar, { type FSWatcher } from 'chokidar'
+﻿import chokidar, { type FSWatcher } from 'chokidar'
 import * as platformPath from 'path'
 import { getAdditionalDirectoriesForClaudeMd } from '../../bootstrap/state.js'
 import {
@@ -58,7 +58,7 @@ const POLLING_INTERVAL_MS = 2000
  * #26385): closing a watcher on the main thread while the File Watcher thread
  * is delivering events can hang both threads in __ulock_wait2 forever. Chokidar
  * with depth: 2 on large skill trees (hundreds of subdirs) triggers this
- * reliably when a git operation touches many directories at once — chokidar
+ * reliably when a git operation touches many directories at once â€” chokidar
  * internally closes/reopens per-directory FSWatchers as dirs are added/removed.
  *
  * Workaround: use stat() polling under Bun. No FSWatcher = no deadlock.
@@ -214,13 +214,13 @@ async function getWatchablePaths(): Promise<string[]> {
     }
   }
 
-  // User skills directory (~/.openclaude/skills)
+  // User skills directory (~/.RootClaude/skills)
   const userSkillsPath = dependencies.getSkillsPath('userSettings', 'skills')
   if (userSkillsPath) {
     await pushIfExists(userSkillsPath)
   }
 
-  // User commands directory (~/.openclaude/commands)
+  // User commands directory (~/.RootClaude/commands)
   const userCommandsPath = dependencies.getSkillsPath(
     'userSettings',
     'commands',
@@ -230,7 +230,7 @@ async function getWatchablePaths(): Promise<string[]> {
   }
 
   // Project skills/commands directories. Keep this in sync with the loader's
-  // OpenClaude project config directories.
+  // RootClaude project config directories.
   for (const configDirName of PROJECT_CONFIG_DIR_NAMES) {
     await pushIfExists(platformPath.resolve(configDirName, 'skills'))
     await pushIfExists(platformPath.resolve(configDirName, 'commands'))
@@ -262,7 +262,7 @@ function handleChange(path: string): void {
  * change at once (e.g. auto-update installs a new binary and a new session
  * touches skill directories), each file fires its own chokidar event. Without
  * debouncing, each event triggers clearCommandsCache() + listener notification
- * — 30 events means 30 full reload cycles, which can deadlock the Bun event
+ * â€” 30 events means 30 full reload cycles, which can deadlock the Bun event
  * loop via rapid FSWatcher watch/unwatch churn.
  */
 function scheduleReload(changedPath: string): void {
@@ -287,7 +287,7 @@ function scheduleReloadTimer(): void {
 
     reloadInProgress = true
     try {
-      // Fire ConfigChange hook once for the batch — the hook query is always
+      // Fire ConfigChange hook once for the batch â€” the hook query is always
       // 'skills' so firing per-path (which can be hundreds during a git
       // operation) just spams the hook matcher with identical queries. Pass the
       // first path as a representative; hooks can inspect all paths via the

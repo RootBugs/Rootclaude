@@ -1,4 +1,4 @@
-import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/messages.js'
+﻿import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/messages.js'
 import type { Command } from '../commands.js'
 import type { ToolUseContext } from '../Tool.js'
 
@@ -41,7 +41,7 @@ export function createMovedToPluginCommand({
     source: 'builtin',
     get allowedTools() {
       // The ant branch only returns a plugin-install notice that doesn't
-      // need any tools — avoid granting turn-scoped permissions for it.
+      // need any tools Ã¢â‚¬â€ avoid granting turn-scoped permissions for it.
       if (process.env.USER_TYPE === 'ant') return undefined
       return allowedTools
     },
@@ -54,9 +54,8 @@ export function createMovedToPluginCommand({
           {
             type: 'text',
             text: `This command has been moved to a plugin. Tell the user:
-
 1. To install the plugin, run:
-   openclaude plugin install ${pluginName}@claude-code-marketplace
+   rootclaude plugin install ${pluginName}@claude-code-marketplace
 
 2. After installation, use /${pluginName}:${pluginCommand} to run this command
 

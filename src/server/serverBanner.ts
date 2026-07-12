@@ -1,8 +1,8 @@
-/**
- * Inert stub for the OpenClaude session-server startup banner.
+﻿/**
+ * Inert stub for the RootClaude session-server startup banner.
  *
  * The bundler noop-stubs this specifier in current builds; this module
- * mirrors that behavior for the typechecker. `printBanner` prints nothing —
+ * mirrors that behavior for the typechecker. `printBanner` prints nothing â€”
  * with the stubbed `startServer` no server is actually listening, so
  * advertising a connect URL would be misleading. No import-time side effects.
  */

@@ -1,11 +1,10 @@
-import { isInBundledMode } from 'src/utils/bundledMode.js'
+﻿import { isInBundledMode } from 'src/utils/bundledMode.js'
 import type { InstallationType } from 'src/utils/doctorDiagnostic.js'
 import { getCurrentInstallationType } from 'src/utils/doctorDiagnostic.js'
 import { isEnvTruthy } from 'src/utils/envUtils.js'
 import { hasNativeDistribution } from 'src/utils/nativeDistribution.js'
-
 const NPM_DEPRECATION_MESSAGE =
-  'OpenClaude has switched from npm to the native installer. Run `openclaude install` or see https://github.com/Gitlawb/openclaude#quick-start for more options.'
+  'RootClaude has switched from npm to the native installer. Run `rootclaude install` or see https://github.com/Gitlawb/rootclaude#quick-start for more options.'
 
 export async function getNpmDeprecationNotification(deps: {
   isBundledMode?: () => boolean

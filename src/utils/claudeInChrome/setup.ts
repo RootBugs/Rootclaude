@@ -1,4 +1,4 @@
-import { BROWSER_TOOLS } from '@ant/claude-for-chrome-mcp'
+﻿import { BROWSER_TOOLS } from '@ant/claude-for-chrome-mcp'
 import { chmod, mkdir, readFile, writeFile } from 'fs/promises'
 import { homedir } from 'os'
 import { join } from 'path'
@@ -354,14 +354,14 @@ exec ${command}
  *
  * Only positive detections are persisted. A negative result from the
  * filesystem scan is not cached, because it may come from a machine that
- * shares ~/.openclaude.json but has no local Chrome (e.g. a remote dev
+ * shares ~/.RootClaude.json but has no local Chrome (e.g. a remote dev
  * environment using the bridge), and caching it would permanently poison
  * auto-enable for every session on every machine that reads that config.
  */
 function isChromeExtensionInstalled_CACHED_MAY_BE_STALE(): boolean {
   // Update cache in background without blocking
   void isChromeExtensionInstalled().then(isInstalled => {
-    // Only persist positive detections — see docstring. The cost of a stale
+    // Only persist positive detections â€” see docstring. The cost of a stale
     // `true` is one silent MCP connection attempt per session; the cost of a
     // stale `false` is auto-enable never working again without manual repair.
     if (!isInstalled) {

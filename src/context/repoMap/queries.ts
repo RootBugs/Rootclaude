@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Bundled tree-sitter tag queries.
  *
  * The .scm files in ./queries/ are the canonical source-of-truth (kept for
  * readability and Aider attribution), but the runtime reads from these inlined
  * string constants so the queries are bundled into dist/cli.mjs and ship with
- * the published npm package — the .scm files themselves are not in the
+ * the published npm package â€” the .scm files themselves are not in the
  * package.json `files` allowlist and would otherwise be missing post-install.
  *
  * If you edit a .scm file, mirror the change here. A unit test guards drift.
@@ -13,8 +13,8 @@
 import type { SupportedLanguage } from './types.js'
 
 const TYPESCRIPT_TAGS = `; Source: https://github.com/Aider-AI/aider/blob/main/aider/queries/tree-sitter-languages/typescript-tags.scm
-; License: MIT (Apache-2.0 dual) — see https://github.com/Aider-AI/aider/blob/main/LICENSE
-; Copied for use in openclaude's repo-map feature.
+; License: MIT (Apache-2.0 dual) â€” see https://github.com/Aider-AI/aider/blob/main/LICENSE
+; Copied for use in RootClaude's repo-map feature.
 
 (function_signature
   name: (identifier) @name.definition.function) @definition.function
@@ -67,8 +67,8 @@ const TYPESCRIPT_TAGS = `; Source: https://github.com/Aider-AI/aider/blob/main/a
 `
 
 const JAVASCRIPT_TAGS = `; Source: https://github.com/Aider-AI/aider/blob/main/aider/queries/tree-sitter-languages/javascript-tags.scm
-; License: MIT (Apache-2.0 dual) — see https://github.com/Aider-AI/aider/blob/main/LICENSE
-; Copied for use in openclaude's repo-map feature.
+; License: MIT (Apache-2.0 dual) â€” see https://github.com/Aider-AI/aider/blob/main/LICENSE
+; Copied for use in RootClaude's repo-map feature.
 
 (
   (comment)* @doc
@@ -157,8 +157,8 @@ const JAVASCRIPT_TAGS = `; Source: https://github.com/Aider-AI/aider/blob/main/a
 `
 
 const PYTHON_TAGS = `; Source: https://github.com/Aider-AI/aider/blob/main/aider/queries/tree-sitter-languages/python-tags.scm
-; License: MIT (Apache-2.0 dual) — see https://github.com/Aider-AI/aider/blob/main/LICENSE
-; Copied for use in openclaude's repo-map feature.
+; License: MIT (Apache-2.0 dual) â€” see https://github.com/Aider-AI/aider/blob/main/LICENSE
+; Copied for use in RootClaude's repo-map feature.
 
 (class_definition
   name: (identifier) @name.definition.class) @definition.class

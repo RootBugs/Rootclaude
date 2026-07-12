@@ -1,5 +1,5 @@
-// Type declarations for @gitlawb/openclaude SDK
-// Manually maintained — keep in sync with src/entrypoints/sdk/index.ts
+﻿// Type declarations for @gitlawb/RootClaude SDK
+// Manually maintained â€” keep in sync with src/entrypoints/sdk/index.ts
 // Drift is caught by validate-externals.ts (runs in CI)
 
 // ============================================================================
@@ -357,7 +357,7 @@ export type SDKPermissionTimeoutMessage = {
  * This allows hosts to detect configuration issues that would otherwise
  * be silently logged to console.warn.
  *
- * Note: Agent load failures are non-fatal — the query continues without agents.
+ * Note: Agent load failures are non-fatal â€” the query continues without agents.
  */
 export type SDKAgentLoadFailureMessage = {
   type: 'agent_load_failure'

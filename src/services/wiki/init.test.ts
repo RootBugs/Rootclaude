@@ -14,7 +14,7 @@ afterEach(async () => {
 })
 
 async function makeProjectDir(): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'openclaude-wiki-init-'))
+  const dir = await mkdtemp(join(tmpdir(), 'RootClaude-wiki-init-'))
   tempDirs.push(dir)
   return dir
 }
@@ -26,18 +26,18 @@ test('initializeWiki creates the expected wiki scaffold', async () => {
 
   expect(result.alreadyExisted).toBe(false)
   expect(result.createdFiles).toEqual([
-    join('.openclaude', 'wiki', 'schema.md'),
-    join('.openclaude', 'wiki', 'index.md'),
-    join('.openclaude', 'wiki', 'log.md'),
-    join('.openclaude', 'wiki', 'pages', 'architecture.md'),
-    join('.openclaude', 'wiki', 'pages', 'conventions.md'),
+    join('.RootClaude', 'wiki', 'schema.md'),
+    join('.RootClaude', 'wiki', 'index.md'),
+    join('.RootClaude', 'wiki', 'log.md'),
+    join('.RootClaude', 'wiki', 'pages', 'architecture.md'),
+    join('.RootClaude', 'wiki', 'pages', 'conventions.md'),
   ])
   expect(await readFile(paths.schemaFile, 'utf8')).toContain(
-    '# OpenClaude Wiki Schema',
+    '# RootClaude Wiki Schema',
   )
   expect(await readFile(paths.indexFile, 'utf8')).toContain('Wiki')
   expect(await readFile(paths.logFile, 'utf8')).toContain(
-    'Wiki initialized by OpenClaude',
+    'Wiki initialized by RootClaude',
   )
   expect(await readFile(join(paths.pagesDir, 'architecture.md'), 'utf8')).toContain(
     '# Architecture',

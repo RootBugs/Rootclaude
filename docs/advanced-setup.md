@@ -1,16 +1,16 @@
-# OpenClaude Advanced Setup
+# RootClaude Advanced Setup
 
 This guide is for users who want source builds, Bun workflows, provider profiles, diagnostics, or more control over runtime behavior.
 
 ## Install Options
 
-OpenClaude requires Node.js `>=22.0.0` for npm installs and runtime. Bun is
+RootClaude requires Node.js `>=22.0.0` for npm installs and runtime. Bun is
 only required when building or running from source.
 
 ### Option A: npm
 
 ```bash
-npm install -g @gitlawb/openclaude@latest
+npm install -g @rootbugs/rootclaude@latest
 ```
 
 ### Option B: From source with Bun
@@ -18,8 +18,8 @@ npm install -g @gitlawb/openclaude@latest
 Use Bun `1.3.13` or newer for source builds. Older Bun versions can fail during `bun run build`.
 
 ```bash
-git clone https://github.com/Gitlawb/openclaude.git
-cd openclaude
+git clone https://github.com/RootBugs/rootclaude.git
+cd rootclaude
 
 bun install
 bun run build
@@ -29,8 +29,8 @@ npm link
 ### Option C: Run directly with Bun
 
 ```bash
-git clone https://github.com/Gitlawb/openclaude.git
-cd openclaude
+git clone https://github.com/RootBugs/rootclaude.git
+cd rootclaude
 
 bun install
 bun run dev
@@ -51,9 +51,9 @@ export OPENAI_MODEL=gpt-4o
 `codexplan` maps to GPT-5.5 on the Codex backend with high reasoning.
 `codexspark` maps to GPT-5.3 Codex Spark for faster loops.
 
-If you use the in-app provider wizard, choose `Codex OAuth` to open ChatGPT sign-in in your browser and let OpenClaude store Codex credentials securely.
+If you use the in-app provider wizard, choose `Codex OAuth` to open ChatGPT sign-in in your browser and let RootClaude store Codex credentials securely.
 
-If you already use the Codex CLI, OpenClaude reads `~/.codex/auth.json` automatically. You can also point it elsewhere with `CODEX_AUTH_JSON_PATH` or override the token directly with `CODEX_API_KEY`.
+If you already use the Codex CLI, RootClaude reads `~/.codex/auth.json` automatically. You can also point it elsewhere with `CODEX_AUTH_JSON_PATH` or override the token directly with `CODEX_API_KEY`.
 
 If you set `CODEX_API_KEY` manually and are not relying on `auth.json` or stored
 Codex OAuth credentials, also set `CHATGPT_ACCOUNT_ID` (or
@@ -67,7 +67,7 @@ export OPENAI_MODEL=codexplan
 export CODEX_API_KEY=...
 export CHATGPT_ACCOUNT_ID=...
 
-openclaude
+rootclaude
 ```
 
 ### DeepSeek
@@ -124,7 +124,7 @@ export ANTHROPIC_VERTEX_PROJECT_ID=my-gcp-project
 export GOOGLE_CLOUD_PROJECT=my-gcp-project
 export CLOUD_ML_REGION=us-east5
 
-openclaude --model claude-sonnet-4-6
+rootclaude --model claude-sonnet-4-6
 ```
 
 `CLOUD_ML_REGION` is optional and defaults to `us-east5`. Model-specific
@@ -154,17 +154,17 @@ export OPENAI_MODEL=llama3.3:70b
 
 #### Ollama Context Length
 
-OpenClaude sends the current conversation history to Ollama on each turn and
-uses Ollama's native chat API for Ollama endpoints. Native chat lets OpenClaude
+RootClaude sends the current conversation history to Ollama on each turn and
+uses Ollama's native chat API for Ollama endpoints. Native chat lets RootClaude
 send `options.num_ctx` with each request, so Ollama receives a 32768-token
 context window by default instead of falling back to the smaller context often
 used by Ollama's OpenAI-compatible `/v1/chat/completions` shim.
 
 To choose a different request-level context size, set
-`OPENCLAUDE_OLLAMA_NUM_CTX` before launching OpenClaude:
+`ROOTCLAUDE_OLLAMA_NUM_CTX` before launching RootClaude:
 
 ```bash
-export OPENCLAUDE_OLLAMA_NUM_CTX=65536
+export ROOTCLAUDE_OLLAMA_NUM_CTX=65536
 ```
 
 You can also start Ollama with a global context length:
@@ -191,7 +191,7 @@ ollama ps
 ```
 
 Check the `CONTEXT` column. If it still shows a small value such as `4K` after a
-new OpenClaude request, stop the existing Ollama app/server, start it again, and
+new RootClaude request, stop the existing Ollama app/server, start it again, and
 retry the request.
 
 Use a concrete recall test after changing the setting, such as asking the model
@@ -253,7 +253,7 @@ export OPENCODE_API_KEY=...
 export OPENAI_BASE_URL=https://opencode.ai/zen/v1
 export OPENAI_MODEL=gpt-5.4
 
-openclaude
+rootclaude
 ```
 
 OpenCode Zen is a pay-as-you-go AI gateway with 48 models (GPT, Claude, Gemini,
@@ -268,7 +268,7 @@ export OPENCODE_API_KEY=...
 export OPENAI_BASE_URL=https://opencode.ai/zen/go/v1
 export OPENAI_MODEL=glm-5.1
 
-openclaude
+rootclaude
 ```
 
 OpenCode Go is a $10/mo subscription for 13 open models (GLM, Kimi, DeepSeek,
@@ -309,7 +309,7 @@ export NEARAI_API_KEY=...
 export OPENAI_BASE_URL=https://cloud-api.near.ai/v1
 export OPENAI_MODEL=anthropic/claude-sonnet-4-6
 
-openclaude
+rootclaude
 ```
 
 NEAR AI is a unified OpenAI-compatible gateway that proxies Anthropic, OpenAI,
@@ -376,11 +376,11 @@ export OPENAI_BASE_URL=https://api.fireworks.ai/inference/v1
 export OPENAI_MODEL=accounts/fireworks/models/llama-v3p1-70b-instruct
 ```
 
-The **OpenClaude VS Code extension** can store the key in Secret Storage and set these variables for you when you launch from the Control Center. See `vscode-extension/openclaude-vscode/README.md`.
+The **RootClaude VS Code extension** can store the key in Secret Storage and set these variables for you when you launch from the Control Center. See `vscode-extension/rootclaude-vscode/README.md`.
 
 ## Optional provider packages
 
-To keep the default `npm i -g @gitlawb/openclaude` install small and
+To keep the default `npm i -g @rootbugs/rootclaude` install small and
 warning-free, a few provider SDKs and the native image library are **not
 bundled**. They are loaded on demand, and the CLI prints an `npm install <pkg>`
 hint (add `-g` for the global CLI) if you enable a feature whose package is
@@ -393,7 +393,7 @@ missing. Install only what you need:
 | Claude on Vertex AI / Gemini ADC | `CLAUDE_CODE_USE_VERTEX=1` / Gemini ADC auth | `npm i -g google-auth-library` |
 | Reading/processing images | reading an image file | `npm i -g sharp` |
 
-When installing OpenClaude from source (`bun install`), all of these are
+When installing RootClaude from source (`bun install`), all of these are
 already present as dev dependencies, so source/dev builds need no extra steps.
 
 ## Environment Variables
@@ -406,7 +406,7 @@ already present as dev dependencies, so source/dev builds need no extra steps.
 | `OPENAI_MODEL` | OpenAI-compatible only | Model name such as `gpt-4o`, `deepseek-v4-flash`, or `llama3.3:70b` |
 | `OPENAI_BASE_URL` | No | API endpoint, defaulting to `https://api.openai.com/v1` |
 | `OPENAI_API_BASE` | No | Compatibility alias for `OPENAI_BASE_URL` |
-| `OPENCLAUDE_OLLAMA_NUM_CTX` | Ollama only | Request-level Ollama context window. Defaults to `32768`; set a larger value for longer same-session history if your model and hardware can handle it. |
+| `ROOTCLAUDE_OLLAMA_NUM_CTX` | Ollama only | Request-level Ollama context window. Defaults to `32768`; set a larger value for longer same-session history if your model and hardware can handle it. |
 | `CLAUDE_CODE_OPENAI_CONTEXT_WINDOWS` | No | JSON map of OpenAI-compatible model names to context windows, such as `{"custom-model":1000000}`. Use this when a custom provider does not expose context metadata from `/v1/models`. |
 | `CLAUDE_CODE_OPENAI_MAX_OUTPUT_TOKENS` | No | JSON map of OpenAI-compatible model names to max output tokens, such as `{"custom-model":32768}`. Use this when a custom provider does not expose output-limit metadata from `/v1/models`. |
 | `OPENCODE_API_KEY` | OpenCode Zen / Go | Shared API key for OpenCode Zen (pay-as-you-go) and OpenCode Go (subscription); get yours from https://opencode.ai |
@@ -423,11 +423,11 @@ already present as dev dependencies, so source/dev builds need no extra steps.
 | `CHATGPT_ACCOUNT_ID` / `CODEX_ACCOUNT_ID` | Codex only | Required for manual Codex env setup when the account id is not coming from `auth.json` or stored OAuth credentials |
 | `CODEX_AUTH_JSON_PATH` | Codex only | Path to a Codex CLI `auth.json` file |
 | `CODEX_HOME` | Codex only | Alternative Codex home directory |
-| `OPENCLAUDE_MAX_RETRIES` | No | Maximum retry attempts for retryable API failures, capped at 100 (default: 10). Set to `0` to disable retries after the initial request. If unset, deprecated `CLAUDE_CODE_MAX_RETRIES` is still honored for compatibility. |
-| `OPENCLAUDE_RETRY_DELAY_MS` | No | Base retry delay in milliseconds for APIs that do not send `Retry-After`; exponential backoff starts from this value, capped at 60000 (default: 500) |
-| `OPENCLAUDE_QUERY_HARD_MAX_MS` | No | Foreground query hard maximum in milliseconds. Defaults to 1800000 (30 minutes). Use a larger positive integer for long autonomous sessions; invalid, zero, negative, fractional, or timer-overflow values are ignored with a warning. |
-| `OPENCLAUDE_DISABLE_CO_AUTHORED_BY` | No | Suppress the default `Co-Authored-By` trailer in generated git commits |
-| `OPENCLAUDE_LOG_TOKEN_USAGE` | No | When truthy (e.g. `verbose`), emits one JSON line on stderr per API request with input/output/cache tokens and the resolved provider. **User-facing debug output** — complements the REPL display controlled by `/config showCacheStats`. Distinct from `CLAUDE_CODE_ENABLE_TOKEN_USAGE_ATTACHMENT`, which is **model-facing** (injects context usage info into the prompt itself). Both can run together. |
+| `ROOTCLAUDE_MAX_RETRIES` | No | Maximum retry attempts for retryable API failures, capped at 100 (default: 10). Set to `0` to disable retries after the initial request. If unset, deprecated `CLAUDE_CODE_MAX_RETRIES` is still honored for compatibility. |
+| `ROOTCLAUDE_RETRY_DELAY_MS` | No | Base retry delay in milliseconds for APIs that do not send `Retry-After`; exponential backoff starts from this value, capped at 60000 (default: 500) |
+| `ROOTCLAUDE_QUERY_HARD_MAX_MS` | No | Foreground query hard maximum in milliseconds. Defaults to 1800000 (30 minutes). Use a larger positive integer for long autonomous sessions; invalid, zero, negative, fractional, or timer-overflow values are ignored with a warning. |
+| `ROOTCLAUDE_DISABLE_CO_AUTHORED_BY` | No | Suppress the default `Co-Authored-By` trailer in generated git commits |
+| `ROOTCLAUDE_LOG_TOKEN_USAGE` | No | When truthy (e.g. `verbose`), emits one JSON line on stderr per API request with input/output/cache tokens and the resolved provider. **User-facing debug output** — complements the REPL display controlled by `/config showCacheStats`. Distinct from `CLAUDE_CODE_ENABLE_TOKEN_USAGE_ATTACHMENT`, which is **model-facing** (injects context usage info into the prompt itself). Both can run together. |
 
 Model env vars are provider-scoped: first-party Anthropic sessions read
 `ANTHROPIC_MODEL`, OpenAI-compatible sessions read `OPENAI_MODEL`, Gemini reads
@@ -441,7 +441,7 @@ When a custom OpenAI-compatible provider does not expose context metadata from
 addition to the `CLAUDE_CODE_OPENAI_CONTEXT_WINDOWS` /
 `CLAUDE_CODE_OPENAI_MAX_OUTPUT_TOKENS` env vars above, you can set a
 `modelLimits` map in your `settings.json` (the same file `/config` writes, e.g.
-`~/.openclaude/settings.json`):
+`~/.rootclaude/settings.json`):
 
 ```json
 {
@@ -473,14 +473,14 @@ addition to the `CLAUDE_CODE_OPENAI_CONTEXT_WINDOWS` /
 
 ## Safety strictness
 
-OpenClaude runs several "safety" checks: a model-level refusal directive, bash
+RootClaude runs several "safety" checks: a model-level refusal directive, bash
 command-injection validation, and sensitive-file / auto-edit guards. These are
 conservative by design, but a few of them can surface as refusals or approval
 prompts for entirely benign, routine coding tasks (e.g. editing `.gitmodules`,
 running a build script that contains `$(date)`, or writing a CTF port scanner).
-See [issue #1616](https://github.com/Gitlawb/openclaude/issues/1616).
+See [issue #1616](https://github.com/RootBugs/rootclaude/issues/1616).
 
-Set `OPENCLAUDE_SAFETY_LEVEL` to dial strictness without changing behavior for
+Set `ROOTCLAUDE_SAFETY_LEVEL` to dial strictness without changing behavior for
 everyone:
 
 | Value | Behavior |
@@ -490,7 +490,7 @@ everyone:
 | `permissive` | Opt-in mode for users who prefer fewer false-positive stops. It bypasses the legacy bash command-injection validation path entirely, keeps ordinary interpreter allow-rules (`Bash(python:*)`, `Bash(npm run:*)`, …) when entering auto mode, and skips prompts for routine edits to filenames on the broad sensitive-file list. Dangerous directory, Windows-path, symlink-resolved path, and UNC guards remain active. The model-level prompt is not weakened by this flag. |
 
 ```bash
-export OPENCLAUDE_SAFETY_LEVEL=permissive   # relax benign-task false positives
+export ROOTCLAUDE_SAFETY_LEVEL=permissive   # relax benign-task false positives
 ```
 
 ## Runtime Hardening
@@ -511,16 +511,16 @@ bun run doctor:runtime:json
 bun run doctor:report
 
 # print a redacted public issue report
-openclaude doctor report --markdown
+rootclaude doctor report --markdown
 
 # write a redacted JSON issue report for attachment
-openclaude doctor report --json --out openclaude-report.json
+rootclaude doctor report --json --out rootclaude-report.json
 
 # write a deterministic task report from a session transcript
-openclaude report --json --transcript ~/.openclaude/projects/-path-to-project/session-id.jsonl --out task-report.json
+rootclaude report --json --transcript ~/.rootclaude/projects/-path-to-project/session-id.jsonl --out task-report.json
 
 # print a human-readable task report from the latest session in the current project
-openclaude report --markdown
+rootclaude report --markdown
 
 # full local hardening check (smoke + runtime doctor)
 bun run hardening:check
@@ -535,8 +535,8 @@ Notes:
 - `doctor:runtime` also validates the dedicated Gemini and Mistral env paths when `CLAUDE_CODE_USE_GEMINI=1` or `CLAUDE_CODE_USE_MISTRAL=1`.
 - Local providers such as `http://localhost:11434/v1`, `http://10.0.0.1:11434/v1`, and `http://127.0.0.1:1337/v1` can run without `OPENAI_API_KEY`.
 - Codex profiles validate `CODEX_API_KEY` or the Codex CLI auth file and probe `POST /responses` instead of `GET /models`.
-- `openclaude doctor report` is redacted by default and is intended for GitHub issues. It summarizes provider/runtime/build/settings state without prompts, transcripts, raw settings files, API keys, MCP command details, or full home-directory paths.
-- `openclaude report --json` and `openclaude report --markdown` summarize observed session facts such as tool uses, Bash commands, validation commands, changed files, branch metadata, warnings, and linked issue/PR references. Use `--transcript <file>` for an explicit transcript, `--session <id>` for a stored session, or omit both to report the latest session for the current project. Large previews are truncated and credential-shaped strings are redacted. When no validation command is observed, the report keeps `validations` empty and includes a warning instead of claiming checks passed.
+- `rootclaude doctor report` is redacted by default and is intended for GitHub issues. It summarizes provider/runtime/build/settings state without prompts, transcripts, raw settings files, API keys, MCP command details, or full home-directory paths.
+- `rootclaude report --json` and `rootclaude report --markdown` summarize observed session facts such as tool uses, Bash commands, validation commands, changed files, branch metadata, warnings, and linked issue/PR references. Use `--transcript <file>` for an explicit transcript, `--session <id>` for a stored session, or omit both to report the latest session for the current project. Large previews are truncated and credential-shaped strings are redacted. When no validation command is observed, the report keeps `validations` empty and includes a warning instead of claiming checks passed.
 
 ## Provider Launch Profiles
 
@@ -600,7 +600,7 @@ If no profile exists yet, `dev:profile` uses the same goal-aware defaults when p
 
 When a saved provider profile is active, `/model` can either show the provider's
 catalog/discovered models or only the models explicitly listed in the profile.
-Configure this in `~/.openclaude.json`:
+Configure this in `~/.rootclaude.json`:
 
 ```json
 {
@@ -644,13 +644,13 @@ For `dev:atomic-chat`, make sure Atomic Chat is running with a model loaded befo
 
 ## Message-Count Compaction Threshold
 
-By default, OpenClaude compacts conversations based on token usage and also
+By default, RootClaude compacts conversations based on token usage and also
 applies a safety hard cap of 1000 active messages. The hard cap catches long
 sessions that accumulate many small messages with negligible token cost.
 
 This hard cap is a safety net: it can still trigger compaction even when
 `DISABLE_COMPACT`, `DISABLE_AUTO_COMPACT`, or a disabled auto-compact setting
-would otherwise prevent it. Set `OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP=0`
+would otherwise prevent it. Set `ROOTCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP=0`
 only when you need to suppress that safety cap for diagnostics.
 
 If you frequently resume long sessions that accumulate hundreds of small
@@ -667,8 +667,8 @@ or `1000`). Setting it to `off` (default) leaves only the built-in hard cap.
 This setting is intended for power users debugging specific edge cases. Most
 users should leave it at `off`.
 
-The legacy `OPENCLAUDE_MAX_ACTIVE_MESSAGES` environment variable is still
-honored when the setting is `off`. `OPENCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP`
+The legacy `ROOTCLAUDE_MAX_ACTIVE_MESSAGES` environment variable is still
+honored when the setting is `off`. `ROOTCLAUDE_MAX_ACTIVE_MESSAGES_HARD_CAP`
 can override the safety cap; set it to `0` only for diagnostics.
 
 ### Long-session memory guard validation

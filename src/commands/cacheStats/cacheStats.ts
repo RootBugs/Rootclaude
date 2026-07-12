@@ -1,4 +1,4 @@
-import {
+﻿import {
   getCacheStatsHistory,
   getCurrentTurnCacheMetrics,
   getSessionCacheMetrics,
@@ -12,12 +12,12 @@ import {
 import type { LocalCommandCall } from '../../types/command.js'
 
 // Cap the per-request breakdown to keep output readable. Users wanting
-// the full history can rely on OPENCLAUDE_LOG_TOKEN_USAGE=verbose for
+// the full history can rely on RootClaude_LOG_TOKEN_USAGE=verbose for
 // structured per-request stderr output.
 const MAX_RECENT_ROWS = 20
 
 function formatRow(entry: CacheStatsEntry, idx: number): string {
-  // `YYYY-MM-DD HH:MM:SS` — long-running sessions can span midnight and a
+  // `YYYY-MM-DD HH:MM:SS` â€” long-running sessions can span midnight and a
   // bare time-of-day makes the wrong row look "most recent" when two
   // entries on different days share the same HH:MM:SS.
   const iso = new Date(entry.timestamp).toISOString()
@@ -56,7 +56,7 @@ export const call: LocalCommandCall = async () => {
     lines.push(formatRow(entry, history.length - recent.length + i))
   }
 
-  // Honesty footnote — providers without cache reporting (vanilla Copilot,
+  // Honesty footnote â€” providers without cache reporting (vanilla Copilot,
   // Ollama) show [Cache: N/A] rather than a fake 0%. Tell the user so they
   // don't read "N/A" as "broken".
   const hasUnsupported = recent.some((e) => !e.metrics.supported)
@@ -66,7 +66,7 @@ export const call: LocalCommandCall = async () => {
       '  N/A rows: provider API does not expose cache usage (GitHub Copilot, Ollama).',
     )
     lines.push(
-      '  The request still ran normally — only the metric is unavailable.',
+      '  The request still ran normally â€” only the metric is unavailable.',
     )
   }
 

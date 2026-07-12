@@ -1,8 +1,8 @@
-/**
+﻿/**
  * Reads plugin-related settings (enabledPlugins, extraKnownMarketplaces)
  * from --add-dir directories.
  *
- * These have the LOWEST priority — callers must spread standard settings
+ * These have the LOWEST priority â€” callers must spread standard settings
  * on top so that user/project/local/flag/policy sources all override.
  */
 
@@ -28,7 +28,7 @@ const SETTINGS_FILES = ['settings.json', 'settings.local.json'] as const
  * (local wins within that dir). Across directories, later CLI-order wins on
  * conflict.
  *
- * This has the lowest priority — callers must spread their standard settings
+ * This has the lowest priority â€” callers must spread their standard settings
  * on top to let user/project/local/flag/policy override.
  */
 export function getAddDirEnabledPlugins(): NonNullable<
@@ -37,7 +37,7 @@ export function getAddDirEnabledPlugins(): NonNullable<
   const result: NonNullable<SettingsJson['enabledPlugins']> = {}
   for (const dir of getAdditionalDirectoriesForClaudeMd()) {
     for (const file of SETTINGS_FILES) {
-      const { settings } = parseSettingsFile(join(dir, '.openclaude', file))
+      const { settings } = parseSettingsFile(join(dir, '.RootClaude', file))
       if (!settings?.enabledPlugins) {
         continue
       }
@@ -60,7 +60,7 @@ export function getAddDirExtraMarketplaces(): Record<
   const result: Record<string, ExtraKnownMarketplace> = {}
   for (const dir of getAdditionalDirectoriesForClaudeMd()) {
     for (const file of SETTINGS_FILES) {
-      const { settings } = parseSettingsFile(join(dir, '.openclaude', file))
+      const { settings } = parseSettingsFile(join(dir, '.RootClaude', file))
       if (!settings?.extraKnownMarketplaces) {
         continue
       }

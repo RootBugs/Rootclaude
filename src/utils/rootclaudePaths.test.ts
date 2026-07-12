@@ -40,10 +40,10 @@ afterEach(() => {
   }
 })
 
-describe('OpenClaude paths', () => {
-  test('defaults user config home to ~/.openclaude', async () => {
+describe('RootClaude paths', () => {
+  test('defaults user config home to ~/.RootClaude', async () => {
     await acquireEnvMutex()
-    delete process.env.OPENCLAUDE_CONFIG_DIR
+    delete process.env.RootClaude_CONFIG_DIR
     delete process.env.CLAUDE_CONFIG_DIR
     const { resolveClaudeConfigHomeDir } = await importFreshEnvUtils()
 
@@ -51,12 +51,12 @@ describe('OpenClaude paths', () => {
       resolveClaudeConfigHomeDir({
         homeDir: homedir(),
       }),
-    ).toBe(join(homedir(), '.openclaude'))
+    ).toBe(join(homedir(), '.RootClaude'))
   })
 
-  test('hard-cuts user config home to ~/.openclaude by default', async () => {
+  test('hard-cuts user config home to ~/.RootClaude by default', async () => {
     await acquireEnvMutex()
-    delete process.env.OPENCLAUDE_CONFIG_DIR
+    delete process.env.RootClaude_CONFIG_DIR
     delete process.env.CLAUDE_CONFIG_DIR
     const { resolveClaudeConfigHomeDir } = await importFreshEnvUtils()
 
@@ -64,12 +64,12 @@ describe('OpenClaude paths', () => {
       resolveClaudeConfigHomeDir({
         homeDir: homedir(),
       }),
-    ).toBe(join(homedir(), '.openclaude'))
+    ).toBe(join(homedir(), '.RootClaude'))
   })
 
-  test('does not migrate legacy .claude config into .openclaude', async () => {
+  test('does not migrate legacy .claude config into .RootClaude', async () => {
     await acquireEnvMutex()
-    const tempHome = mkdtempSync(join(tmpdir(), 'openclaude-paths-test-'))
+    const tempHome = mkdtempSync(join(tmpdir(), 'rootclaude-paths-test-'))
     try {
       mkdirSync(join(tempHome, '.claude', 'skills', 'legacy-skill'), {
         recursive: true,
@@ -84,7 +84,7 @@ describe('OpenClaude paths', () => {
         join(tempHome, '.claude-custom-oauth.json'),
         '{"custom":true}',
       )
-      expect(existsSync(join(tempHome, '.openclaude'))).toBe(false)
+      expect(existsSync(join(tempHome, '.RootClaude'))).toBe(false)
     } finally {
       rmSync(tempHome, { recursive: true, force: true })
     }
@@ -92,33 +92,33 @@ describe('OpenClaude paths', () => {
 
   test('config home does not fall back to legacy .claude', async () => {
     await acquireEnvMutex()
-    const tempHome = mkdtempSync(join(tmpdir(), 'openclaude-paths-test-'))
+    const tempHome = mkdtempSync(join(tmpdir(), 'rootclaude-paths-test-'))
     try {
-      writeFileSync(join(tempHome, '.openclaude'), 'not a directory')
+      writeFileSync(join(tempHome, '.RootClaude'), 'not a directory')
       mkdirSync(join(tempHome, '.claude'), { recursive: true })
       mock.module('os', () => ({
         homedir: () => tempHome,
         tmpdir,
       }))
-      delete process.env.OPENCLAUDE_CONFIG_DIR
+      delete process.env.RootClaude_CONFIG_DIR
       delete process.env.CLAUDE_CONFIG_DIR
 
       const { getClaudeConfigHomeDir } = await importFreshEnvUtils()
 
-      expect(getClaudeConfigHomeDir()).toBe(join(tempHome, '.openclaude'))
+      expect(getClaudeConfigHomeDir()).toBe(join(tempHome, '.RootClaude'))
     } finally {
       rmSync(tempHome, { recursive: true, force: true })
     }
   })
 
-  test('default plans directory uses ~/.openclaude/plans', async () => {
+  test('default plans directory uses ~/.RootClaude/plans', async () => {
     await acquireEnvMutex()
-    delete process.env.OPENCLAUDE_CONFIG_DIR
+    delete process.env.RootClaude_CONFIG_DIR
     delete process.env.CLAUDE_CONFIG_DIR
     const { getDefaultPlansDirectory } = await importFreshPlans()
 
     expect(getDefaultPlansDirectory({ homeDir: homedir() })).toBe(
-      join(homedir(), '.openclaude', 'plans'),
+      join(homedir(), '.RootClaude', 'plans'),
     )
   })
 
@@ -127,29 +127,29 @@ describe('OpenClaude paths', () => {
     const { getDefaultPlansDirectory } = await importFreshPlans()
 
     expect(
-      getDefaultPlansDirectory({ configDirEnv: '/tmp/custom-openclaude' }),
-    ).toBe(join('/tmp/custom-openclaude', 'plans'))
+      getDefaultPlansDirectory({ configDirEnv: '/tmp/custom-RootClaude' }),
+    ).toBe(join('/tmp/custom-RootClaude', 'plans'))
   })
 
-  test('default plans directory respects OPENCLAUDE_CONFIG_DIR', async () => {
+  test('default plans directory respects RootClaude_CONFIG_DIR', async () => {
     await acquireEnvMutex()
-    process.env.OPENCLAUDE_CONFIG_DIR = '/tmp/preferred-openclaude'
+    process.env.RootClaude_CONFIG_DIR = '/tmp/preferred-RootClaude'
     delete process.env.CLAUDE_CONFIG_DIR
     const { getDefaultPlansDirectory } = await importFreshPlans()
 
     expect(getDefaultPlansDirectory()).toBe(
-      join('/tmp/preferred-openclaude', 'plans'),
+      join('/tmp/preferred-RootClaude', 'plans'),
     )
   })
 
-  test('OPENCLAUDE_CONFIG_DIR wins for default plans directory', async () => {
+  test('RootClaude_CONFIG_DIR wins for default plans directory', async () => {
     await acquireEnvMutex()
-    process.env.OPENCLAUDE_CONFIG_DIR = '/tmp/preferred-openclaude'
-    process.env.CLAUDE_CONFIG_DIR = '/tmp/legacy-openclaude'
+    process.env.RootClaude_CONFIG_DIR = '/tmp/preferred-RootClaude'
+    process.env.CLAUDE_CONFIG_DIR = '/tmp/legacy-RootClaude'
     const { getDefaultPlansDirectory } = await importFreshPlans()
 
     expect(getDefaultPlansDirectory()).toBe(
-      join('/tmp/preferred-openclaude', 'plans'),
+      join('/tmp/preferred-RootClaude', 'plans'),
     )
   })
 
@@ -159,7 +159,7 @@ describe('OpenClaude paths', () => {
 
     expect(
       getDefaultPlansDirectory({ homeDir: '/tmp/cafe\u0301' }),
-    ).toBe(join('/tmp/caf\u00e9', '.openclaude', 'plans'))
+    ).toBe(join('/tmp/caf\u00e9', '.RootClaude', 'plans'))
   })
 
   test('default plans directory normalizes explicit configDirEnv argument to NFC', async () => {
@@ -167,57 +167,57 @@ describe('OpenClaude paths', () => {
     const { getDefaultPlansDirectory } = await importFreshPlans()
 
     expect(
-      getDefaultPlansDirectory({ configDirEnv: '/tmp/cafe\u0301-openclaude' }),
-    ).toBe(join('/tmp/caf\u00e9-openclaude', 'plans'))
+      getDefaultPlansDirectory({ configDirEnv: '/tmp/cafe\u0301-RootClaude' }),
+    ).toBe(join('/tmp/caf\u00e9-RootClaude', 'plans'))
   })
 
   test('ignores CLAUDE_CONFIG_DIR override when provided', async () => {
     await acquireEnvMutex()
-    delete process.env.OPENCLAUDE_CONFIG_DIR
-    process.env.CLAUDE_CONFIG_DIR = '/tmp/custom-openclaude'
+    delete process.env.RootClaude_CONFIG_DIR
+    process.env.CLAUDE_CONFIG_DIR = '/tmp/custom-RootClaude'
     mock.module('os', () => ({
       homedir: () => '/tmp/home',
       tmpdir,
     }))
     const { getClaudeConfigHomeDir } = await importFreshEnvUtils()
 
-    expect(getClaudeConfigHomeDir()).toBe('/tmp/home/.openclaude')
+    expect(getClaudeConfigHomeDir()).toBe('/tmp/home/.RootClaude')
   })
 
-  test('OPENCLAUDE_CONFIG_DIR overrides the default (issue #454)', async () => {
+  test('RootClaude_CONFIG_DIR overrides the default (issue #454)', async () => {
     await acquireEnvMutex()
     delete process.env.CLAUDE_CONFIG_DIR
-    process.env.OPENCLAUDE_CONFIG_DIR = '/tmp/oc-config-only'
+    process.env.RootClaude_CONFIG_DIR = '/tmp/oc-config-only'
     const { getClaudeConfigHomeDir } = await importFreshEnvUtils()
 
     expect(getClaudeConfigHomeDir()).toBe('/tmp/oc-config-only')
   })
 
-  test('OPENCLAUDE_CONFIG_DIR wins when both env vars are set with different values', async () => {
+  test('RootClaude_CONFIG_DIR wins when both env vars are set with different values', async () => {
     await acquireEnvMutex()
-    process.env.OPENCLAUDE_CONFIG_DIR = '/tmp/oc-wins'
+    process.env.RootClaude_CONFIG_DIR = '/tmp/oc-wins'
     process.env.CLAUDE_CONFIG_DIR = '/tmp/legacy-loses'
     const { getClaudeConfigHomeDir } = await importFreshEnvUtils()
 
     expect(getClaudeConfigHomeDir()).toBe('/tmp/oc-wins')
   })
 
-  test('CLAUDE_CONFIG_DIR is ignored when OPENCLAUDE_CONFIG_DIR is unset', async () => {
+  test('CLAUDE_CONFIG_DIR is ignored when RootClaude_CONFIG_DIR is unset', async () => {
     await acquireEnvMutex()
-    delete process.env.OPENCLAUDE_CONFIG_DIR
+    delete process.env.RootClaude_CONFIG_DIR
     process.env.CLAUDE_CONFIG_DIR = '/tmp/legacy-only'
     const { getClaudeConfigHomeDir } = await importFreshEnvUtils()
 
-    expect(getClaudeConfigHomeDir()).toBe(join(homedir(), '.openclaude'))
+    expect(getClaudeConfigHomeDir()).toBe(join(homedir(), '.RootClaude'))
   })
 
-  test('empty OPENCLAUDE_CONFIG_DIR does not fall through to CLAUDE_CONFIG_DIR', async () => {
+  test('empty RootClaude_CONFIG_DIR does not fall through to CLAUDE_CONFIG_DIR', async () => {
     await acquireEnvMutex()
-    process.env.OPENCLAUDE_CONFIG_DIR = ''
+    process.env.RootClaude_CONFIG_DIR = ''
     process.env.CLAUDE_CONFIG_DIR = '/tmp/legacy-fallback'
     const { getClaudeConfigHomeDir } = await importFreshEnvUtils()
 
-    expect(getClaudeConfigHomeDir()).toBe(join(homedir(), '.openclaude'))
+    expect(getClaudeConfigHomeDir()).toBe(join(homedir(), '.RootClaude'))
   })
 
   test('resolveConfigDirEnv ignores CLAUDE_CONFIG_DIR without warning', async () => {
@@ -228,7 +228,7 @@ describe('OpenClaude paths', () => {
 
     const warnings: string[] = []
     const result = resolveConfigDirEnv({
-      openClaudeConfigDir: '/a',
+      RootClaudeConfigDir: '/a',
       legacyConfigDir: '/b',
       warn: m => warnings.push(m),
     })
@@ -237,7 +237,7 @@ describe('OpenClaude paths', () => {
     expect(warnings.length).toBe(0)
 
     resolveConfigDirEnv({
-      openClaudeConfigDir: '/x',
+      RootClaudeConfigDir: '/x',
       legacyConfigDir: '/y',
       warn: m => warnings.push(m),
     })
@@ -252,7 +252,7 @@ describe('OpenClaude paths', () => {
 
     expect(
       resolveConfigDirEnv({
-        openClaudeConfigDir: '/silent-open',
+        RootClaudeConfigDir: '/silent-open',
         legacyConfigDir: '/silent-legacy',
       }),
     ).toBe('/silent-open')
@@ -260,7 +260,7 @@ describe('OpenClaude paths', () => {
     const warnings: string[] = []
     expect(
       resolveConfigDirEnv({
-        openClaudeConfigDir: '/warn-open',
+        RootClaudeConfigDir: '/warn-open',
         legacyConfigDir: '/warn-legacy',
         warn: m => warnings.push(m),
       }),
@@ -276,7 +276,7 @@ describe('OpenClaude paths', () => {
 
     const warnings: string[] = []
     const result = resolveConfigDirEnv({
-      openClaudeConfigDir: '/same',
+      RootClaudeConfigDir: '/same',
       legacyConfigDir: '/same',
       warn: m => warnings.push(m),
     })
@@ -291,43 +291,43 @@ describe('OpenClaude paths', () => {
 
     expect(
       resolveConfigDirEnv({
-        openClaudeConfigDir: undefined,
+        RootClaudeConfigDir: undefined,
         legacyConfigDir: undefined,
       }),
     ).toBeUndefined()
   })
 
-  test('project and local settings paths use .openclaude', async () => {
+  test('project and local settings paths use .RootClaude', async () => {
     await acquireEnvMutex()
     const { getRelativeSettingsFilePathForSource } = await importFreshSettings()
 
     expect(getRelativeSettingsFilePathForSource('projectSettings')).toBe(
-      '.openclaude/settings.json',
+      '.RootClaude/settings.json',
     )
     expect(getRelativeSettingsFilePathForSource('localSettings')).toBe(
-      '.openclaude/settings.local.json',
+      '.RootClaude/settings.local.json',
     )
   })
 
-  test('local installer uses openclaude wrapper path', async () => {
+  test('local installer uses rootclaude wrapper path', async () => {
     await acquireEnvMutex()
-    process.env.OPENCLAUDE_CONFIG_DIR = join(homedir(), '.openclaude')
+    process.env.RootClaude_CONFIG_DIR = join(homedir(), '.RootClaude')
     delete process.env.CLAUDE_CONFIG_DIR
     const { getLocalClaudePath } = await importFreshLocalInstaller()
 
     expect(getLocalClaudePath()).toBe(
-      join(homedir(), '.openclaude', 'local', 'openclaude'),
+      join(homedir(), '.RootClaude', 'local', 'rootclaude'),
     )
   })
 
-  test('local installation detection matches .openclaude path', async () => {
+  test('local installation detection matches .RootClaude path', async () => {
     await acquireEnvMutex()
     const { isManagedLocalInstallationPath } =
       await importFreshLocalInstaller()
 
     expect(
       isManagedLocalInstallationPath(
-        `${join(homedir(), '.openclaude', 'local')}/node_modules/.bin/openclaude`,
+        `${join(homedir(), '.RootClaude', 'local')}/node_modules/.bin/rootclaude`,
       ),
     ).toBe(true)
   })
@@ -339,21 +339,21 @@ describe('OpenClaude paths', () => {
 
     expect(
       isManagedLocalInstallationPath(
-        `${join(homedir(), '.claude', 'local')}/node_modules/.bin/openclaude`,
+        `${join(homedir(), '.claude', 'local')}/node_modules/.bin/rootclaude`,
       ),
     ).toBe(false)
   })
 
-  test('candidate local install dirs include only openclaude path', async () => {
+  test('candidate local install dirs include only rootclaude path', async () => {
     await acquireEnvMutex()
     const { getCandidateLocalInstallDirs } = await importFreshLocalInstaller()
 
     expect(
       getCandidateLocalInstallDirs({
-        configHomeDir: join(homedir(), '.openclaude'),
+        configHomeDir: join(homedir(), '.RootClaude'),
       }),
     ).toEqual([
-      join(homedir(), '.openclaude', 'local'),
+      join(homedir(), '.RootClaude', 'local'),
     ])
   })
 

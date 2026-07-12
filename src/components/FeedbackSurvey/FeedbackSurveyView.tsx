@@ -1,4 +1,4 @@
-import { c as _c } from "react-compiler-runtime";
+﻿import { c as _c } from "react-compiler-runtime";
 import React from 'react';
 import { Box, Text } from '../../ink.js';
 import { useDebouncedDigitInput } from './useDebouncedDigitInput.js';
@@ -54,7 +54,7 @@ export function FeedbackSurveyView(t0) {
   useDebouncedDigitInput(t3);
   let t4;
   if ($[6] === Symbol.for("react.memo_cache_sentinel")) {
-    t4 = <Text color="ansi:cyan">● </Text>;
+    t4 = <Text color="ansi:cyan">â— </Text>;
     $[6] = t4;
   } else {
     t4 = $[6];

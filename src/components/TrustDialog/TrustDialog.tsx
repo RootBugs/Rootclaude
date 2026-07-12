@@ -1,4 +1,4 @@
-import { c as _c } from "react-compiler-runtime";
+﻿import { c as _c } from "react-compiler-runtime";
 import { homedir } from 'os';
 import React from 'react';
 import { logEvent } from 'src/services/analytics/index.js';
@@ -206,7 +206,7 @@ export function TrustDialog(t0) {
   if ($[20] === Symbol.for("react.memo_cache_sentinel")) {
     t16 = <Text bold={true}>{getFsImplementation().cwd()}</Text>;
     t17 = <Text>Quick safety check: Is this a project you created or one you trust? (Like your own code, a well-known open source project, or work from your team). If not, take a moment to review what{"'"}s in this folder first.</Text>;
-    t18 = <Text>OpenClaude{"'"}ll be able to read, edit, and execute files here.</Text>;
+    t18 = <Text>RootClaude{"'"}ll be able to read, edit, and execute files here.</Text>;
     $[20] = t16;
     $[21] = t17;
     $[22] = t18;
@@ -245,7 +245,7 @@ export function TrustDialog(t0) {
   }
   let t22;
   if ($[27] !== exitState.keyName || $[28] !== exitState.pending) {
-    t22 = <Text dimColor={true}>{exitState.pending ? <>Press {exitState.keyName} again to exit</> : <>Enter to confirm · Esc to cancel</>}</Text>;
+    t22 = <Text dimColor={true}>{exitState.pending ? <>Press {exitState.keyName} again to exit</> : <>Enter to confirm Â· Esc to cancel</>}</Text>;
     $[27] = exitState.keyName;
     $[28] = exitState.pending;
     $[29] = t22;

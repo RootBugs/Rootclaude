@@ -1,4 +1,4 @@
-import {
+﻿import {
   readCodexCredentialsAsync,
   refreshCodexAccessTokenIfNeeded,
 } from '../../utils/codexCredentials.js'
@@ -446,7 +446,7 @@ export async function fetchCodexUsage(): Promise<CodexUsageData> {
         Accept: 'application/json',
         Authorization: `Bearer ${credentials.apiKey}`,
         'chatgpt-account-id': credentials.accountId,
-        originator: 'openclaude',
+        originator: 'RootClaude',
       },
       signal,
     })

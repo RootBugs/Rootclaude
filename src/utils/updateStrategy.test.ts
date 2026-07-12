@@ -11,7 +11,7 @@ import {
 
 describe('isThirdPartyBuildBlockedFor', () => {
   const UPSTREAM = '@anthropic-ai/claude-code'
-  const OPENCLAUDE = '@gitlawb/openclaude'
+  const RootClaude = '@gitlawb/RootClaude'
 
   test('blocks a third-party provider running the upstream build', () => {
     for (const provider of [
@@ -28,9 +28,9 @@ describe('isThirdPartyBuildBlockedFor', () => {
     expect(isThirdPartyBuildBlockedFor('firstParty', UPSTREAM)).toBe(false)
   })
 
-  test('allows a custom-PACKAGE_URL build (OpenClaude) on any provider', () => {
-    expect(isThirdPartyBuildBlockedFor('bedrock', OPENCLAUDE)).toBe(false)
-    expect(isThirdPartyBuildBlockedFor('firstParty', OPENCLAUDE)).toBe(false)
+  test('allows a custom-PACKAGE_URL build (RootClaude) on any provider', () => {
+    expect(isThirdPartyBuildBlockedFor('bedrock', RootClaude)).toBe(false)
+    expect(isThirdPartyBuildBlockedFor('firstParty', RootClaude)).toBe(false)
   })
 })
 
