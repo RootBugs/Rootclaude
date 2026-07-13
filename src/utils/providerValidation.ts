@@ -1,4 +1,4 @@
-﻿import { resolve } from 'node:path'
+import { resolve } from 'node:path'
 import '../integrations/index.js'
 import {
   ensureIntegrationsLoaded,
@@ -339,6 +339,11 @@ function getCredentialEnvValidationError(
     (isLocalProviderUrl(request.baseUrl) ||
       isLikelyOllamaEndpoint(request.baseUrl))
   ) {
+    return null
+  }
+
+  // Allow empty credentials for free tier models
+  if ((validation as any).allowEmptyCredentials) {
     return null
   }
 
