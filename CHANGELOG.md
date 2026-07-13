@@ -1,5 +1,45 @@
 # Changelog
 
+## 1.0.0 (2026-07-13)
+
+
+### Features
+
+* Add 4 reasoning skills - context-optimizer, tdd-enforcer, deep-reasoning, system-prompt-master ([03cb538](https://github.com/RootBugs/Rootclaude/commit/03cb5381e91712ea81d8b2c080e279485af2b6d6))
+* Add 5 new skills - css-validator, verify-claims, render-check, memory-manager, agent-orchestrator ([353c3b8](https://github.com/RootBugs/Rootclaude/commit/353c3b8e5180fd6caaa24f1f24faacf2c6cd0148))
+* Add 5 quality skills - code-quality, ui-design-quality, security-first, performance-optimized, responsive-design ([e76718b](https://github.com/RootBugs/Rootclaude/commit/e76718bd11b1990357aa147143dcd4a63e63b994))
+* Add RootClaude ASCII logo from brand.ts to welcome screen ([f5269af](https://github.com/RootBugs/Rootclaude/commit/f5269af7987ffe0ae47de77084ed8ba1210b6ff1))
+* Add smart-memory, multi-search, and agent-cache skills ([d53afa7](https://github.com/RootBugs/Rootclaude/commit/d53afa7e4d14e9469d38a9f20094e088f35d04dd))
+* Add ultra-fast skill for 10x faster verification ([bed9801](https://github.com/RootBugs/Rootclaude/commit/bed98012746c0ea734d961229e2e32833435ac83))
+* Implement 5-phase v2.0 plan - smart routing, auto-skills, verification, context, memory ([7f173fc](https://github.com/RootBugs/Rootclaude/commit/7f173fc1edaf0b97e513379a9b3c67f4582c623d))
+* Rebrand OpenClaude to RootClaude with OpenCode Zen default provider ([5cf2cf0](https://github.com/RootBugs/Rootclaude/commit/5cf2cf0a1f7d265d27c40f77c63f5599bc1d6e0c))
+* RootClaude red theme - replace Claude orange with RootClaude red accent color ([075ae41](https://github.com/RootBugs/Rootclaude/commit/075ae411e6ce77766dbf0c77f63a9081485eb825))
+* RootRed palette - replace ember with red gradient for logo ([f16b365](https://github.com/RootBugs/Rootclaude/commit/f16b365bffca34f762a9ac796e3bedc313704d2c))
+
+
+### Bug Fixes
+
+* Add allowEmptyCredentials to opencode-go gateway for free models ([ffed9e1](https://github.com/RootBugs/Rootclaude/commit/ffed9e12db4a21c213a6178e4bca5df3d87e51dc))
+* Allow empty credentials for free OpenCode Zen models ([cf20c42](https://github.com/RootBugs/Rootclaude/commit/cf20c420086ada7455344c7d8f79465cc53ebf38))
+* Change feedback prompt from 'OpenClaude' to 'RootClaude' ([58dcdf1](https://github.com/RootBugs/Rootclaude/commit/58dcdf11ef153d47ab3684a07ef69baef65b523f))
+* Disable tool reminders to hide system-reminder in output ([5ba24a3](https://github.com/RootBugs/Rootclaude/commit/5ba24a34815205e19485d45d49a46640397974b0))
+* Fix injectSkillContext to append skill content to existing message instead of creating new one ([3284347](https://github.com/RootBugs/Rootclaude/commit/32843472357c46f6b9ff17d5323ed2fce74d57a0))
+* Improve DeepScrape integration - configurable path, retry logic, better error handling ([eb6f9f1](https://github.com/RootBugs/Rootclaude/commit/eb6f9f135fb9b6a6ffd99637a429cb57deadc631))
+* Remove all logos and ASCII art from startup screen ([6812c7e](https://github.com/RootBugs/Rootclaude/commit/6812c7e731caa422c8c45b4382b26f020864d9f6))
+* Remove ASCII logo from StartupScreen.ts ([9ab46b3](https://github.com/RootBugs/Rootclaude/commit/9ab46b33a468d18d483f895fe496c8fec867eebc))
+* Remove ASCII logo from welcome screen ([c93b7f0](https://github.com/RootBugs/Rootclaude/commit/c93b7f08ee21bbc5dcfbf27cefd1123f6803ccbc))
+* Remove Clawd mascot from welcome screen ([3e8643c](https://github.com/RootBugs/Rootclaude/commit/3e8643c2d4fdd50c66ffb4b6ec66698ca11d0da4))
+* Replace DeepScrape with AutoCLI direct HTTP fetch - no Chrome dependency needed ([b603d67](https://github.com/RootBugs/Rootclaude/commit/b603d674b403e2cba828f68a47315e3d6328e5e9))
+* Replace Unicode block characters with ASCII art for terminal compatibility ([beb5778](https://github.com/RootBugs/Rootclaude/commit/beb57787b1b2e7ca29a36b3bef3ab2e95e27f7a3))
+* Replace Unicode characters with ASCII art for Clawd mascot ([ef70cf9](https://github.com/RootBugs/Rootclaude/commit/ef70cf91eb4dab2e1585c4bfe9695311e541b77b))
+* Support allowEmptyCredentials in provider validation for free tier models ([b66e5ff](https://github.com/RootBugs/Rootclaude/commit/b66e5ff2472321af291922f5bed211385c8b65db))
+* Update user-facing strings from OpenClaude to RootClaude ([5e55e26](https://github.com/RootBugs/Rootclaude/commit/5e55e26ec215b1c0637be79bfb5031668352884e))
+
+
+### Reverts
+
+* Restore original ASCII logo and Clawd mascot ([f2bd658](https://github.com/RootBugs/Rootclaude/commit/f2bd658946d6ab1882cba4c9b9c19d87d4f19f39))
+
 ## [0.23.0](https://github.com/RootBugs/RootClaude/compare/v0.22.0...v0.23.0) (2026-07-07)
 
 
