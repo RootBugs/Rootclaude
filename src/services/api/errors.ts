@@ -1,4 +1,4 @@
-﻿import {
+import {
   APIConnectionError,
   APIConnectionTimeoutError,
   APIError,
@@ -483,13 +483,13 @@ function parseOpenCodeGoLimitError(
   retryAfterSeconds?: number
 } | null {
   const requestUrl = error.headers?.get?.('x-opencode-request-url')
-  let isOpencodeGo = false
+  let isOpencodeEndpoint = false
   if (typeof requestUrl === 'string') {
-    isOpencodeGo = requestUrl.includes('opencode.ai/zen/go')
+    isOpencodeEndpoint = requestUrl.includes('opencode.ai/zen')
   } else {
-    isOpencodeGo = (process.env.OPENAI_BASE_URL ?? '').includes('opencode.ai/zen/go')
+    const baseUrl = process.env.OPENAI_BASE_URL ?? ''
+    isOpencodeEndpoint = baseUrl.includes('opencode.ai/zen')
   }
-  if (!isOpencodeGo) return null
 
   const body = error.message ?? ''
   const retryAfter = error.headers?.get?.('retry-after')
@@ -498,6 +498,8 @@ function parseOpenCodeGoLimitError(
   if (body.includes('FreeUsageLimitError')) {
     return { kind: 'free' }
   }
+  if (!isOpencodeEndpoint) return null
+
   if (body.includes('GoUsageLimitError')) {
     const limitNameMatch = body.match(/"limitName"\s*:\s*"([^"]+)"/)
     const workspaceMatch = body.match(/"workspace"\s*:\s*"([^"]+)"/)

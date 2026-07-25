@@ -1735,6 +1735,11 @@ export async function buildLaunchEnv(options: {
       profileEnv.OPENAI_API_KEY = opencodeKey
     } else if (openAICredential) {
       profileEnv[openAICredential.envVar] = openAICredential.value
+    } else {
+      // Free models: OpenCode uses apiKey: "public" to signal unauthenticated
+      // free-tier access. Without this, the API treats the request as
+      // unauthenticated and rate-limits it.
+      profileEnv.OPENAI_API_KEY = 'public'
     }
 
     return buildCompatibilityProcessEnv({

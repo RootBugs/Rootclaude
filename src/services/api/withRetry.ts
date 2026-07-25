@@ -1,4 +1,4 @@
-﻿import { feature } from 'bun:bundle'
+import { feature } from 'bun:bundle'
 import type Anthropic from '@anthropic-ai/sdk'
 import {
   APIConnectionError,
@@ -24,6 +24,7 @@ import {
   handleOAuth401Error,
   isClaudeAISubscriber,
   isEnterpriseSubscriber,
+  isUsing3PServices,
 } from '../../utils/auth.js'
 import { isEnvTruthy } from '../../utils/envUtils.js'
 import { validateBoundedIntEnvVar } from '../../utils/envValidation.js'
@@ -316,8 +317,14 @@ export async function* withRetry<T>(
       // cooldown a quota-exhausted subscription. Wrapping the original
       // APIError preserves the OpenCode Go message via
       // getAssistantMessageFromError instead of the generic guidance.
+      // FreeUsageLimitError from Zen endpoint: NOT terminal — OpenCode retries
+      // it with backoff. Only GoUsageLimitError (paid subscription) is terminal.
       if (isOpenCodeGoQuotaError(error)) {
-        throw new CannotRetryError(error, retryContext)
+        const body = (error.message ?? '').toLowerCase()
+        if (body.includes('gousagelimiterror')) {
+          throw new CannotRetryError(error, retryContext)
+        }
+        // FreeUsageLimitError falls through to normal retry with backoff
       }
       if (
         error instanceof APIError &&
@@ -648,6 +655,9 @@ function getRetryAfter(error: unknown): string | null {
   )
 }
 
+const FREE_MODEL_MAX_RETRY_AFTER_S = 30
+const FREE_MODEL_MAX_RETRIES = 3
+
 export function getRetryDelay(
   attempt: number,
   retryAfterHeader?: string | null,
@@ -656,7 +666,9 @@ export function getRetryDelay(
   if (retryAfterHeader) {
     const seconds = parseInt(retryAfterHeader, 10)
     if (!isNaN(seconds)) {
-      return seconds * 1000
+      // For free/3PS models, cap retry-after to avoid 14-hour waits
+      const cap = isUsing3PServices() ? FREE_MODEL_MAX_RETRY_AFTER_S : undefined
+      return Math.min(seconds * 1000, cap !== undefined ? cap * 1000 : Infinity)
     }
   }
 
@@ -942,8 +954,11 @@ function shouldRetry(error: APIError, persistentRetryEnabled: boolean): boolean 
 
   // Retry on rate limits, but not for ClaudeAI Subscription users
   // Enterprise users can retry because they typically use PAYG instead of rate limits
+  // Free/3PS models: don't retry — if the endpoint rate-limits a free model,
+  // retrying won't help; surface the error immediately.
   if (error.status === 429) {
     if (isQuotaExhausted(error)) return false
+    if (isUsing3PServices()) return false
     return !isClaudeAISubscriber() || isEnterpriseSubscriber()
   }
 
@@ -997,7 +1012,12 @@ export function getDefaultRetryDelayMs(): number {
   ).effective
 }
 function getMaxRetries(options: RetryOptions): number {
-  return options.maxRetries ?? getDefaultMaxRetries()
+  const base = options.maxRetries ?? getDefaultMaxRetries()
+  // Free/3PS models: cap retries — no point burning 10 attempts on a free endpoint
+  if (isUsing3PServices()) {
+    return Math.min(base, FREE_MODEL_MAX_RETRIES)
+  }
+  return base
 }
 
 function validateRetryAttemptsEnvVar(

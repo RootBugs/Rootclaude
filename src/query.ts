@@ -116,6 +116,7 @@ import { applyToolResultBudget } from './utils/toolResultStorage.js'
 import { resolveNextFallbackProviderFromState } from './utils/providerFallback.js'
 import { setActiveProviderProfile, getActiveProviderProfile } from './utils/providerProfiles.js'
 import { getPrimaryModel } from './utils/providerModels.js'
+import { isUsing3PServices } from './utils/auth.js'
 import { recordContentReplacement } from './utils/sessionStorage.js'
 import { handleStopHooks } from './query/stopHooks.js'
 import {
@@ -1442,8 +1443,10 @@ async function* queryLoop(
             // guards. If no fallback resolves, the recovery branch falls
             // through to the standard error-termination path which yields
             // the original error so the user still sees it.
+            // Skip for 3PS/free models — no rate-limit concept, just surface the error.
             if (
               !hasAttemptedProviderFallback &&
+              !isUsing3PServices() &&
               querySource !== 'compact' &&
               querySource !== 'session_memory' &&
               message.type === 'assistant' &&
@@ -2067,6 +2070,7 @@ async function* queryLoop(
       // ~query.ts:691.
       const isWithheldRateLimit =
         !hasAttemptedProviderFallback &&
+        !isUsing3PServices() &&
         querySource !== 'compact' &&
         querySource !== 'session_memory' &&
         lastMessage?.type === 'assistant' &&
